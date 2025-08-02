@@ -1,0 +1,34 @@
+﻿@model Entidades.Salon
+
+<h2>Crear Nuevo Salon</h2>
+
+<form asp-action="Crear" method="post">
+    <div>
+        <label asp-for="NombreSalon">NombreSalon:</label>
+        <input asp-for="NombreSalon" type="text" required />
+        <span asp-validation-for="NombreSalon"></span>
+    </div>
+
+    <div>
+        <label asp-for="Estado">Estado:</label>
+        <input asp-for="Estado" type="text" />
+        <span asp-validation-for="Estado"></span>
+    </div>
+
+    <div>
+        <label asp-for="MontoSalon">MontoSalon:</label>
+        <input asp-for="MontoSalon" type="text" required />
+        <span asp-validation-for="MontoSalon"></span>
+    </div>
+
+    <div>
+        <button type="submit">Crear Salon</button>
+        <a asp-action="Index">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,46 @@
+﻿@model Entidades.Cliente
+
+<h2>Crear Nuevo Cliente</h2>
+
+<form asp-action="Crear" method="post">
+    <div>
+        <label asp-for="Nombre">Nombre:</label>
+        <input asp-for="Nombre" type="text" required />
+        <span asp-validation-for="Nombre"></span>
+    </div>
+
+    <div>
+        <label asp-for="Apellido">Apellido:</label>
+        <input asp-for="Apellido" type="text" required />
+        <span asp-validation-for="Apellido"></span>
+    </div>
+
+    <div>
+        <label asp-for="Email">Email:</label>
+        <input asp-for="Email" type="email" required />
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div>
+        <label asp-for="Telefono">Teléfono:</label>
+        <input asp-for="Telefono" type="text" />
+        <span asp-validation-for="Telefono"></span>
+    </div>
+
+    <div>
+        <label asp-for="NombreUsuario">Usuario:</label>
+        <input asp-for="NombreUsuario" type="text" required />
+        <span asp-validation-for="NombreUsuario"></span>
+    </div>
+
+    <div>
+        <button type="submit">Crear Cliente</button>
+        <a asp-action="Index">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

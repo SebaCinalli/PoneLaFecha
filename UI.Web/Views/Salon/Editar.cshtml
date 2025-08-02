@@ -1,0 +1,36 @@
+﻿@model Entidades.Salon
+
+<h2>Editar Salon</h2>
+
+<form asp-action="Editar" method="post">
+    <input type="hidden" asp-for="IdSalon" />
+
+    <div>
+        <label asp-for="NombreSalon">NombreSalon:</label>
+        <input asp-for="NombreSalon" type="text" required />
+        <span asp-validation-for="NombreSalon"></span>
+    </div>
+
+    <div>
+        <label asp-for="Estado">Estado:</label>
+        <input asp-for="Estado" type="text" required />
+        <span asp-validation-for="Estado"></span>
+    </div>
+
+    <div>
+        <label asp-for="MontoSalon">MontoSalon:</label>
+        <input asp-for="MontoSalon" type="email" required />
+        <span asp-validation-for="MontoSalon"></span>
+    </div>
+
+    <div>
+        <button type="submit">Guardar Cambios</button>
+        <a asp-action="Index">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
