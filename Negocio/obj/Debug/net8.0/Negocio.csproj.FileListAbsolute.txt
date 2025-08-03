@@ -14,3 +14,19 @@ C:\Users\Dell\Source\Repos\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.dll
 C:\Users\Dell\Source\Repos\PoneLaFecha\Negocio\obj\Debug\net8.0\refint\Negocio.dll
 C:\Users\Dell\Source\Repos\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.pdb
 C:\Users\Dell\Source\Repos\PoneLaFecha\Negocio\obj\Debug\net8.0\ref\Negocio.dll
+C:\TP Net\PoneLaFecha\Negocio\bin\Debug\net8.0\Negocio.deps.json
+C:\TP Net\PoneLaFecha\Negocio\bin\Debug\net8.0\Negocio.dll
+C:\TP Net\PoneLaFecha\Negocio\bin\Debug\net8.0\Negocio.pdb
+C:\TP Net\PoneLaFecha\Negocio\bin\Debug\net8.0\Entidades.dll
+C:\TP Net\PoneLaFecha\Negocio\bin\Debug\net8.0\Entidades.pdb
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.csproj.AssemblyReference.cache
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.GeneratedMSBuildEditorConfig.editorconfig
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.AssemblyInfoInputs.cache
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.AssemblyInfo.cs
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.csproj.CoreCompileInputs.cache
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.sourcelink.json
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.csproj.Up2Date
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.dll
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\refint\Negocio.dll
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\Negocio.pdb
+C:\TP Net\PoneLaFecha\Negocio\obj\Debug\net8.0\ref\Negocio.dll

@@ -10,3 +10,15 @@ C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.dll
 C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\refint\Entidades.dll
 C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.pdb
 C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\ref\Entidades.dll
+C:\TP Net\PoneLaFecha\Entidades\bin\Debug\net8.0\Entidades.deps.json
+C:\TP Net\PoneLaFecha\Entidades\bin\Debug\net8.0\Entidades.dll
+C:\TP Net\PoneLaFecha\Entidades\bin\Debug\net8.0\Entidades.pdb
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.GeneratedMSBuildEditorConfig.editorconfig
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.AssemblyInfoInputs.cache
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.AssemblyInfo.cs
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.csproj.CoreCompileInputs.cache
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.sourcelink.json
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.dll
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\refint\Entidades.dll
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.pdb
+C:\TP Net\PoneLaFecha\Entidades\obj\Debug\net8.0\ref\Entidades.dll
