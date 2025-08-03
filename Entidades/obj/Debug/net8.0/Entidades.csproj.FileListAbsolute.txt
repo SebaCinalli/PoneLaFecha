@@ -1,0 +1,12 @@
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\bin\Debug\net8.0\Entidades.deps.json
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\bin\Debug\net8.0\Entidades.dll
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\bin\Debug\net8.0\Entidades.pdb
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.AssemblyInfoInputs.cache
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.AssemblyInfo.cs
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.sourcelink.json
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.dll
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\refint\Entidades.dll
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\Entidades.pdb
+C:\Users\Dell\Source\Repos\PoneLaFecha\Entidades\obj\Debug\net8.0\ref\Entidades.dll
