@@ -6,4 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Entidades\Entidades.csproj" />
+    <ProjectReference Include="..\Negocio\Negocio.csproj" />
+    <ProjectReference Include="..\UI.Desktop\UI.Desktop.csproj" />
+    <ProjectReference Include="..\UI.Web\UI.Web.csproj" />
+  </ItemGroup>
+
 </Project>
