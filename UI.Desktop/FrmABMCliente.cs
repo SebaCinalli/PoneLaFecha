@@ -243,18 +243,6 @@ namespace UI.Desktop
         private void InicializarDatos()
         {
             clientes = new List<Entidades.Cliente>();
-
-            // Datos de ejemplo
-            clientes.Add(new Entidades.Cliente
-            {
-                IdCliente = 1,
-                Nombre = "Juan",
-                Apellido = "Pérez",
-                Email = "juan.perez@email.com",
-                Telefono = "123456789",
-                NombreUsuario = "jperez"
-            });
-
             ActualizarGrilla();
         }
 

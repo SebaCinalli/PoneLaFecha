@@ -195,24 +195,6 @@ namespace UI.Desktop
         private void InicializarDatos()
         {
             salones = new List<Entidades.Salon>();
-
-            // Datos de ejemplo
-            salones.Add(new Entidades.Salon
-            {
-                IdSalon = 1,
-                NombreSalon = "Salón Primavera",
-                Estado = "Disponible",
-                MontoSalon = 25000.00m
-            });
-
-            salones.Add(new Entidades.Salon
-            {
-                IdSalon = 2,
-                NombreSalon = "Salón Elegante",
-                Estado = "Ocupado",
-                MontoSalon = 35000.00m
-            });
-
             ActualizarGrilla();
         }
 
