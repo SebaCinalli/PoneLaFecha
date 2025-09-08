@@ -11,8 +11,14 @@ namespace UI.Desktop
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
+            // Ensure DB schema for ADO.NET persistence
+            Negocio.LogicaCliente.EnsureSchema();
+            Negocio.LogicaSalon.EnsureSchema();
+
             Application.Run(new FrmABMCliente());
             //Application.Run(new FrmABMSalon());
+            //Application.Run(new FrmABMBarra());
         }
     }
 }

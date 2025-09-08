@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using Negocio;
 
 namespace UI.Desktop
 {
@@ -242,7 +243,8 @@ namespace UI.Desktop
 
         private void InicializarDatos()
         {
-            clientes = new List<Entidades.Cliente>();
+            // Cargar desde BD con ADO.NET
+            clientes = LogicaCliente.Listar();
             ActualizarGrilla();
         }
 
@@ -262,7 +264,6 @@ namespace UI.Desktop
             {
                 var nuevoCliente = new Entidades.Cliente
                 {
-                    IdCliente = clientes.Count > 0 ? clientes.Max(c => c.IdCliente) + 1 : 1,
                     Nombre = txtNombre.Text.Trim(),
                     Apellido = txtApellido.Text.Trim(),
                     Email = txtEmail.Text.Trim(),
@@ -270,7 +271,8 @@ namespace UI.Desktop
                     NombreUsuario = txtNombreUsuario.Text.Trim()
                 };
 
-                clientes.Add(nuevoCliente);
+                LogicaCliente.Crear(nuevoCliente);
+                clientes = LogicaCliente.Listar();
                 ActualizarGrilla();
                 LimpiarCampos();
                 MessageBox.Show("Cliente agregado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -287,6 +289,8 @@ namespace UI.Desktop
                 clienteSeleccionado.Telefono = txtTelefono.Text.Trim();
                 clienteSeleccionado.NombreUsuario = txtNombreUsuario.Text.Trim();
 
+                LogicaCliente.Editar(clienteSeleccionado);
+                clientes = LogicaCliente.Listar();
                 ActualizarGrilla();
                 LimpiarCampos();
                 MessageBox.Show("Cliente modificado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -306,7 +310,8 @@ namespace UI.Desktop
 
                 if (resultado == DialogResult.Yes)
                 {
-                    clientes.Remove(clienteSeleccionado);
+                    LogicaCliente.Eliminar(clienteSeleccionado.IdCliente);
+                    clientes = LogicaCliente.Listar();
                     ActualizarGrilla();
                     LimpiarCampos();
                     MessageBox.Show("Cliente eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -316,11 +321,6 @@ namespace UI.Desktop
             {
                 MessageBox.Show("Debe seleccionar un cliente para eliminar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
-
-        private void BtnLimpiar_Click(object sender, EventArgs e)
-        {
-            LimpiarCampos();
         }
 
         private void DgvClientes_SelectionChanged(object sender, EventArgs e)
@@ -383,6 +383,11 @@ namespace UI.Desktop
             }
 
             return true;
+        }
+        // Add this method to handle the Limpiar button click event
+        private void BtnLimpiar_Click(object sender, EventArgs e)
+        {
+            LimpiarCampos();
         }
     }
 }

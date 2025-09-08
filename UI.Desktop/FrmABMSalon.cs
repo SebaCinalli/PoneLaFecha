@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using Negocio;
 
 namespace UI.Desktop
 {
@@ -194,7 +195,7 @@ namespace UI.Desktop
 
         private void InicializarDatos()
         {
-            salones = new List<Entidades.Salon>();
+            salones = LogicaSalon.Listar();
             ActualizarGrilla();
         }
 
@@ -225,13 +226,13 @@ namespace UI.Desktop
             {
                 var nuevoSalon = new Entidades.Salon
                 {
-                    IdSalon = salones.Count > 0 ? salones.Max(s => s.IdSalon) + 1 : 1,
                     NombreSalon = txtNombreSalon.Text.Trim(),
                     Estado = txtEstado.Text.Trim(),
                     MontoSalon = decimal.Parse(txtMontoSalon.Text.Trim())
                 };
 
-                salones.Add(nuevoSalon);
+                LogicaSalon.Crear(nuevoSalon);
+                salones = LogicaSalon.Listar();
                 ActualizarGrilla();
                 LimpiarCampos();
                 MessageBox.Show("Salón agregado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -246,6 +247,8 @@ namespace UI.Desktop
                 salonSeleccionado.Estado = txtEstado.Text.Trim();
                 salonSeleccionado.MontoSalon = decimal.Parse(txtMontoSalon.Text.Trim());
 
+                LogicaSalon.Editar(salonSeleccionado);
+                salones = LogicaSalon.Listar();
                 ActualizarGrilla();
                 LimpiarCampos();
                 MessageBox.Show("Salón modificado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -265,7 +268,8 @@ namespace UI.Desktop
 
                 if (resultado == DialogResult.Yes)
                 {
-                    salones.Remove(salonSeleccionado);
+                    LogicaSalon.Eliminar(salonSeleccionado.IdSalon);
+                    salones = LogicaSalon.Listar();
                     ActualizarGrilla();
                     LimpiarCampos();
                     MessageBox.Show("Salón eliminado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
