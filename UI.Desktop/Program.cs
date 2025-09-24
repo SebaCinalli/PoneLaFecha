@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Datos;
+
 namespace UI.Desktop
 {
     internal static class Program
@@ -12,13 +15,14 @@ namespace UI.Desktop
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            // Ensure DB schema for ADO.NET persistence
-            Negocio.LogicaCliente.EnsureSchema();
-            Negocio.LogicaSalon.EnsureSchema();
+            // Ensure DB schema with migrations - run any pending migrations
+            using (var db = new AppDbContext())
+            {
+                db.Database.Migrate();
+            }
 
-            Application.Run(new FrmABMCliente());
-            //Application.Run(new FrmABMSalon());
-            //Application.Run(new FrmABMBarra());
+            // Show main menu instead of individual forms
+            Application.Run(new FrmMenuPrincipal());
         }
     }
 }

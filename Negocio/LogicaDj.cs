@@ -1,44 +1,44 @@
-﻿using Entidades;
+using Entidades;
 using Datos;
 
 namespace Negocio
 {
-    public static class LogicaSalon
+    public static class LogicaDj
     {
-        public static List<Salon> Listar()
+        public static List<Dj> Listar()
         {
             using var db = new AppDbContext();
-            return db.Salones.ToList();
+            return db.Djs.ToList();
         }
 
-        public static int Crear(Salon s)
+        public static int Crear(Dj dj)
         {
             using var db = new AppDbContext();
-            db.Salones.Add(s);
+            db.Djs.Add(dj);
             db.SaveChanges();
-            return s.IdSalon;
+            return dj.IdDj;
         }
 
-        public static Salon? Obtener(int id)
+        public static Dj? Obtener(int id)
         {
             using var db = new AppDbContext();
-            return db.Salones.Find(id);
+            return db.Djs.Find(id);
         }
 
-        public static void Editar(Salon s)
+        public static void Editar(Dj dj)
         {
             using var db = new AppDbContext();
-            db.Salones.Update(s);
+            db.Djs.Update(dj);
             db.SaveChanges();
         }
 
         public static void Eliminar(int id)
         {
             using var db = new AppDbContext();
-            var salon = db.Salones.Find(id);
-            if (salon != null)
+            var dj = db.Djs.Find(id);
+            if (dj != null)
             {
-                db.Salones.Remove(salon);
+                db.Djs.Remove(dj);
                 db.SaveChanges();
             }
         }

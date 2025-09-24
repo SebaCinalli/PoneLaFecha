@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entidades;
+using Datos;
 
 namespace Negocio
 {
@@ -13,37 +14,42 @@ namespace Negocio
 
     public static class LogicaBarra
     {
-        private static List<Barra> barras = new();
-        private static int proximoId = 1;
-
-        public static List<Barra> Listar() => barras;
-
-        public static void Crear(Barra b)
+        public static List<Barra> Listar()
         {
-            b.IdBarra = proximoId++;
-            barras.Add(b);
+            using var db = new AppDbContext();
+            return db.Barras.ToList();
         }
 
-        public static Barra? Obtener(int id) =>
-            barras.FirstOrDefault(b => b.IdBarra == id);
+        public static int Crear(Barra b)
+        {
+            using var db = new AppDbContext();
+            db.Barras.Add(b);
+            db.SaveChanges();
+            return b.IdBarra;
+        }
+
+        public static Barra? Obtener(int id)
+        {
+            using var db = new AppDbContext();
+            return db.Barras.Find(id);
+        }
 
         public static void Editar(Barra b)
         {
-            var existente = Obtener(b.IdBarra);
-            if (existente != null)
-            {
-                existente.Nombre = b.Nombre;
-                existente.TipoBebida = b.TipoBebida;
-                existente.PrecioPorHora = b.PrecioPorHora;
-                existente.Estado = b.Estado;
-                existente.Descripcion = b.Descripcion;
-            }
+            using var db = new AppDbContext();
+            db.Barras.Update(b);
+            db.SaveChanges();
         }
 
         public static void Eliminar(int id)
         {
-            var barra = Obtener(id);
-            if (barra != null) barras.Remove(barra);
+            using var db = new AppDbContext();
+            var barra = db.Barras.Find(id);
+            if (barra != null)
+            {
+                db.Barras.Remove(barra);
+                db.SaveChanges();
+            }
         }
     }
 }
