@@ -10,6 +10,7 @@ namespace Datos
         public DbSet<Salon> Salones { get; set; }
         public DbSet<Barra> Barras { get; set; }
         public DbSet<Dj> Djs { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,6 +35,10 @@ namespace Datos
             // Configure unique constraints
             modelBuilder.Entity<Dj>()
                 .HasIndex(d => d.NombreArtistico)
+                .IsUnique();
+
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.NombreUsuario)
                 .IsUnique();
 
             base.OnModelCreating(modelBuilder);

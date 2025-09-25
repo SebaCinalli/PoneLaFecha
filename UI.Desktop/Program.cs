@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Datos;
+using Negocio;
 
 namespace UI.Desktop
 {
@@ -15,14 +16,49 @@ namespace UI.Desktop
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            // Ensure DB schema with migrations - run any pending migrations
-            using (var db = new AppDbContext())
+            try
             {
-                db.Database.Migrate();
-            }
+                // Ensure DB schema with migrations - run any pending migrations
+                using (var db = new AppDbContext())
+                {
+                    db.Database.Migrate();
+                }
 
-            // Show main menu instead of individual forms
-            Application.Run(new FrmMenuPrincipal());
+                // Crear administrador por defecto si no existe
+                LogicaUsuario.CrearAdministradorDefault();
+                
+                // Crear usuarios de ejemplo para testing
+                LogicaUsuario.CrearUsuariosEjemplo();
+                
+                // Crear datos de ejemplo para los servicios
+                LogicaSalon.CrearDatosEjemplo();
+                LogicaBarra.CrearDatosEjemplo();
+                LogicaDj.CrearDatosEjemplo();
+
+                // Mostrar formulario de login
+                var frmLogin = new FrmLogin();
+                Application.Run(frmLogin);
+
+                // Si el login fue exitoso, mostrar la interfaz correspondiente
+                if (frmLogin.LoginExitoso && SesionUsuario.EstaLogueado)
+                {
+                    if (SesionUsuario.EsAdministrador)
+                    {
+                        // Mostrar menú completo para administradores
+                        Application.Run(new FrmMenuPrincipal());
+                    }
+                    else if (SesionUsuario.EsCliente)
+                    {
+                        // Mostrar menú restringido para clientes
+                        Application.Run(new FrmMenuCliente());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al inicializar la aplicación: {ex.Message}", 
+                    "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
