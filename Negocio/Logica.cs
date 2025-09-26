@@ -51,5 +51,44 @@ namespace Negocio
                 db.SaveChanges();
             }
         }
+
+        public static void CrearDatosEjemplo()
+        {
+            using var db = new AppDbContext();
+            
+            if (!db.Barras.Any())
+            {
+                var barras = new List<Barra>
+                {
+                    new Barra
+                    {
+                        Nombre = "Barra Premium",
+                        TipoBebida = "Licores Premium",
+                        PrecioPorHora = 15000.00m,
+                        Estado = "Disponible",
+                        Descripcion = "Barra completa con licores premium y cócteles exclusivos"
+                    },
+                    new Barra
+                    {
+                        Nombre = "Barra Estándar",
+                        TipoBebida = "Bebidas Estándar",
+                        PrecioPorHora = 8000.00m,
+                        Estado = "Disponible",
+                        Descripcion = "Barra con selección estándar de bebidas y cócteles básicos"
+                    },
+                    new Barra
+                    {
+                        Nombre = "Barra de Vinos",
+                        TipoBebida = "Vinos y Champagne",
+                        PrecioPorHora = 12000.00m,
+                        Estado = "Mantenimiento",
+                        Descripcion = "Especializada en vinos finos y champagne"
+                    }
+                };
+                
+                db.Barras.AddRange(barras);
+                db.SaveChanges();
+            }
+        }
     }
 }

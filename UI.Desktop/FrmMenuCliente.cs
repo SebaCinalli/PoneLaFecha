@@ -1,25 +1,25 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using Negocio;
 
 namespace UI.Desktop
 {
-    public partial class FrmMenuPrincipal : Form
+    public partial class FrmMenuCliente : Form
     {
         private Button btnSalones;
         private Button btnBarras;
         private Button btnDjs;
         private Button btnGastronomicos;
-        private Button btnUsuarios;
         private Button btnCerrarSesion;
         private Button btnSalir;
         private Label lblTitulo;
         private Label lblBienvenida;
 
-        public FrmMenuPrincipal()
+        public FrmMenuCliente()
         {
             InitializeComponent();
-            ConfigurarInterfazPorRol();
         }
 
         private void InitializeComponent()
@@ -28,7 +28,6 @@ namespace UI.Desktop
             this.btnBarras = new Button();
             this.btnDjs = new Button();
             this.btnGastronomicos = new Button();
-            this.btnUsuarios = new Button();
             this.btnCerrarSesion = new Button();
             this.btnSalir = new Button();
             this.lblTitulo = new Label();
@@ -57,7 +56,7 @@ namespace UI.Desktop
             this.lblBienvenida.Name = "lblBienvenida";
             this.lblBienvenida.Size = new Size(400, 20);
             this.lblBienvenida.TabIndex = 1;
-            this.lblBienvenida.Text = $"Bienvenido {SesionUsuario.NombreCompleto} ({SesionUsuario.UsuarioActual?.Rol})";
+            this.lblBienvenida.Text = $"Bienvenido {SesionUsuario.NombreCompleto} - Cliente";
 
             // 
             // btnSalones
@@ -67,7 +66,7 @@ namespace UI.Desktop
             this.btnSalones.Name = "btnSalones";
             this.btnSalones.Size = new Size(180, 50);
             this.btnSalones.TabIndex = 2;
-            this.btnSalones.Text = "Gestión de Salones";
+            this.btnSalones.Text = "Ver Salones";
             this.btnSalones.UseVisualStyleBackColor = true;
             this.btnSalones.Click += BtnSalones_Click;
 
@@ -79,7 +78,7 @@ namespace UI.Desktop
             this.btnBarras.Name = "btnBarras";
             this.btnBarras.Size = new Size(180, 50);
             this.btnBarras.TabIndex = 3;
-            this.btnBarras.Text = "Gestión de Barras";
+            this.btnBarras.Text = "Ver Barras";
             this.btnBarras.UseVisualStyleBackColor = true;
             this.btnBarras.Click += BtnBarras_Click;
 
@@ -91,7 +90,7 @@ namespace UI.Desktop
             this.btnDjs.Name = "btnDjs";
             this.btnDjs.Size = new Size(180, 50);
             this.btnDjs.TabIndex = 4;
-            this.btnDjs.Text = "Gestión de DJs";
+            this.btnDjs.Text = "Ver DJs";
             this.btnDjs.UseVisualStyleBackColor = true;
             this.btnDjs.Click += BtnDjs_Click;
 
@@ -103,21 +102,9 @@ namespace UI.Desktop
             this.btnGastronomicos.Name = "btnGastronomicos";
             this.btnGastronomicos.Size = new Size(180, 50);
             this.btnGastronomicos.TabIndex = 5;
-            this.btnGastronomicos.Text = "Gestión Gastronomico";
+            this.btnGastronomicos.Text = "Ver Gastronomico";
             this.btnGastronomicos.UseVisualStyleBackColor = true;
             this.btnGastronomicos.Click += BtnGastronomicos_Click;
-
-            // 
-            // btnUsuarios
-            // 
-            this.btnUsuarios.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnUsuarios.Location = new Point(150, 400);
-            this.btnUsuarios.Name = "btnUsuarios";
-            this.btnUsuarios.Size = new Size(180, 50);
-            this.btnUsuarios.TabIndex = 6;
-            this.btnUsuarios.Text = "Gestión de Usuarios";
-            this.btnUsuarios.UseVisualStyleBackColor = true;
-            this.btnUsuarios.Click += BtnUsuarios_Click;
 
             // 
             // btnCerrarSesion
@@ -125,10 +112,10 @@ namespace UI.Desktop
             this.btnCerrarSesion.BackColor = Color.Orange;
             this.btnCerrarSesion.ForeColor = Color.White;
             this.btnCerrarSesion.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnCerrarSesion.Location = new Point(100, 480);
+            this.btnCerrarSesion.Location = new Point(100, 420);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Size = new Size(120, 40);
-            this.btnCerrarSesion.TabIndex = 7;
+            this.btnCerrarSesion.TabIndex = 6;
             this.btnCerrarSesion.Text = "Cerrar Sesión";
             this.btnCerrarSesion.UseVisualStyleBackColor = false;
             this.btnCerrarSesion.Click += BtnCerrarSesion_Click;
@@ -137,24 +124,23 @@ namespace UI.Desktop
             // btnSalir
             // 
             this.btnSalir.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnSalir.Location = new Point(240, 480);
+            this.btnSalir.Location = new Point(240, 420);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new Size(120, 40);
-            this.btnSalir.TabIndex = 8;
+            this.btnSalir.TabIndex = 7;
             this.btnSalir.Text = "Salir";
             this.btnSalir.UseVisualStyleBackColor = true;
             this.btnSalir.Click += BtnSalir_Click;
 
             // 
-            // FrmMenuPrincipal
+            // FrmMenuCliente
             // 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightSteelBlue;
-            this.ClientSize = new Size(480, 540);
+            this.ClientSize = new Size(480, 490);
             this.Controls.Add(this.btnSalir);
             this.Controls.Add(this.btnCerrarSesion);
-            this.Controls.Add(this.btnUsuarios);
             this.Controls.Add(this.btnGastronomicos);
             this.Controls.Add(this.btnDjs);
             this.Controls.Add(this.btnBarras);
@@ -163,54 +149,35 @@ namespace UI.Desktop
             this.Controls.Add(this.lblTitulo);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.Name = "FrmMenuPrincipal";
+            this.Name = "FrmMenuCliente";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = "Menú Principal - Pone La Fecha";
+            this.Text = "Menú Cliente - Pone La Fecha";
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
-        private void ConfigurarInterfazPorRol()
-        {
-            // Solo los administradores pueden ver todas las opciones
-            // Los clientes no deberían llegar aquí, pero por si acaso
-            bool esAdmin = SesionUsuario.EsAdministrador;
-            
-            btnSalones.Visible = esAdmin;
-            btnBarras.Visible = esAdmin;
-            btnDjs.Visible = esAdmin;
-            btnGastronomicos.Visible = esAdmin;
-            btnUsuarios.Visible = esAdmin;
-        }
-
         private void BtnSalones_Click(object sender, EventArgs e)
         {
-            var frmSalones = new FrmABMSalon();
-            frmSalones.ShowDialog();
+            var frmSalonesVista = new FrmVistaSalones();
+            frmSalonesVista.ShowDialog();
         }
 
         private void BtnBarras_Click(object sender, EventArgs e)
         {
-            var frmBarras = new FrmABMBarra();
-            frmBarras.ShowDialog();
+            var frmBarrasVista = new FrmVistaBarras();
+            frmBarrasVista.ShowDialog();
         }
 
         private void BtnDjs_Click(object sender, EventArgs e)
         {
-            var frmDjs = new FrmABMDj();
-            frmDjs.ShowDialog();
+            var frmDjsVista = new FrmVistaDjs();
+            frmDjsVista.ShowDialog();
         }
 
         private void BtnGastronomicos_Click(object sender, EventArgs e)
         {
-            var frmGastronomicos = new FrmABMGastronomico();
-            frmGastronomicos.ShowDialog();
-        }
-
-        private void BtnUsuarios_Click(object sender, EventArgs e)
-        {
-            var frmUsuarios = new FrmABMUsuario();
-            frmUsuarios.ShowDialog();
+            var frmGastronomicosVista = new FrmVistaGastronomicos();
+            frmGastronomicosVista.ShowDialog();
         }
 
         private void BtnCerrarSesion_Click(object sender, EventArgs e)
@@ -229,16 +196,15 @@ namespace UI.Desktop
                 {
                     if (SesionUsuario.EsAdministrador)
                     {
-                        // Si es administrador, seguir en este formulario
-                        ConfigurarInterfazPorRol();
-                        this.Show();
+                        // Si es administrador, abrir menú principal
+                        var frmMenuPrincipal = new FrmMenuPrincipal();
+                        frmMenuPrincipal.Show();
+                        this.Close();
                     }
                     else if (SesionUsuario.EsCliente)
                     {
-                        // Si es cliente, abrir menú de cliente
-                        var frmMenuCliente = new FrmMenuCliente();
-                        frmMenuCliente.Show();
-                        this.Close();
+                        // Si es cliente, seguir en este formulario
+                        this.Show();
                     }
                 }
                 else

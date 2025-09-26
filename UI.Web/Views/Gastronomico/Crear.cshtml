@@ -1,0 +1,49 @@
+@model Entidades.Gastronomico
+
+<h2>Crear Nuevo Gastronomico</h2>
+
+<form asp-action="Crear" method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Nombre" class="form-label">Nombre:</label>
+        <input asp-for="Nombre" type="text" class="form-control" required />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="TipoComida" class="form-label">Tipo de Comida:</label>
+        <select asp-for="TipoComida" class="form-select" required>
+            <option value="">Seleccione un tipo</option>
+            <option value="Italiana">Italiana</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Internacional">Internacional</option>
+            <option value="Vegetariana">Vegetariana</option>
+            <option value="Vegana">Vegana</option>
+            <option value="Mediterránea">Mediterránea</option>
+            <option value="Oriental">Oriental</option>
+            <option value="Mexicana">Mexicana</option>
+            <option value="Francesa">Francesa</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <span asp-validation-for="TipoComida" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="MontoG" class="form-label">Monto:</label>
+        <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input asp-for="MontoG" type="number" step="0.01" min="0" class="form-control" required />
+        </div>
+        <span asp-validation-for="MontoG" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Crear Gastronomico</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

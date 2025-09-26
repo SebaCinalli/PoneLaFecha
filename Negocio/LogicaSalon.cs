@@ -1,4 +1,7 @@
-﻿using Entidades;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Entidades;
 using Datos;
 
 namespace Negocio
@@ -39,6 +42,39 @@ namespace Negocio
             if (salon != null)
             {
                 db.Salones.Remove(salon);
+                db.SaveChanges();
+            }
+        }
+
+        public static void CrearDatosEjemplo()
+        {
+            using var db = new AppDbContext();
+            
+            if (!db.Salones.Any())
+            {
+                var salones = new List<Salon>
+                {
+                    new Salon
+                    {
+                        NombreSalon = "Salón Emperador",
+                        Estado = "Disponible",
+                        MontoSalon = 250000.00m
+                    },
+                    new Salon
+                    {
+                        NombreSalon = "Salón Cristal",
+                        Estado = "Disponible", 
+                        MontoSalon = 180000.00m
+                    },
+                    new Salon
+                    {
+                        NombreSalon = "Salón Garden",
+                        Estado = "Ocupado",
+                        MontoSalon = 320000.00m
+                    }
+                };
+                
+                db.Salones.AddRange(salones);
                 db.SaveChanges();
             }
         }

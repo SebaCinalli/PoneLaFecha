@@ -1,0 +1,38 @@
+@model List<Entidades.Gastronomico>
+
+<h2>Gastronomico</h2>
+<a asp-action="Crear" class="btn btn-primary">Nuevo Gastronomico</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Tipo de Comida</th>
+            <th>Monto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var g in Model)
+        {
+            <tr>
+                <td>@g.Nombre</td>
+                <td>@g.TipoComida</td>
+                <td>$@g.MontoG.ToString("N2")</td>
+                <td>
+                    <a asp-action="Detalle" asp-route-id="@g.IdGastro" class="btn btn-sm btn-info">Ver</a>
+                    <a asp-action="Editar" asp-route-id="@g.IdGastro" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Eliminar" asp-route-id="@g.IdGastro" class="btn btn-sm btn-danger" 
+                       onclick="return confirm('¿Está seguro que desea eliminar este gastronomico?')">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <p>No hay gastronomicos registrados.</p>
+    </div>
+}

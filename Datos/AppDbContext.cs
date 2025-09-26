@@ -10,6 +10,8 @@ namespace Datos
         public DbSet<Salon> Salones { get; set; }
         public DbSet<Barra> Barras { get; set; }
         public DbSet<Dj> Djs { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Gastronomico> Gastronomicos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,9 +33,17 @@ namespace Datos
                 .Property(d => d.MontoDj)
                 .HasPrecision(18, 2);
 
+            modelBuilder.Entity<Gastronomico>()
+                .Property(g => g.MontoG)
+                .HasPrecision(18, 2);
+
             // Configure unique constraints
             modelBuilder.Entity<Dj>()
                 .HasIndex(d => d.NombreArtistico)
+                .IsUnique();
+
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.NombreUsuario)
                 .IsUnique();
 
             base.OnModelCreating(modelBuilder);
