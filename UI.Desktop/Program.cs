@@ -34,6 +34,7 @@ namespace UI.Desktop
                 LogicaSalon.CrearDatosEjemplo();
                 LogicaBarra.CrearDatosEjemplo();
                 LogicaDj.CrearDatosEjemplo();
+                LogicaGastronomico.CrearDatosEjemplo();
 
                 // Mostrar formulario de login
                 var frmLogin = new FrmLogin();

@@ -11,6 +11,7 @@ namespace UI.Desktop
         private Button btnSalones;
         private Button btnBarras;
         private Button btnDjs;
+        private Button btnGastronomicos;
         private Button btnCerrarSesion;
         private Button btnSalir;
         private Label lblTitulo;
@@ -26,6 +27,7 @@ namespace UI.Desktop
             this.btnSalones = new Button();
             this.btnBarras = new Button();
             this.btnDjs = new Button();
+            this.btnGastronomicos = new Button();
             this.btnCerrarSesion = new Button();
             this.btnSalir = new Button();
             this.lblTitulo = new Label();
@@ -93,15 +95,27 @@ namespace UI.Desktop
             this.btnDjs.Click += BtnDjs_Click;
 
             // 
+            // btnGastronomicos
+            // 
+            this.btnGastronomicos.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnGastronomicos.Location = new Point(150, 330);
+            this.btnGastronomicos.Name = "btnGastronomicos";
+            this.btnGastronomicos.Size = new Size(180, 50);
+            this.btnGastronomicos.TabIndex = 5;
+            this.btnGastronomicos.Text = "Ver Gastronomico";
+            this.btnGastronomicos.UseVisualStyleBackColor = true;
+            this.btnGastronomicos.Click += BtnGastronomicos_Click;
+
+            // 
             // btnCerrarSesion
             // 
             this.btnCerrarSesion.BackColor = Color.Orange;
             this.btnCerrarSesion.ForeColor = Color.White;
             this.btnCerrarSesion.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnCerrarSesion.Location = new Point(100, 350);
+            this.btnCerrarSesion.Location = new Point(100, 420);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Size = new Size(120, 40);
-            this.btnCerrarSesion.TabIndex = 5;
+            this.btnCerrarSesion.TabIndex = 6;
             this.btnCerrarSesion.Text = "Cerrar Sesión";
             this.btnCerrarSesion.UseVisualStyleBackColor = false;
             this.btnCerrarSesion.Click += BtnCerrarSesion_Click;
@@ -110,10 +124,10 @@ namespace UI.Desktop
             // btnSalir
             // 
             this.btnSalir.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnSalir.Location = new Point(240, 350);
+            this.btnSalir.Location = new Point(240, 420);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new Size(120, 40);
-            this.btnSalir.TabIndex = 6;
+            this.btnSalir.TabIndex = 7;
             this.btnSalir.Text = "Salir";
             this.btnSalir.UseVisualStyleBackColor = true;
             this.btnSalir.Click += BtnSalir_Click;
@@ -124,9 +138,10 @@ namespace UI.Desktop
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightSteelBlue;
-            this.ClientSize = new Size(480, 420);
+            this.ClientSize = new Size(480, 490);
             this.Controls.Add(this.btnSalir);
             this.Controls.Add(this.btnCerrarSesion);
+            this.Controls.Add(this.btnGastronomicos);
             this.Controls.Add(this.btnDjs);
             this.Controls.Add(this.btnBarras);
             this.Controls.Add(this.btnSalones);
@@ -159,6 +174,12 @@ namespace UI.Desktop
             frmDjsVista.ShowDialog();
         }
 
+        private void BtnGastronomicos_Click(object sender, EventArgs e)
+        {
+            var frmGastronomicosVista = new FrmVistaGastronomicos();
+            frmGastronomicosVista.ShowDialog();
+        }
+
         private void BtnCerrarSesion_Click(object sender, EventArgs e)
         {
             var resultado = MessageBox.Show("¿Está seguro de que desea cerrar sesión?", 
@@ -167,7 +188,7 @@ namespace UI.Desktop
             if (resultado == DialogResult.Yes)
             {
                 SesionUsuario.CerrarSesion();
-                this.Close();
+                this.Hide();
                 
                 // Mostrar formulario de login nuevamente
                 var frmLogin = new FrmLogin();
@@ -178,7 +199,7 @@ namespace UI.Desktop
                         // Si es administrador, abrir menú principal
                         var frmMenuPrincipal = new FrmMenuPrincipal();
                         frmMenuPrincipal.Show();
-                        this.Hide();
+                        this.Close();
                     }
                     else if (SesionUsuario.EsCliente)
                     {
@@ -189,7 +210,7 @@ namespace UI.Desktop
                 else
                 {
                     // Si no hay login exitoso, cerrar la aplicación
-                    Application.Exit();
+                    this.Close();
                 }
             }
         }

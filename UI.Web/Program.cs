@@ -1,9 +1,24 @@
+using Negocio;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Initialize sample data
+try
+{
+    LogicaSalon.CrearDatosEjemplo();
+    LogicaDj.CrearDatosEjemplo();
+    LogicaGastronomico.CrearDatosEjemplo();
+}
+catch (Exception ex)
+{
+    // Log the error but continue running the application
+    Console.WriteLine($"Error initializing sample data: {ex.Message}");
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

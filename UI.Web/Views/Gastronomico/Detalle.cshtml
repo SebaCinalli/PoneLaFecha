@@ -1,0 +1,36 @@
+@model Entidades.Gastronomico
+
+<h2>Detalle del Gastronomico</h2>
+
+<div class="card">
+    <div class="card-header">
+        <h4>@Model.Nombre</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <dl class="row">
+                    <dt class="col-sm-3">ID:</dt>
+                    <dd class="col-sm-9">@Model.IdGastro</dd>
+                    
+                    <dt class="col-sm-3">Nombre:</dt>
+                    <dd class="col-sm-9">@Model.Nombre</dd>
+                    
+                    <dt class="col-sm-3">Tipo de Comida:</dt>
+                    <dd class="col-sm-9">@Model.TipoComida</dd>
+                    
+                    <dt class="col-sm-3">Monto:</dt>
+                    <dd class="col-sm-9">
+                        <strong class="text-success">$@Model.MontoG.ToString("N2")</strong>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a asp-action="Editar" asp-route-id="@Model.IdGastro" class="btn btn-warning">Editar</a>
+        <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+        <a asp-action="Eliminar" asp-route-id="@Model.IdGastro" class="btn btn-danger" 
+           onclick="return confirm('¿Está seguro que desea eliminar este gastronomico?')">Eliminar</a>
+    </div>
+</div>

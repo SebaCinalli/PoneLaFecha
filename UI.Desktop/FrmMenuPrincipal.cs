@@ -6,10 +6,10 @@ namespace UI.Desktop
 {
     public partial class FrmMenuPrincipal : Form
     {
-        private Button btnClientes;
         private Button btnSalones;
         private Button btnBarras;
         private Button btnDjs;
+        private Button btnGastronomicos;
         private Button btnUsuarios;
         private Button btnCerrarSesion;
         private Button btnSalir;
@@ -24,10 +24,10 @@ namespace UI.Desktop
 
         private void InitializeComponent()
         {
-            this.btnClientes = new Button();
             this.btnSalones = new Button();
             this.btnBarras = new Button();
             this.btnDjs = new Button();
+            this.btnGastronomicos = new Button();
             this.btnUsuarios = new Button();
             this.btnCerrarSesion = new Button();
             this.btnSalir = new Button();
@@ -60,25 +60,13 @@ namespace UI.Desktop
             this.lblBienvenida.Text = $"Bienvenido {SesionUsuario.NombreCompleto} ({SesionUsuario.UsuarioActual?.Rol})";
 
             // 
-            // btnClientes
-            // 
-            this.btnClientes.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnClientes.Location = new Point(150, 100);
-            this.btnClientes.Name = "btnClientes";
-            this.btnClientes.Size = new Size(180, 50);
-            this.btnClientes.TabIndex = 2;
-            this.btnClientes.Text = "Gestión de Clientes";
-            this.btnClientes.UseVisualStyleBackColor = true;
-            this.btnClientes.Click += BtnClientes_Click;
-
-            // 
             // btnSalones
             // 
             this.btnSalones.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnSalones.Location = new Point(150, 170);
+            this.btnSalones.Location = new Point(150, 120);
             this.btnSalones.Name = "btnSalones";
             this.btnSalones.Size = new Size(180, 50);
-            this.btnSalones.TabIndex = 3;
+            this.btnSalones.TabIndex = 2;
             this.btnSalones.Text = "Gestión de Salones";
             this.btnSalones.UseVisualStyleBackColor = true;
             this.btnSalones.Click += BtnSalones_Click;
@@ -87,10 +75,10 @@ namespace UI.Desktop
             // btnBarras
             // 
             this.btnBarras.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnBarras.Location = new Point(150, 240);
+            this.btnBarras.Location = new Point(150, 190);
             this.btnBarras.Name = "btnBarras";
             this.btnBarras.Size = new Size(180, 50);
-            this.btnBarras.TabIndex = 4;
+            this.btnBarras.TabIndex = 3;
             this.btnBarras.Text = "Gestión de Barras";
             this.btnBarras.UseVisualStyleBackColor = true;
             this.btnBarras.Click += BtnBarras_Click;
@@ -99,19 +87,31 @@ namespace UI.Desktop
             // btnDjs
             // 
             this.btnDjs.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnDjs.Location = new Point(150, 310);
+            this.btnDjs.Location = new Point(150, 260);
             this.btnDjs.Name = "btnDjs";
             this.btnDjs.Size = new Size(180, 50);
-            this.btnDjs.TabIndex = 5;
+            this.btnDjs.TabIndex = 4;
             this.btnDjs.Text = "Gestión de DJs";
             this.btnDjs.UseVisualStyleBackColor = true;
             this.btnDjs.Click += BtnDjs_Click;
 
             // 
+            // btnGastronomicos
+            // 
+            this.btnGastronomicos.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnGastronomicos.Location = new Point(150, 330);
+            this.btnGastronomicos.Name = "btnGastronomicos";
+            this.btnGastronomicos.Size = new Size(180, 50);
+            this.btnGastronomicos.TabIndex = 5;
+            this.btnGastronomicos.Text = "Gestión Gastronomico";
+            this.btnGastronomicos.UseVisualStyleBackColor = true;
+            this.btnGastronomicos.Click += BtnGastronomicos_Click;
+
+            // 
             // btnUsuarios
             // 
             this.btnUsuarios.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnUsuarios.Location = new Point(150, 380);
+            this.btnUsuarios.Location = new Point(150, 400);
             this.btnUsuarios.Name = "btnUsuarios";
             this.btnUsuarios.Size = new Size(180, 50);
             this.btnUsuarios.TabIndex = 6;
@@ -125,7 +125,7 @@ namespace UI.Desktop
             this.btnCerrarSesion.BackColor = Color.Orange;
             this.btnCerrarSesion.ForeColor = Color.White;
             this.btnCerrarSesion.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnCerrarSesion.Location = new Point(100, 460);
+            this.btnCerrarSesion.Location = new Point(100, 480);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Size = new Size(120, 40);
             this.btnCerrarSesion.TabIndex = 7;
@@ -137,7 +137,7 @@ namespace UI.Desktop
             // btnSalir
             // 
             this.btnSalir.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnSalir.Location = new Point(240, 460);
+            this.btnSalir.Location = new Point(240, 480);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new Size(120, 40);
             this.btnSalir.TabIndex = 8;
@@ -151,14 +151,14 @@ namespace UI.Desktop
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightSteelBlue;
-            this.ClientSize = new Size(480, 520);
+            this.ClientSize = new Size(480, 540);
             this.Controls.Add(this.btnSalir);
             this.Controls.Add(this.btnCerrarSesion);
             this.Controls.Add(this.btnUsuarios);
+            this.Controls.Add(this.btnGastronomicos);
             this.Controls.Add(this.btnDjs);
             this.Controls.Add(this.btnBarras);
             this.Controls.Add(this.btnSalones);
-            this.Controls.Add(this.btnClientes);
             this.Controls.Add(this.lblBienvenida);
             this.Controls.Add(this.lblTitulo);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -176,17 +176,11 @@ namespace UI.Desktop
             // Los clientes no deberían llegar aquí, pero por si acaso
             bool esAdmin = SesionUsuario.EsAdministrador;
             
-            btnClientes.Visible = esAdmin;
             btnSalones.Visible = esAdmin;
             btnBarras.Visible = esAdmin;
             btnDjs.Visible = esAdmin;
+            btnGastronomicos.Visible = esAdmin;
             btnUsuarios.Visible = esAdmin;
-        }
-
-        private void BtnClientes_Click(object sender, EventArgs e)
-        {
-            var frmClientes = new FrmABMCliente();
-            frmClientes.ShowDialog();
         }
 
         private void BtnSalones_Click(object sender, EventArgs e)
@@ -207,6 +201,12 @@ namespace UI.Desktop
             frmDjs.ShowDialog();
         }
 
+        private void BtnGastronomicos_Click(object sender, EventArgs e)
+        {
+            var frmGastronomicos = new FrmABMGastronomico();
+            frmGastronomicos.ShowDialog();
+        }
+
         private void BtnUsuarios_Click(object sender, EventArgs e)
         {
             var frmUsuarios = new FrmABMUsuario();
@@ -221,7 +221,7 @@ namespace UI.Desktop
             if (resultado == DialogResult.Yes)
             {
                 SesionUsuario.CerrarSesion();
-                this.Close();
+                this.Hide();
                 
                 // Mostrar formulario de login nuevamente
                 var frmLogin = new FrmLogin();
@@ -238,13 +238,13 @@ namespace UI.Desktop
                         // Si es cliente, abrir menú de cliente
                         var frmMenuCliente = new FrmMenuCliente();
                         frmMenuCliente.Show();
-                        this.Hide();
+                        this.Close();
                     }
                 }
                 else
                 {
                     // Si no hay login exitoso, cerrar la aplicación
-                    Application.Exit();
+                    this.Close();
                 }
             }
         }

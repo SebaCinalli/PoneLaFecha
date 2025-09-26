@@ -19,6 +19,7 @@ namespace UI.Desktop
         private Button btnModificar;
         private Button btnEliminar;
         private Button btnLimpiar;
+        private Button btnVolver;
 
         // Lista para manejar los salones (simulando base de datos)
         private List<Entidades.Salon> salones;
@@ -44,6 +45,7 @@ namespace UI.Desktop
             this.btnModificar = new Button();
             this.btnEliminar = new Button();
             this.btnLimpiar = new Button();
+            this.btnVolver = new Button();
 
             ((System.ComponentModel.ISupportInitialize)(this.dgvSalones)).BeginInit();
             this.SuspendLayout();
@@ -158,11 +160,22 @@ namespace UI.Desktop
             this.btnLimpiar.UseVisualStyleBackColor = true;
 
             // 
+            // btnVolver
+            // 
+            this.btnVolver.Location = new Point(484, 360);
+            this.btnVolver.Name = "btnVolver";
+            this.btnVolver.Size = new Size(100, 30);
+            this.btnVolver.TabIndex = 11;
+            this.btnVolver.Text = "Volver";
+            this.btnVolver.UseVisualStyleBackColor = true;
+
+            // 
             // FrmABMSalon
             // 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(784, 411);
+            this.Controls.Add(this.btnVolver);
             this.Controls.Add(this.btnLimpiar);
             this.Controls.Add(this.btnEliminar);
             this.Controls.Add(this.btnModificar);
@@ -190,6 +203,7 @@ namespace UI.Desktop
             this.btnModificar.Click += BtnModificar_Click;
             this.btnEliminar.Click += BtnEliminar_Click;
             this.btnLimpiar.Click += BtnLimpiar_Click;
+            this.btnVolver.Click += BtnVolver_Click;
             this.dgvSalones.SelectionChanged += DgvSalones_SelectionChanged;
         }
 
@@ -284,6 +298,11 @@ namespace UI.Desktop
         private void BtnLimpiar_Click(object sender, EventArgs e)
         {
             LimpiarCampos();
+        }
+
+        private void BtnVolver_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void DgvSalones_SelectionChanged(object sender, EventArgs e)
