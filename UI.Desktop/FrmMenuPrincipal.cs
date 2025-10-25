@@ -11,6 +11,8 @@ namespace UI.Desktop
         private Button btnDjs;
         private Button btnGastronomicos;
         private Button btnUsuarios;
+        private Button btnZonas;
+        private Button btnSolicitudes;
         private Button btnCerrarSesion;
         private Button btnSalir;
         private Label lblTitulo;
@@ -29,6 +31,8 @@ namespace UI.Desktop
             this.btnDjs = new Button();
             this.btnGastronomicos = new Button();
             this.btnUsuarios = new Button();
+            this.btnZonas = new Button();
+            this.btnSolicitudes = new Button();
             this.btnCerrarSesion = new Button();
             this.btnSalir = new Button();
             this.lblTitulo = new Label();
@@ -120,12 +124,36 @@ namespace UI.Desktop
             this.btnUsuarios.Click += BtnUsuarios_Click;
 
             // 
+            // btnZonas
+            // 
+            this.btnZonas.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnZonas.Location = new Point(150, 470);
+            this.btnZonas.Name = "btnZonas";
+            this.btnZonas.Size = new Size(180, 50);
+            this.btnZonas.TabIndex = 9;
+            this.btnZonas.Text = "Gestión de Zonas";
+            this.btnZonas.UseVisualStyleBackColor = true;
+            this.btnZonas.Click += BtnZonas_Click;
+
+            // 
+            // btnSolicitudes
+            // 
+            this.btnSolicitudes.Font = new Font("Microsoft Sans Serif", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnSolicitudes.Location = new Point(150, 540);
+            this.btnSolicitudes.Name = "btnSolicitudes";
+            this.btnSolicitudes.Size = new Size(180, 50);
+            this.btnSolicitudes.TabIndex = 10;
+            this.btnSolicitudes.Text = "Gestión de Solicitudes";
+            this.btnSolicitudes.UseVisualStyleBackColor = true;
+            this.btnSolicitudes.Click += BtnSolicitudes_Click;
+
+            // 
             // btnCerrarSesion
             // 
             this.btnCerrarSesion.BackColor = Color.Orange;
             this.btnCerrarSesion.ForeColor = Color.White;
             this.btnCerrarSesion.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnCerrarSesion.Location = new Point(100, 480);
+            this.btnCerrarSesion.Location = new Point(100, 610);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Size = new Size(120, 40);
             this.btnCerrarSesion.TabIndex = 7;
@@ -137,7 +165,7 @@ namespace UI.Desktop
             // btnSalir
             // 
             this.btnSalir.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnSalir.Location = new Point(240, 480);
+            this.btnSalir.Location = new Point(240, 610);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new Size(120, 40);
             this.btnSalir.TabIndex = 8;
@@ -151,7 +179,9 @@ namespace UI.Desktop
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightSteelBlue;
-            this.ClientSize = new Size(480, 540);
+            this.ClientSize = new Size(480, 680);
+            this.Controls.Add(this.btnSolicitudes);
+            this.Controls.Add(this.btnZonas);
             this.Controls.Add(this.btnSalir);
             this.Controls.Add(this.btnCerrarSesion);
             this.Controls.Add(this.btnUsuarios);
@@ -181,6 +211,8 @@ namespace UI.Desktop
             btnDjs.Visible = esAdmin;
             btnGastronomicos.Visible = esAdmin;
             btnUsuarios.Visible = esAdmin;
+            btnZonas.Visible = esAdmin;
+            btnSolicitudes.Visible = esAdmin;
         }
 
         private void BtnSalones_Click(object sender, EventArgs e)
@@ -211,6 +243,18 @@ namespace UI.Desktop
         {
             var frmUsuarios = new FrmABMUsuario();
             frmUsuarios.ShowDialog();
+        }
+
+        private void BtnZonas_Click(object sender, EventArgs e)
+        {
+            var frmZonas = new FrmABMZona();
+            frmZonas.ShowDialog();
+        }
+
+        private void BtnSolicitudes_Click(object sender, EventArgs e)
+        {
+            var frmSolicitudes = new FrmABMSolicitud();
+            frmSolicitudes.ShowDialog();
         }
 
         private void BtnCerrarSesion_Click(object sender, EventArgs e)
