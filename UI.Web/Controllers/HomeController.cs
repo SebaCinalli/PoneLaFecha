@@ -8,25 +8,33 @@ namespace UI.Web.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
-        {
+  public HomeController(ILogger<HomeController> logger)
+   {
             _logger = logger;
-        }
+  }
 
         public IActionResult Index()
-        {
+  {
+      // Redirigir al login si no está autenticado
+      if (HttpContext.Session.GetString("UsuarioId") == null)
+     {
+     return RedirectToAction("Login", "Auth");
+            }
+
+            ViewBag.NombreCompleto = HttpContext.Session.GetString("NombreCompleto");
+     ViewBag.Rol = HttpContext.Session.GetString("Rol");
             return View();
         }
 
         public IActionResult Privacy()
-        {
+ {
             return View();
-        }
+  }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+   return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

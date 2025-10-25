@@ -40,17 +40,31 @@ public async Task<Solicitud?> GetByIdAsync(int id)
 
  public async Task<Solicitud> CreateAsync(Solicitud solicitud)
  {
-      using var context = new AppDbContext();
-      context.Solicitudes.Add(solicitud);
-      await context.SaveChangesAsync();
-    return solicitud;
+    // Validar antes de crear
+       var validacion = Validaciones.ValidarSolicitud(solicitud);
+  if (!validacion.EsValido)
+       {
+       throw new Exception($"Validación fallida:\n{validacion.ObtenerMensajeErrores()}");
+ }
+
+using var context = new AppDbContext();
+    context.Solicitudes.Add(solicitud);
+await context.SaveChangesAsync();
+      return solicitud;
         }
 
   public async Task<Solicitud?> UpdateAsync(Solicitud solicitud)
    {
-         using var context = new AppDbContext();
-    var solicitudExistente = await context.Solicitudes.FindAsync(solicitud.IdSolicitud);
-     if (solicitudExistente == null)
+        // Validar antes de actualizar
+  var validacion = Validaciones.ValidarSolicitud(solicitud);
+  if (!validacion.EsValido)
+  {
+      throw new Exception($"Validación fallida:\n{validacion.ObtenerMensajeErrores()}");
+       }
+
+  using var context = new AppDbContext();
+   var solicitudExistente = await context.Solicitudes.FindAsync(solicitud.IdSolicitud);
+       if (solicitudExistente == null)
     return null;
 
      solicitudExistente.FechaDesde = solicitud.FechaDesde;
