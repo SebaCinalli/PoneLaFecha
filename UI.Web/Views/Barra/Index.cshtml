@@ -1,0 +1,45 @@
+@model IEnumerable<Entidades.Barra>
+
+@{
+    ViewData["Title"] = "Barras";
+}
+
+<h2>Gestión de Barras</h2>
+
+<p>
+  <a asp-action="Crear" class="btn btn-primary">Agregar Nueva Barra</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+         <th>ID</th>
+     <th>Nombre</th>
+      <th>Tipo de Bebida</th>
+     <th>Precio por Hora</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var barra in Model)
+   {
+  <tr>
+          <td>@barra.IdBarra</td>
+     <td>@barra.Nombre</td>
+   <td>@barra.TipoBebida</td>
+  <td>@barra.PrecioPorHora.ToString("C")</td>
+<td>
+     <span class="badge @(barra.Estado == "Disponible" ? "bg-success" : "bg-secondary")">
+  @barra.Estado
+     </span>
+    </td>
+ <td>
+      <a asp-action="Editar" asp-route-id="@barra.IdBarra" class="btn btn-sm btn-warning">Editar</a>
+     <a asp-action="Eliminar" asp-route-id="@barra.IdBarra" class="btn btn-sm btn-danger" 
+      onclick="return confirm('¿Está seguro de eliminar esta barra?')">Eliminar</a>
+   </td>
+ </tr>
+        }
+    </tbody>
+</table>
