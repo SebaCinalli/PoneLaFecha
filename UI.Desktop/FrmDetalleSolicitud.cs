@@ -335,7 +335,7 @@ namespace UI.Desktop
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new Size(150, 45);
             this.btnGuardar.TabIndex = 21;
-            this.btnGuardar.Text = "?? Guardar";
+            this.btnGuardar.Text = "Guardar";
             this.btnGuardar.UseVisualStyleBackColor = false;
             this.btnGuardar.Click += BtnGuardar_Click;
 

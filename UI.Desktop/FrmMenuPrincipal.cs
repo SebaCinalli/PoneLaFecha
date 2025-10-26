@@ -138,9 +138,9 @@ this.btnUsuarios.UseVisualStyleBackColor = true;
   this.btnReportes.Name = "btnReportes";
             this.btnReportes.Size = new Size(180, 50);
             this.btnReportes.TabIndex = 11;
-            this.btnReportes.Text = "?? Reportes";
-            this.btnReportes.UseVisualStyleBackColor = false;
-       this.btnReportes.Click += BtnReportes_Click;
+            this.btnReportes.Text = "Reportes";
+   this.btnReportes.UseVisualStyleBackColor = false;
+            this.btnReportes.Click += BtnReportes_Click;
 
          // btnCerrarSesion
             this.btnCerrarSesion.BackColor = Color.Orange;

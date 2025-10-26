@@ -71,7 +71,7 @@ namespace UI.Desktop
             this.btnNuevaSolicitud.Name = "btnNuevaSolicitud";
             this.btnNuevaSolicitud.Size = new Size(280, 55);
             this.btnNuevaSolicitud.TabIndex = 2;
-            this.btnNuevaSolicitud.Text = "? Nueva Solicitud";
+            this.btnNuevaSolicitud.Text = "Nueva Solicitud";
             this.btnNuevaSolicitud.UseVisualStyleBackColor = false;
             this.btnNuevaSolicitud.Click += BtnNuevaSolicitud_Click;
 
@@ -84,7 +84,7 @@ namespace UI.Desktop
             this.btnMisSolicitudes.Name = "btnMisSolicitudes";
             this.btnMisSolicitudes.Size = new Size(280, 55);
             this.btnMisSolicitudes.TabIndex = 3;
-            this.btnMisSolicitudes.Text = "?? Mis Solicitudes";
+            this.btnMisSolicitudes.Text = "Mis Solicitudes";
             this.btnMisSolicitudes.UseVisualStyleBackColor = false;
             this.btnMisSolicitudes.Click += BtnMisSolicitudes_Click;
 

@@ -32,7 +32,7 @@ namespace UI.Desktop
        this.lblTitulo.Name = "lblTitulo";
           this.lblTitulo.Size = new Size(160, 26);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "?? Reportes";
+     this.lblTitulo.Text = "Reportes";
 
     // btnReporteSolicitudes
             this.btnReporteSolicitudes.BackColor = Color.LightBlue;
