@@ -49,23 +49,6 @@ namespace Datos
                 .Property(g => g.MontoG)
                 .HasPrecision(18, 2);
 
-            // Configure decimal precision for Solicitud monetary fields
-            modelBuilder.Entity<Solicitud>()
-                .Property(s => s.MontoDJ)
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<Solicitud>()
-                .Property(s => s.MontoSalon)
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<Solicitud>()
-                .Property(s => s.MontoGastro)
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<Solicitud>()
-                .Property(s => s.MontoBarra)
-                .HasPrecision(18, 2);
-
             // Configure unique constraints
             modelBuilder.Entity<Dj>()
                 .HasIndex(d => d.NombreArtistico)

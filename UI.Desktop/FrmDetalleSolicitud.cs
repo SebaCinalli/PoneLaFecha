@@ -335,7 +335,7 @@ namespace UI.Desktop
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new Size(150, 45);
             this.btnGuardar.TabIndex = 21;
-            this.btnGuardar.Text = "?? Guardar";
+            this.btnGuardar.Text = "Guardar";
             this.btnGuardar.UseVisualStyleBackColor = false;
             this.btnGuardar.Click += BtnGuardar_Click;
 
@@ -539,13 +539,63 @@ namespace UI.Desktop
                     }
                     dtpFechaEvento.Value = solicitud.FechaDesde;
                     
-                    // Seleccionar servicios basados en los montos guardados
-                    // Esto es una aproximación - idealmente deberías guardar los IDs de los servicios
-                    SeleccionarServicioPorMonto(cboSalon, solicitud.MontoSalon);
-                    SeleccionarServicioPorMonto(cboDJ, solicitud.MontoDJ);
-                    SeleccionarServicioPorMonto(cboBarra, solicitud.MontoBarra);
-                    SeleccionarServicioPorMonto(cboGastronomico, solicitud.MontoGastro);
-                    
+                    // Cargar servicios desde las relaciones
+                    // Salon
+                    if (solicitud.SalonSolicitudes?.Any() == true)
+                    {
+                        var primerSalon = solicitud.SalonSolicitudes.First().Salon;
+                        for (int i = 1; i < cboSalon.Items.Count; i++)
+                        {
+                            if (cboSalon.Items[i] is Salon s && s.IdSalon == primerSalon.IdSalon)
+                            {
+                                cboSalon.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                
+                    // DJ
+                    if (solicitud.DjSolicitudes?.Any() == true)
+                    {
+                        var primerDj = solicitud.DjSolicitudes.First().Dj;
+                        for (int i = 1; i < cboDJ.Items.Count; i++)
+                        {
+                            if (cboDJ.Items[i] is Dj d && d.IdDj == primerDj.IdDj)
+                            {
+                                cboDJ.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                
+                    // Barra
+                    if (solicitud.BarraSolicitudes?.Any() == true)
+                    {
+                        var primeraBarra = solicitud.BarraSolicitudes.First().Barra;
+                        for (int i = 1; i < cboBarra.Items.Count; i++)
+                        {
+                            if (cboBarra.Items[i] is Barra b && b.IdBarra == primeraBarra.IdBarra)
+                            {
+                                cboBarra.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                
+                    // Gastronomico
+                    if (solicitud.GastroSolicitudes?.Any() == true)
+                    {
+                        var primerGastro = solicitud.GastroSolicitudes.First().Gastronomico;
+                        for (int i = 1; i < cboGastronomico.Items.Count; i++)
+                        {
+                            if (cboGastronomico.Items[i] is Gastronomico g && g.IdGastro == primerGastro.IdGastro)
+                            {
+                                cboGastronomico.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+ 
                     cboEstado.SelectedItem = solicitud.Estado;
                     CalcularMontoTotal();
                 }
@@ -631,29 +681,10 @@ namespace UI.Desktop
 
             try
             {
-                // Obtener montos de los servicios seleccionados
-                decimal montoSalon = 0, montoDJ = 0, montoBarra = 0, montoGastro = 0;
-
-                if (cboSalon.SelectedIndex > 0 && cboSalon.SelectedItem is Salon salon)
-                    montoSalon = salon.MontoSalon;
-
-                if (cboDJ.SelectedIndex > 0 && cboDJ.SelectedItem is Dj dj)
-                    montoDJ = dj.MontoDj;
-
-                if (cboBarra.SelectedIndex > 0 && cboBarra.SelectedItem is Barra barra)
-                    montoBarra = barra.PrecioPorHora;
-
-                if (cboGastronomico.SelectedIndex > 0 && cboGastronomico.SelectedItem is Gastronomico gastro)
-                    montoGastro = gastro.MontoG;
-
                 var solicitud = new Solicitud
                 {
                     IdCliente = idCliente,
                     FechaDesde = dtpFechaEvento.Value,
-                    MontoDJ = montoDJ,
-                    MontoSalon = montoSalon,
-                    MontoGastro = montoGastro,
-                    MontoBarra = montoBarra,
                     Estado = cboEstado.SelectedItem.ToString()
                 };
 
@@ -661,15 +692,45 @@ namespace UI.Desktop
                 {
                     solicitud.IdSolicitud = _idSolicitud.Value;
                     await _logicaSolicitud.UpdateAsync(solicitud);
+                }
+                else
+                {
+                    await _logicaSolicitud.CreateAsync(solicitud);
+                    
+                    // Asignar servicios seleccionados a la nueva solicitud
+                    if (cboSalon.SelectedIndex > 0 && cboSalon.SelectedItem is Salon salon)
+                    {
+                        await _logicaSolicitud.AsignarSalonASolicitudAsync(solicitud.IdSolicitud, salon.IdSalon);
+                    }
+                
+                    if (cboDJ.SelectedIndex > 0 && cboDJ.SelectedItem is Dj dj)
+                    {
+                         await _logicaSolicitud.AsignarDjASolicitudAsync(solicitud.IdSolicitud, dj.IdDj);
+                     }
+                     
+                     if (cboBarra.SelectedIndex > 0 && cboBarra.SelectedItem is Barra barra)
+                     {
+                         await _logicaSolicitud.AsignarBarraASolicitudAsync(solicitud.IdSolicitud, barra.IdBarra);
+                     }
+                    
+                    if (cboGastronomico.SelectedIndex > 0 && cboGastronomico.SelectedItem is Gastronomico gastro)
+                    {
+                         await _logicaSolicitud.AsignarGastronomicoASolicitudAsync(solicitud.IdSolicitud, gastro.IdGastro);
+                     }
+                }
+
+                // Calcular monto total para mostrarlo
+                decimal montoTotal = await _logicaSolicitud.CalcularMontoTotalAsync(solicitud.IdSolicitud);
+                
+                if (_idSolicitud.HasValue)
+                {
                     MessageBox.Show("Solicitud actualizada correctamente.", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    await _logicaSolicitud.CreateAsync(solicitud);
-                    MessageBox.Show("Solicitud creada correctamente.\n\n" +
-                        $"Total: {(montoSalon + montoDJ + montoBarra + montoGastro):C2}", 
-                        "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Solicitud creada correctamente.\n\nTotal: {montoTotal:C2}", 
+ "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 this.DialogResult = DialogResult.OK;

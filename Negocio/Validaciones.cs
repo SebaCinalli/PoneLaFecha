@@ -108,20 +108,6 @@ resultado.AgregarError("Debe seleccionar un cliente válido.");
      resultado.AgregarError("La fecha del evento no puede ser anterior a hoy.");
      }
 
-       if (solicitud.MontoDJ < 0 || solicitud.MontoSalon < 0 || 
-       solicitud.MontoGastro < 0 || solicitud.MontoBarra < 0)
-       {
-   resultado.AgregarError("Los montos no pueden ser negativos.");
-         }
-
-     decimal montoTotal = solicitud.MontoDJ + solicitud.MontoSalon + 
-solicitud.MontoGastro + solicitud.MontoBarra;
-       
-if (montoTotal == 0)
-    {
-       resultado.AgregarError("Debe haber al menos un servicio con monto mayor a cero.");
-            }
-
        if (string.IsNullOrWhiteSpace(solicitud.Estado))
  {
   resultado.AgregarError("El estado es obligatorio.");

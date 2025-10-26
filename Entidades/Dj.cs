@@ -18,9 +18,6 @@ namespace Entidades
         [Required]
         public decimal MontoDj { get; set; }
         
-        [MaxLength(255)]
-        public string? Foto { get; set; }
-        
         // Navegación
         public ICollection<ZonaDJ> ZonaDJs { get; set; } = new List<ZonaDJ>();
         public ICollection<DjSolicitud> DjSolicitudes { get; set; } = new List<DjSolicitud>();

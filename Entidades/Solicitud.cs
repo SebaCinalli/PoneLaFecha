@@ -14,18 +14,6 @@ namespace Entidades
         public DateTime FechaDesde { get; set; }
         
         [Required]
-      public decimal MontoDJ { get; set; }
-        
-    [Required]
-        public decimal MontoSalon { get; set; }
-    
-        [Required]
-   public decimal MontoGastro { get; set; }
-        
-        [Required]
-      public decimal MontoBarra { get; set; }
-      
-        [Required]
         [MaxLength(50)]
         public string Estado { get; set; } = "Pendiente"; // Pendiente, Confirmada, Cancelada
         
