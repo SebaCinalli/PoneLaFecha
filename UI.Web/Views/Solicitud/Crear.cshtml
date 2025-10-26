@@ -1,74 +1,158 @@
 @model Entidades.Solicitud
 
 @{
-  ViewData["Title"] = "Crear Solicitud";
+    ViewData["Title"] = "Crear Solicitud";
 }
 
 <h2>Crear Nueva Solicitud</h2>
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      @TempData["Error"]
+     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <form asp-action="Crear" method="post">
     <div class="row">
-        <div class="col-md-6">
-       <div class="form-group mb-3">
-    <label asp-for="IdCliente">Cliente:</label>
-    <select asp-for="IdCliente" class="form-control" asp-items="ViewBag.Clientes" required>
-          <option value="">-- Seleccione un cliente --</option>
-      </select>
-   <span asp-validation-for="IdCliente" class="text-danger"></span>
-      </div>
-
-    <div class="form-group mb-3">
-      <label asp-for="FechaDesde">Fecha del Evento:</label>
-     <input asp-for="FechaDesde" type="date" class="form-control" required />
-    <span asp-validation-for="FechaDesde" class="text-danger"></span>
+        <div class="col-md-12">
+          <div class="form-group mb-3">
+           <label asp-for="FechaDesde">Fecha del Evento:</label>
+    <input asp-for="FechaDesde" type="date" class="form-control" required min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="FechaDesde" class="text-danger"></span>
+<small class="form-text text-muted">Seleccione la fecha en que se realizará su evento</small>
             </div>
         </div>
-
-  <div class="col-md-6">
-     <div class="form-group mb-3">
- <label asp-for="MontoDJ">Monto DJ:</label>
-<input asp-for="MontoDJ" type="number" step="0.01" class="form-control" required />
-    <span asp-validation-for="MontoDJ" class="text-danger"></span>
-      </div>
-
-   <div class="form-group mb-3">
-     <label asp-for="MontoSalon">Monto Salón:</label>
-      <input asp-for="MontoSalon" type="number" step="0.01" class="form-control" required />
-  <span asp-validation-for="MontoSalon" class="text-danger"></span>
     </div>
 
-<div class="form-group mb-3">
-        <label asp-for="MontoGastro">Monto Gastronómico:</label>
-  <input asp-for="MontoGastro" type="number" step="0.01" class="form-control" required />
- <span asp-validation-for="MontoGastro" class="text-danger"></span>
+    <hr class="my-4" />
+
+    <h4>Seleccionar Servicios</h4>
+    <p class="text-muted">Seleccione los servicios que desea contratar para su evento</p>
+
+    <div class="row">
+        <div class="col-md-6">
+<div class="card mb-3">
+              <div class="card-header bg-primary text-white">
+           <h5 class="mb-0">Salones</h5>
+             </div>
+     <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+        @if (ViewBag.Salones != null)
+  {
+    @foreach (var salon in ViewBag.Salones)
+       {
+           <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" name="salonesSeleccionados" value="@salon.IdSalon" id="salon_@salon.IdSalon">
+       <label class="form-check-label" for="salon_@salon.IdSalon">
+        <strong>@salon.NombreSalon</strong> - $@salon.MontoSalon.ToString("N2")
+        <br><small class="text-muted">Estado: @salon.Estado</small>
+   </label>
+          </div>
+       }
+           }
+     else
+         {
+   <p class="text-muted">No hay salones disponibles</p>
+   }
+         </div>
+          </div>
+
+  <div class="card mb-3">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Barras</h5>
+    </div>
+       <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+     @if (ViewBag.Barras != null)
+           {
+    @foreach (var barra in ViewBag.Barras)
+                {
+      <div class="form-check mb-2">
+         <input class="form-check-input" type="checkbox" name="barrasSeleccionadas" value="@barra.IdBarra" id="barra_@barra.IdBarra">
+         <label class="form-check-label" for="barra_@barra.IdBarra">
+          <strong>@barra.Nombre</strong> - $@barra.PrecioPorHora.ToString("N2")/hora
+        <br><small class="text-muted">@barra.TipoBebida - @barra.Estado</small>
+         </label>
+    </div>
+        }
+    }
+    else
+            {
+       <p class="text-muted">No hay barras disponibles</p>
+}
+      </div>
+     </div>
+        </div>
+
+        <div class="col-md-6">
+        <div class="card mb-3">
+    <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Servicios Gastronómicos</h5>
    </div>
+           <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+          @if (ViewBag.Gastronomicos != null)
+            {
+           @foreach (var gastro in ViewBag.Gastronomicos)
+        {
+            <div class="form-check mb-2">
+                 <input class="form-check-input" type="checkbox" name="gastrosSeleccionados" value="@gastro.IdGastro" id="gastro_@gastro.IdGastro">
+    <label class="form-check-label" for="gastro_@gastro.IdGastro">
+            <strong>@gastro.Nombre</strong> - $@gastro.MontoG.ToString("N2")
+      <br><small class="text-muted">Tipo: @gastro.TipoComida</small>
+         </label>
+        </div>
+      }
+    }
+     else
+          {
+              <p class="text-muted">No hay servicios gastronómicos disponibles</p>
+   }
+        </div>
+         </div>
 
-   <div class="form-group mb-3">
-     <label asp-for="MontoBarra">Monto Barra:</label>
-    <input asp-for="MontoBarra" type="number" step="0.01" class="form-control" required />
-     <span asp-validation-for="MontoBarra" class="text-danger"></span>
-    </div>
-
-            <div class="form-group mb-3">
-    <label asp-for="Estado">Estado:</label>
-      <select asp-for="Estado" class="form-control">
-     <option value="Pendiente">Pendiente</option>
-           <option value="Confirmada">Confirmada</option>
-   <option value="Cancelada">Cancelada</option>
-  </select>
-        <span asp-validation-for="Estado" class="text-danger"></span>
-      </div>
+ <div class="card mb-3">
+     <div class="card-header bg-info text-white">
+         <h5 class="mb-0">DJs</h5>
+            </div>
+<div class="card-body" style="max-height: 300px; overflow-y: auto;">
+            @if (ViewBag.Djs != null)
+              {
+      @foreach (var dj in ViewBag.Djs)
+             {
+    <div class="form-check mb-2">
+         <input class="form-check-input" type="checkbox" name="djsSeleccionados" value="@dj.IdDj" id="dj_@dj.IdDj">
+        <label class="form-check-label" for="dj_@dj.IdDj">
+       <strong>@dj.NombreArtistico</strong> - $@dj.MontoDj.ToString("N2")
+          <br><small class="text-muted">Estado: @dj.Estado</small>
+     </label>
+       </div>
+            }
+     }
+        else
+            {
+       <p class="text-muted">No hay DJs disponibles</p>
+ }
+        </div>
+         </div>
         </div>
     </div>
 
-    <div class="mt-3">
-     <button type="submit" class="btn btn-success">Crear Solicitud</button>
-  <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success btn-lg">Crear Solicitud</button>
+        <a asp-action="Index" class="btn btn-secondary btn-lg">Cancelar</a>
     </div>
 </form>
 
 @section Scripts {
     @{
-  await Html.RenderPartialAsync("_ValidationScriptsPartial");
- }
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

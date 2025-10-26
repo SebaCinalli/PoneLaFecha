@@ -68,11 +68,7 @@ await context.SaveChangesAsync();
     return null;
 
      solicitudExistente.FechaDesde = solicitud.FechaDesde;
-            solicitudExistente.MontoDJ = solicitud.MontoDJ;
-   solicitudExistente.MontoSalon = solicitud.MontoSalon;
-            solicitudExistente.MontoGastro = solicitud.MontoGastro;
-    solicitudExistente.MontoBarra = solicitud.MontoBarra;
-     solicitudExistente.Estado = solicitud.Estado;
+            solicitudExistente.Estado = solicitud.Estado;
 
           await context.SaveChangesAsync();
        return solicitudExistente;
@@ -179,12 +175,31 @@ return true;
    public async Task<decimal> CalcularMontoTotalAsync(int idSolicitud)
 {
   using var context = new AppDbContext();
-     var solicitud = await context.Solicitudes.FindAsync(idSolicitud);
-  if (solicitud == null)
+  var solicitud = await context.Solicitudes
+      .Include(s => s.SalonSolicitudes).ThenInclude(ss => ss.Salon)
+       .Include(s => s.BarraSolicitudes).ThenInclude(bs => bs.Barra)
+        .Include(s => s.GastroSolicitudes).ThenInclude(gs => gs.Gastronomico)
+          .Include(s => s.DjSolicitudes).ThenInclude(ds => ds.Dj)
+    .FirstOrDefaultAsync(s => s.IdSolicitud == idSolicitud);
+            
+      if (solicitud == null)
              return 0;
 
-      return solicitud.MontoDJ + solicitud.MontoSalon + 
-     solicitud.MontoGastro + solicitud.MontoBarra;
+  decimal total = 0;
+
+            // Sumar montos de salones
+       total += solicitud.SalonSolicitudes.Sum(ss => ss.Salon.MontoSalon);
+
+       // Sumar montos de barras
+  total += solicitud.BarraSolicitudes.Sum(bs => bs.Barra.PrecioPorHora);
+
+          // Sumar montos de gastronómicos
+         total += solicitud.GastroSolicitudes.Sum(gs => gs.Gastronomico.MontoG);
+
+ // Sumar montos de DJs
+     total += solicitud.DjSolicitudes.Sum(ds => ds.Dj.MontoDj);
+
+            return total;
         }
 
         // Cambiar estado de la solicitud

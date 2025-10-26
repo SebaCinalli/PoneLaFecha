@@ -259,13 +259,16 @@ this.Controls.Add(this.dtpDesde);
    var totalConfirmadas = solicitudes.Count(s => s.Estado == "Confirmada");
     var totalCanceladas = solicitudes.Count(s => s.Estado == "Cancelada");
     
-      decimal montoTotal = solicitudes
-  .Where(s => s.Estado != "Cancelada")
-     .Sum(s => s.MontoDJ + s.MontoSalon + s.MontoGastro + s.MontoBarra);
+// TODO: Actualizar este cálculo para usar LogicaSolicitud.CalcularMontoTotalAsync
+// Temporalmente establecido en 0
+            decimal montoTotal = 0;
+        // decimal montoTotal = solicitudes
+  //   .Where(s => s.Estado != "Cancelada")
+            //     .Sum(s => s.MontoDJ + s.MontoSalon + s.MontoGastro + s.MontoBarra);
 
       lblTotalSolicitudes.Text = $"Total Solicitudes: {totalSolicitudes}";
     lblTotalPendientes.Text = $"Pendientes: {totalPendientes}";
-            lblTotalConfirmadas.Text = $"Confirmadas: {totalConfirmadas}";
+      lblTotalConfirmadas.Text = $"Confirmadas: {totalConfirmadas}";
  lblTotalCanceladas.Text = $"Canceladas: {totalCanceladas}";
             lblMontoTotal.Text = $"Monto Total: {montoTotal:C2}";
 

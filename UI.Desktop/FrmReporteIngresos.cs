@@ -290,10 +290,14 @@ if (cboMes.SelectedIndex > 0 && cboAnio.SelectedItem != null)
 
  private void MostrarEstadisticas(System.Collections.Generic.List<Entidades.Solicitud> solicitudes)
   {
-decimal ingresoDJ = solicitudes.Sum(s => s.MontoDJ);
-       decimal ingresoSalon = solicitudes.Sum(s => s.MontoSalon);
-     decimal ingresoGastro = solicitudes.Sum(s => s.MontoGastro);
-     decimal ingresoBarra = solicitudes.Sum(s => s.MontoBarra);
+// TODO: decimal ingresoDJ = solicitudes.Sum(s => s.MontoDJ);
+  decimal ingresoDJ = 0; // Temporal
+       // TODO: decimal ingresoSalon = solicitudes.Sum(s => s.MontoSalon);
+       decimal ingresoSalon = 0; // Temporal
+     // TODO: decimal ingresoGastro = solicitudes.Sum(s => s.MontoGastro);
+          decimal ingresoGastro = 0; // Temporal
+     // TODO: decimal ingresoBarra = solicitudes.Sum(s => s.MontoBarra);
+    decimal ingresoBarra = 0; // Temporal
 decimal ingresoTotal = ingresoDJ + ingresoSalon + ingresoGastro + ingresoBarra;
 
             lblIngresoDJ.Text = $"Ingresos DJ: {ingresoDJ:C2}";

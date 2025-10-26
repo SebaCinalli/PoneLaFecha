@@ -243,31 +243,20 @@ namespace UI.Desktop
 
             // Configurar headers
             if (dgvSolicitudes.Columns["IdSolicitud"] != null)
+            {
                 dgvSolicitudes.Columns["IdSolicitud"].HeaderText = "Nro.";
+                dgvSolicitudes.Columns["IdSolicitud"].Width = 50;
+            }
             if (dgvSolicitudes.Columns["FechaDesde"] != null)
             {
                 dgvSolicitudes.Columns["FechaDesde"].HeaderText = "Fecha Evento";
                 dgvSolicitudes.Columns["FechaDesde"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                dgvSolicitudes.Columns["FechaDesde"].Width = 120;
             }
-            if (dgvSolicitudes.Columns["MontoDJ"] != null)
+            if (dgvSolicitudes.Columns["Estado"] != null)
             {
-                dgvSolicitudes.Columns["MontoDJ"].HeaderText = "Monto DJ";
-                dgvSolicitudes.Columns["MontoDJ"].DefaultCellStyle.Format = "C2";
-            }
-            if (dgvSolicitudes.Columns["MontoSalon"] != null)
-            {
-                dgvSolicitudes.Columns["MontoSalon"].HeaderText = "Monto Salón";
-                dgvSolicitudes.Columns["MontoSalon"].DefaultCellStyle.Format = "C2";
-            }
-            if (dgvSolicitudes.Columns["MontoGastro"] != null)
-            {
-                dgvSolicitudes.Columns["MontoGastro"].HeaderText = "Monto Gastro";
-                dgvSolicitudes.Columns["MontoGastro"].DefaultCellStyle.Format = "C2";
-            }
-            if (dgvSolicitudes.Columns["MontoBarra"] != null)
-            {
-                dgvSolicitudes.Columns["MontoBarra"].HeaderText = "Monto Barra";
-                dgvSolicitudes.Columns["MontoBarra"].DefaultCellStyle.Format = "C2";
+                dgvSolicitudes.Columns["Estado"].HeaderText = "Estado";
+                dgvSolicitudes.Columns["Estado"].Width = 100;
             }
         }
 

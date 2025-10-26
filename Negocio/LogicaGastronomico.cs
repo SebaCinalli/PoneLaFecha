@@ -57,28 +57,24 @@ namespace Negocio
                     new Gastronomico
                     {
                         TipoComida = "Italiana",
-                        Foto = null,
                         Nombre = "Pasta & Pizza Deluxe",
                         MontoG = 25000.00m
                     },
                     new Gastronomico
                     {
                         TipoComida = "Argentina",
-                        Foto = null,
                         Nombre = "Parrilla Premium",
                         MontoG = 35000.00m
                     },
                     new Gastronomico
                     {
                         TipoComida = "Internacional",
-                        Foto = null,
                         Nombre = "Buffet Internacional",
                         MontoG = 40000.00m
                     },
                     new Gastronomico
                     {
                         TipoComida = "Vegetariana",
-                        Foto = null,
                         Nombre = "Garden Fresh",
                         MontoG = 22000.00m
                     }

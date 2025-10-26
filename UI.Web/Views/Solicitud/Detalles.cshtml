@@ -2,151 +2,160 @@
 
 @{
     ViewData["Title"] = "Detalles de Solicitud";
+    var rol = ViewBag.Rol as string;
 }
 
 <h2>Detalles de Solicitud #@Model.IdSolicitud</h2>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+   @TempData["Success"]
+   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+  @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+ </div>
+}
+
 <div class="row">
-    <div class="col-md-6">
+  <div class="col-md-6">
      <div class="card mb-3">
-    <div class="card-body">
+       <div class="card-body">
    <h5 class="card-title">Información General</h5>
-      <p><strong>ID Solicitud:</strong> @Model.IdSolicitud</p>
-       <p><strong>Cliente:</strong> @Model.Cliente?.Nombre @Model.Cliente?.Apellido</p>
-     <p><strong>Email:</strong> @Model.Cliente?.Email</p>
+     <p><strong>ID Solicitud:</strong> @Model.IdSolicitud</p>
+   <p><strong>Cliente:</strong> @Model.Cliente?.Nombre @Model.Cliente?.Apellido</p>
+            <p><strong>Email:</strong> @Model.Cliente?.Email</p>
         <p><strong>Teléfono:</strong> @Model.Cliente?.Telefono</p>
-    <p><strong>Fecha del Evento:</strong> @Model.FechaDesde.ToString("dd/MM/yyyy")</p>
-   <p><strong>Estado:</strong> 
-  <span class="badge @(Model.Estado == "Confirmada" ? "bg-success" : 
+       <p><strong>Fecha del Evento:</strong> @Model.FechaDesde.ToString("dd/MM/yyyy")</p>
+                <p><strong>Estado:</strong> 
+      <span class="badge @(Model.Estado == "Confirmada" ? "bg-success" : 
       Model.Estado == "Pendiente" ? "bg-warning" : "bg-danger")">
-  @Model.Estado
-   </span>
-    </p>
+       @Model.Estado
+        </span>
+  </p>
       </div>
-        </div>
+     </div>
     </div>
 
     <div class="col-md-6">
-<div class="card mb-3">
-     <div class="card-body">
-   <h5 class="card-title">Detalle de Montos</h5>
-     <table class="table table-sm">
-    <tr>
-     <td><strong>Monto DJ:</strong></td>
-         <td class="text-end">@Model.MontoDJ.ToString("C")</td>
-         </tr>
-            <tr>
-    <td><strong>Monto Salón:</strong></td>
-     <td class="text-end">@Model.MontoSalon.ToString("C")</td>
-        </tr>
-         <tr>
-           <td><strong>Monto Gastronómico:</strong></td>
-  <td class="text-end">@Model.MontoGastro.ToString("C")</td>
-       </tr>
-      <tr>
-        <td><strong>Monto Barra:</strong></td>
-    <td class="text-end">@Model.MontoBarra.ToString("C")</td>
-     </tr>
-           <tr class="table-primary">
-     <td><strong>TOTAL:</strong></td>
-      <td class="text-end"><strong>@ViewBag.MontoTotal.ToString("C")</strong></td>
-    </tr>
-      </table>
-            </div>
+        <div class="card mb-3">
+            <div class="card-body">
+         <h5 class="card-title">Monto Total</h5>
+         <h3 class="text-primary">@ViewBag.MontoTotal.ToString("C")</h3>
+            <p class="text-muted">Calculado a partir de los servicios seleccionados</p>
+          </div>
         </div>
-    </div>
+  </div>
 </div>
 
 @if (Model.SalonSolicitudes?.Any() == true)
 {
     <div class="card mb-3">
-   <div class="card-body">
-       <h5 class="card-title">Salones Reservados</h5>
-    <ul class="list-group">
-       @foreach (var ss in Model.SalonSolicitudes)
-    {
-    <li class="list-group-item">
-@ss.Salon?.NombreSalon - Estado: @ss.Salon?.Estado - Monto: @ss.Salon?.MontoSalon.ToString("C")
-    </li>
-      }
-   </ul>
-     </div>
-    </div>
-}
-
-@if (Model.BarraSolicitudes?.Any() == true)
-{
-    <div class="card mb-3">
- <div class="card-body">
-   <h5 class="card-title">Barras Reservadas</h5>
-            <ul class="list-group">
-    @foreach (var bs in Model.BarraSolicitudes)
-    {
-    <li class="list-group-item">
-    @bs.Barra?.Nombre - @bs.Barra?.TipoBebida - Precio/hora: @bs.Barra?.PrecioPorHora.ToString("C")
- </li>
-     }
-   </ul>
-        </div>
-  </div>
-}
-
-@if (Model.GastroSolicitudes?.Any() == true)
-{
-<div class="card mb-3">
         <div class="card-body">
-   <h5 class="card-title">Servicios Gastronómicos</h5>
-         <ul class="list-group">
-   @foreach (var gs in Model.GastroSolicitudes)
-   {
-     <li class="list-group-item">
-  @gs.Gastronomico?.Nombre - @gs.Gastronomico?.TipoComida - Monto: @gs.Gastronomico?.MontoG.ToString("C")
-            </li>
+    <h5 class="card-title">Salones Reservados</h5>
+            <ul class="list-group">
+          @foreach (var ss in Model.SalonSolicitudes)
+       {
+<li class="list-group-item">
+         @ss.Salon?.NombreSalon - Estado: @ss.Salon?.Estado - Monto: @ss.Salon?.MontoSalon.ToString("C")
+    </li>
     }
             </ul>
         </div>
     </div>
 }
 
-@if (Model.DjSolicitudes?.Any() == true)
+@if (Model.BarraSolicitudes?.Any() == true)
 {
     <div class="card mb-3">
         <div class="card-body">
-   <h5 class="card-title">DJs Contratados</h5>
-      <ul class="list-group">
-   @foreach (var ds in Model.DjSolicitudes)
-    {
-     <li class="list-group-item">
-@ds.Dj?.NombreArtistico - Estado: @ds.Dj?.Estado - Monto: @ds.Dj?.MontoDj.ToString("C")
- </li>
-       }
-   </ul>
+ <h5 class="card-title">Barras Reservadas</h5>
+          <ul class="list-group">
+     @foreach (var bs in Model.BarraSolicitudes)
+      {
+           <li class="list-group-item">
+     @bs.Barra?.Nombre - @bs.Barra?.TipoBebida - Precio/hora: @bs.Barra?.PrecioPorHora.ToString("C")
+       </li>
+    }
+  </ul>
+        </div>
+    </div>
+}
+
+@if (Model.GastroSolicitudes?.Any() == true)
+{
+ <div class="card mb-3">
+        <div class="card-body">
+        <h5 class="card-title">Servicios Gastronómicos</h5>
+  <ul class="list-group">
+       @foreach (var gs in Model.GastroSolicitudes)
+           {
+         <li class="list-group-item">
+      @gs.Gastronomico?.Nombre - @gs.Gastronomico?.TipoComida - Monto: @gs.Gastronomico?.MontoG.ToString("C")
+      </li>
+  }
+          </ul>
+     </div>
+    </div>
+}
+
+@if (Model.DjSolicitudes?.Any() == true)
+{
+    <div class="card mb-3">
+ <div class="card-body">
+    <h5 class="card-title">DJs Contratados</h5>
+            <ul class="list-group">
+    @foreach (var ds in Model.DjSolicitudes)
+       {
+    <li class="list-group-item">
+    @ds.Dj?.NombreArtistico - Estado: @ds.Dj?.Estado - Monto: @ds.Dj?.MontoDj.ToString("C")
+         </li>
+  }
+</ul>
  </div>
     </div>
 }
 
-<div class="card mb-3">
-    <div class="card-body">
-        <h5 class="card-title">Cambiar Estado</h5>
+@if (rol == "Administrador")
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Cambiar Estado</h5>
   <form asp-action="CambiarEstado" method="post" class="d-inline">
-  <input type="hidden" name="id" value="@Model.IdSolicitud" />
-   <div class="row">
-        <div class="col-md-6">
-    <select name="nuevoEstado" class="form-control">
-      <option value="Pendiente" selected="@(Model.Estado == "Pendiente")">Pendiente</option>
-   <option value="Confirmada" selected="@(Model.Estado == "Confirmada")">Confirmada</option>
+<input type="hidden" name="id" value="@Model.IdSolicitud" />
+        <div class="row">
+           <div class="col-md-6">
+             <select name="nuevoEstado" class="form-control">
+         <option value="Pendiente" selected="@(Model.Estado == "Pendiente")">Pendiente</option>
+           <option value="Confirmada" selected="@(Model.Estado == "Confirmada")">Confirmada</option>
       <option value="Cancelada" selected="@(Model.Estado == "Cancelada")">Cancelada</option>
-      </select>
-     </div>
- <div class="col-md-6">
-         <button type="submit" class="btn btn-primary">Actualizar Estado</button>
-     </div>
+              </select>
+      </div>
+   <div class="col-md-6">
+   <button type="submit" class="btn btn-primary">Actualizar Estado</button>
+         </div>
         </div>
-   </form>
+    </form>
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="alert alert-info">
+        <strong>Nota:</strong> Solo el administrador puede cambiar el estado de su solicitud. Si necesita realizar cambios, puede eliminar esta solicitud y crear una nueva, o contacte al administrador.
+    </div>
+}
 
 <div class="mt-3">
-    <a asp-action="Editar" asp-route-id="@Model.IdSolicitud" class="btn btn-warning">Editar</a>
+    @if (rol == "Administrador")
+    {
+        <a asp-action="Editar" asp-route-id="@Model.IdSolicitud" class="btn btn-warning">Editar</a>
+    }
     <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
 </div>

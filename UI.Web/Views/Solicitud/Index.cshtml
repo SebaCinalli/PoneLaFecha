@@ -1,53 +1,65 @@
 @model IEnumerable<Entidades.Solicitud>
 
 @{
-    ViewData["Title"] = "Solicitudes";
+  ViewData["Title"] = "Solicitudes";
+    var rol = Context.Session.GetString("Rol");
 }
 
 <h2>Gestión de Solicitudes</h2>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+     @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <p>
-    <a asp-action="Crear" class="btn btn-primary">Crear Nueva Solicitud</a>
+ <a asp-action="Crear" class="btn btn-primary">Crear Nueva Solicitud</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>
-       <th>Cliente</th>
-            <th>Fecha Desde</th>
-          <th>Estado</th>
-          <th>Monto DJ</th>
-<th>Monto Salón</th>
-            <th>Monto Gastro</th>
-            <th>Monto Barra</th>
-         <th>Acciones</th>
+  <th>Cliente</th>
+ <th>Fecha Desde</th>
+            <th>Estado</th>
+     <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var solicitud in Model)
-   {
-          <tr>
-          <td>@solicitud.IdSolicitud</td>
-       <td>@solicitud.Cliente?.Nombre @solicitud.Cliente?.Apellido</td>
-              <td>@solicitud.FechaDesde.ToString("dd/MM/yyyy")</td>
-           <td>
-      <span class="badge @(solicitud.Estado == "Confirmada" ? "bg-success" : 
-             solicitud.Estado == "Pendiente" ? "bg-warning" : "bg-danger")">
-       @solicitud.Estado
-              </span>
+      @foreach (var solicitud in Model)
+        {
+      <tr>
+    <td>@solicitud.IdSolicitud</td>
+          <td>@solicitud.Cliente?.Nombre @solicitud.Cliente?.Apellido</td>
+          <td>@solicitud.FechaDesde.ToString("dd/MM/yyyy")</td>
+              <td>
+   <span class="badge @(solicitud.Estado == "Confirmada" ? "bg-success" : 
+         solicitud.Estado == "Pendiente" ? "bg-warning" : "bg-danger")">
+  @solicitud.Estado
+        </span>
           </td>
-         <td>@solicitud.MontoDJ.ToString("C")</td>
-   <td>@solicitud.MontoSalon.ToString("C")</td>
-      <td>@solicitud.MontoGastro.ToString("C")</td>
-     <td>@solicitud.MontoBarra.ToString("C")</td>
-                <td>
-<a asp-action="Editar" asp-route-id="@solicitud.IdSolicitud" class="btn btn-sm btn-warning">Editar</a>
-    <a asp-action="Detalles" asp-route-id="@solicitud.IdSolicitud" class="btn btn-sm btn-info">Detalles</a>
-         <a asp-action="Eliminar" asp-route-id="@solicitud.IdSolicitud" class="btn btn-sm btn-danger" 
-     onclick="return confirm('¿Está seguro de eliminar esta solicitud?')">Eliminar</a>
-     </td>
-            </tr>
-        }
+      <td>
+           @if (rol == "Administrador")
+        {
+         <a asp-action="Editar" asp-route-id="@solicitud.IdSolicitud" class="btn btn-sm btn-warning">Editar</a>
+    }
+     <a asp-action="Detalles" asp-route-id="@solicitud.IdSolicitud" class="btn btn-sm btn-info">Detalles</a>
+    <a asp-action="Eliminar" asp-route-id="@solicitud.IdSolicitud" class="btn btn-sm btn-danger" 
+         onclick="return confirm('¿Está seguro de eliminar esta solicitud?')">Eliminar</a>
+                </td>
+          </tr>
+   }
     </tbody>
 </table>
