@@ -21,5 +21,9 @@ namespace Entidades
         [Required(ErrorMessage = "El monto es requerido")]
         [Range(0, double.MaxValue, ErrorMessage = "El monto debe ser mayor a 0")]
         public decimal MontoG { get; set; }
+        
+        // Navegación
+        public ICollection<ZonaGastro> ZonaGastros { get; set; } = new List<ZonaGastro>();
+        public ICollection<GastroSolicitud> GastroSolicitudes { get; set; } = new List<GastroSolicitud>();
     }
 }

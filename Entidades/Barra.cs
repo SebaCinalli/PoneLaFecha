@@ -11,5 +11,9 @@ namespace Entidades
         public decimal PrecioPorHora { get; set; }
         public string Estado { get; set; } = string.Empty;
         public string Descripcion { get; set; } = string.Empty;
+        
+        // Navegación
+        public ICollection<ZonaBarra> ZonaBarras { get; set; } = new List<ZonaBarra>();
+        public ICollection<BarraSolicitud> BarraSolicitudes { get; set; } = new List<BarraSolicitud>();
     }
 }

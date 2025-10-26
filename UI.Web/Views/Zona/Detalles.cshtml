@@ -1,0 +1,96 @@
+@model Entidades.Zona
+
+@{
+    ViewData["Title"] = "Detalles de Zona";
+}
+
+<h2>Detalles de Zona: @Model.Nombre</h2>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Información de la Zona</h5>
+   <p><strong>ID:</strong> @Model.IdZona</p>
+      <p><strong>Nombre:</strong> @Model.Nombre</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Salones en esta Zona</h5>
+   @if (ViewBag.Salones != null && ((IEnumerable<Entidades.Salon>)ViewBag.Salones).Any())
+ {
+            <ul class="list-group">
+                @foreach (var salon in (IEnumerable<Entidades.Salon>)ViewBag.Salones)
+   {
+     <li class="list-group-item">@salon.NombreSalon - $@salon.MontoSalon</li>
+      }
+            </ul>
+        }
+     else
+      {
+      <p class="text-muted">No hay salones asignados a esta zona.</p>
+      }
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Barras en esta Zona</h5>
+     @if (ViewBag.Barras != null && ((IEnumerable<Entidades.Barra>)ViewBag.Barras).Any())
+        {
+    <ul class="list-group">
+                @foreach (var barra in (IEnumerable<Entidades.Barra>)ViewBag.Barras)
+ {
+        <li class="list-group-item">@barra.Nombre - $@barra.PrecioPorHora/hora</li>
+         }
+            </ul>
+        }
+        else
+  {
+     <p class="text-muted">No hay barras asignadas a esta zona.</p>
+        }
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+   <h5 class="card-title">Servicios Gastronómicos en esta Zona</h5>
+        @if (ViewBag.Gastronomicos != null && ((IEnumerable<Entidades.Gastronomico>)ViewBag.Gastronomicos).Any())
+    {
+            <ul class="list-group">
+   @foreach (var gastro in (IEnumerable<Entidades.Gastronomico>)ViewBag.Gastronomicos)
+       {
+              <li class="list-group-item">@gastro.Nombre - @gastro.TipoComida - $@gastro.MontoG</li>
+           }
+    </ul>
+        }
+        else
+        {
+ <p class="text-muted">No hay servicios gastronómicos asignados a esta zona.</p>
+        }
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+   <h5 class="card-title">DJs en esta Zona</h5>
+        @if (ViewBag.Djs != null && ((IEnumerable<Entidades.Dj>)ViewBag.Djs).Any())
+        {
+        <ul class="list-group">
+       @foreach (var dj in (IEnumerable<Entidades.Dj>)ViewBag.Djs)
+           {
+    <li class="list-group-item">@dj.NombreArtistico - $@dj.MontoDj</li>
+        }
+         </ul>
+        }
+        else
+        {
+   <p class="text-muted">No hay DJs asignados a esta zona.</p>
+        }
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Editar" asp-route-id="@Model.IdZona" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+</div>

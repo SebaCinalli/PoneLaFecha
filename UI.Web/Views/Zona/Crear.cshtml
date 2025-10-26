@@ -1,0 +1,26 @@
+@model Entidades.Zona
+
+@{
+    ViewData["Title"] = "Crear Zona";
+}
+
+<h2>Crear Nueva Zona</h2>
+
+<form asp-action="Crear" method="post">
+  <div class="form-group">
+        <label asp-for="Nombre">Nombre:</label>
+        <input asp-for="Nombre" type="text" class="form-control" required />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-success">Crear Zona</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

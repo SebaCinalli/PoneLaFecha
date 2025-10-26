@@ -1,0 +1,43 @@
+@model IEnumerable<Entidades.Dj>
+
+@{
+    ViewData["Title"] = "DJs";
+}
+
+<h2>Gestión de DJs</h2>
+
+<p>
+    <a asp-action="Crear" class="btn btn-primary">Agregar Nuevo DJ</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+        <th>ID</th>
+      <th>Nombre Artístico</th>
+            <th>Estado</th>
+   <th>Monto</th>
+ <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var dj in Model)
+        {
+      <tr>
+     <td>@dj.IdDj</td>
+     <td>@dj.NombreArtistico</td>
+          <td>
+           <span class="badge @(dj.Estado == "Disponible" ? "bg-success" : "bg-secondary")">
+  @dj.Estado
+      </span>
+    </td>
+                <td>@dj.MontoDj.ToString("C")</td>
+           <td>
+     <a asp-action="Editar" asp-route-id="@dj.IdDj" class="btn btn-sm btn-warning">Editar</a>
+      <a asp-action="Eliminar" asp-route-id="@dj.IdDj" class="btn btn-sm btn-danger" 
+         onclick="return confirm('¿Está seguro de eliminar este DJ?')">Eliminar</a>
+                </td>
+     </tr>
+        }
+    </tbody>
+</table>
