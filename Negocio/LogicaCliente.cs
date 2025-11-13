@@ -1,5 +1,6 @@
 ﻿using Entidades;
 using Datos;
+using Microsoft.Data.SqlClient;
 
 namespace Negocio
 {
@@ -9,6 +10,29 @@ namespace Negocio
         {
             using var db = new AppDbContext();
             return db.Clientes.ToList();
+        }
+
+        /// <summary>
+        /// Método que usa ADO.NET puro para contar el total de clientes.
+        /// Implementado para cumplir con el requisito de usar ADO.NET al menos una vez.
+        /// </summary>
+        public static int ObtenerTotalClientesConADO()
+        {
+            int total = 0;
+            string connectionString = ConnectionHelper.GetConnectionString();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT COUNT(*) FROM Clientes";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    total = (int)command.ExecuteScalar();
+                }
+            }
+
+            return total;
         }
 
         public static int Crear(Cliente c)

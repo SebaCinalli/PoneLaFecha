@@ -1,0 +1,199 @@
+@{
+    ViewData["Title"] = "Estadísticas con ADO.NET";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+ <div class="alert alert-info">
+     <h4 class="alert-heading">
+      <i class="bi bi-info-circle"></i> Información Técnica
+           </h4>
+     <p class="mb-0">
+               Esta página demuestra el uso de <strong>ADO.NET puro</strong> para consultas a la base de datos.
+            Los métodos <code>ListarConADO()</code> y <code>ObtenerTotalClientesConADO()</code> utilizan
+  <code>SqlConnection</code>, <code>SqlCommand</code> y <code>SqlDataReader</code>.
+             </p>
+ </div>
+        </div>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+  <div class="alert alert-danger">
+       <strong>Error:</strong> @ViewBag.Error
+        </div>
+    }
+    else
+    {
+<div class="row mt-4">
+      <!-- Card de Estadísticas de Clientes -->
+      <div class="col-md-4">
+     <div class="card border-success">
+<div class="card-header bg-success text-white">
+  <h5 class="mb-0">
+  <i class="bi bi-people-fill"></i> Estadísticas de Clientes
+   </h5>
+           </div>
+      <div class="card-body text-center">
+   <h1 class="display-3 text-success">@ViewBag.TotalClientes</h1>
+        <p class="text-muted">Total de Clientes Registrados</p>
+ <small class="text-muted">
+          <i class="bi bi-database"></i> Consultado con ADO.NET
+      </small>
+       </div>
+    </div>
+            </div>
+
+      <!-- Card de Estadísticas de Salones -->
+     <div class="col-md-4">
+ <div class="card border-primary">
+          <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">
+               <i class="bi bi-building"></i> Estadísticas de Salones
+          </h5>
+        </div>
+    <div class="card-body text-center">
+   <h1 class="display-3 text-primary">@ViewBag.TotalSalones</h1>
+              <p class="text-muted">Total de Salones Disponibles</p>
+       <small class="text-muted">
+   <i class="bi bi-database"></i> Consultado con ADO.NET
+  </small>
+        </div>
+    </div>
+ </div>
+
+   <!-- Card de Información -->
+ <div class="col-md-4">
+           <div class="card border-warning">
+     <div class="card-header bg-warning">
+         <h5 class="mb-0">
+      <i class="bi bi-code-square"></i> Métodos Utilizados
+    </h5>
+          </div>
+      <div class="card-body">
+        <ul class="list-unstyled">
+     <li class="mb-2">
+     <i class="bi bi-check-circle text-success"></i>
+       <code>ListarConADO()</code>
+          </li>
+     <li class="mb-2">
+             <i class="bi bi-check-circle text-success"></i>
+              <code>ObtenerTotalClientesConADO()</code>
+     </li>
+     <li class="mb-2">
+        <i class="bi bi-check-circle text-success"></i>
+         <code>SqlConnection</code>
+  </li>
+      <li class="mb-2">
+  <i class="bi bi-check-circle text-success"></i>
+    <code>SqlCommand</code>
+         </li>
+  <li>
+      <i class="bi bi-check-circle text-success"></i>
+      <code>SqlDataReader</code>
+        </li>
+      </ul>
+        </div>
+       </div>
+ </div>
+        </div>
+
+        <!-- Tabla de Salones -->
+        <div class="row mt-4">
+  <div class="col-md-12">
+     <div class="card">
+    <div class="card-header bg-info text-white">
+  <h5 class="mb-0">
+   <i class="bi bi-table"></i> Listado de Salones (Obtenido con ADO.NET)
+             </h5>
+        </div>
+    <div class="card-body">
+     <div class="table-responsive">
+      <table class="table table-striped table-hover">
+         <thead class="table-dark">
+             <tr>
+                <th>ID</th>
+    <th>Nombre del Salón</th>
+         <th>Estado</th>
+       <th class="text-end">Monto</th>
+             </tr>
+        </thead>
+  <tbody>
+@if (ViewBag.Salones != null)
+            {
+              @foreach (var salon in ViewBag.Salones)
+           {
+ <tr>
+     <td>@salon.IdSalon</td>
+  <td>@salon.NombreSalon</td>
+     <td>
+             <span class="badge @(salon.Estado == "Disponible" ? "bg-success" : "bg-warning")">
+     @salon.Estado
+           </span>
+         </td>
+    <td class="text-end">@salon.MontoSalon.ToString("C")</td>
+         </tr>
+            }
+            }
+        </tbody>
+       </table>
+       </div>
+           </div>
+ </div>
+     </div>
+      </div>
+
+        <!-- Código de Ejemplo -->
+        <div class="row mt-4 mb-4">
+            <div class="col-md-12">
+       <div class="card border-secondary">
+         <div class="card-header bg-secondary text-white">
+  <h5 class="mb-0">
+  <i class="bi bi-file-code"></i> Código de Ejemplo - ADO.NET
+      </h5>
+          </div>
+    <div class="card-body">
+            <pre class="bg-light p-3 rounded"><code>public static List&lt;Salon&gt; ListarConADO()
+{
+    var salones = new List&lt;Salon&gt;();
+    string connectionString = ConnectionHelper.GetConnectionString();
+
+    using (var connection = new SqlConnection(connectionString))
+    {
+        connection.Open();
+string query = "SELECT IdSalon, NombreSalon, Estado, MontoSalon FROM Salones";
+
+        using (var command = new SqlCommand(query, connection))
+ {
+            using (var reader = command.ExecuteReader())
+       {
+  while (reader.Read())
+    {
+      var salon = new Salon
+       {
+       IdSalon = reader.GetInt32(0),
+ NombreSalon = reader.GetString(1),
+       Estado = reader.GetString(2),
+             MontoSalon = reader.GetDecimal(3)
+    };
+           salones.Add(salon);
+     }
+     }
+    }
+    }
+
+    return salones;
+}</code></pre>
+        </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="text-center mt-4 mb-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+        <i class="bi bi-house"></i> Volver al Inicio
+ </a>
+</div>
