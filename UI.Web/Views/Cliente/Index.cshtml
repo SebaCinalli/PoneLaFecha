@@ -1,32 +1,60 @@
-ï»¿@model List<Entidades.Cliente>
+@model List<Entidades.Cliente>
 
-<h2>Clientes</h2>
-<a asp-action="Crear">Nuevo Cliente</a>
-<table>
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Email</th>
-            <th>TelÃ©fono</th>
-            <th>Usuario</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model)
-        {
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+}
+
+<div class="container mt-4">
+    <h2>Gestión de Clientes</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <p>
+    <a asp-action="Crear" class="btn btn-primary">Nuevo Cliente</a>
+    </p>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
             <tr>
-                <td>@c.Nombre</td>
-                <td>@c.Apellido</td>
-                <td>@c.Email</td>
-                <td>@c.Telefono</td>
-                <td>@c.NombreUsuario</td>
-                <td>
-                    <a asp-action="Editar" asp-route-id="@c.IdCliente">Editar</a> |
-                    <a asp-action="Eliminar" asp-route-id="@c.IdCliente">Eliminar</a>
-                </td>
+       <th>Nombre</th>
+     <th>Apellido</th>
+    <th>Email</th>
+       <th>Teléfono</th>
+      <th>Usuario</th>
+  <th>Acciones</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+          <tr>
+          <td>@c.Nombre</td>
+         <td>@c.Apellido</td>
+     <td>@c.Email</td>
+   <td>@c.Telefono</td>
+        <td>@c.NombreUsuario</td>
+    <td>
+                   <a asp-action="Editar" asp-route-id="@c.IdCliente" class="btn btn-sm btn-warning">Editar</a>
+      <a asp-action="Eliminar" asp-route-id="@c.IdCliente" 
+                class="btn btn-sm btn-danger"
+     onclick="return confirm('¿Está seguro de eliminar este cliente?')">Eliminar</a>
+    </td>
+     </tr>
+      }
+        </tbody>
+    </table>
+</div>

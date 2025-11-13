@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Entidades;
 using Datos;
+using Microsoft.Data.SqlClient;
 
 namespace Negocio
 {
@@ -12,6 +13,42 @@ namespace Negocio
         {
             using var db = new AppDbContext();
             return db.Salones.ToList();
+        }
+
+        /// <summary>
+        /// Método que usa ADO.NET puro para listar salones.
+        /// Implementado para cumplir con el requisito de usar ADO.NET al menos una vez.
+        /// </summary>
+        public static List<Salon> ListarConADO()
+        {
+            var salones = new List<Salon>();
+            string connectionString = ConnectionHelper.GetConnectionString();
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT IdSalon, NombreSalon, Estado, MontoSalon FROM Salones";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var salon = new Salon
+                            {
+                                IdSalon = reader.GetInt32(0),
+                                NombreSalon = reader.GetString(1),
+                                Estado = reader.GetString(2),
+                                MontoSalon = reader.GetDecimal(3)
+                            };
+                            salones.Add(salon);
+                        }
+                    }
+                }
+            }
+
+            return salones;
         }
 
         public static int Crear(Salon s)

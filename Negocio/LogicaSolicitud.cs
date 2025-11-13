@@ -8,7 +8,7 @@ namespace Negocio
     {
      public async Task<List<Solicitud>> GetAllAsync()
         {
-            using var context = new AppDbContext();
+      using var context = new AppDbContext();
         return await context.Solicitudes
    .Include(s => s.Cliente)
  .ToListAsync();
@@ -28,7 +28,7 @@ public async Task<Solicitud?> GetByIdAsync(int id)
         public async Task<List<Solicitud>> GetByClienteIdAsync(int idCliente)
         {
             using var context = new AppDbContext();
-    return await context.Solicitudes
+  return await context.Solicitudes
        .Where(s => s.IdCliente == idCliente)
     .Include(s => s.Cliente)
  .Include(s => s.SalonSolicitudes).ThenInclude(ss => ss.Salon)
@@ -36,26 +36,26 @@ public async Task<Solicitud?> GetByIdAsync(int id)
   .Include(s => s.GastroSolicitudes).ThenInclude(gs => gs.Gastronomico)
        .Include(s => s.DjSolicitudes).ThenInclude(ds => ds.Dj)
        .ToListAsync();
-        }
+    }
 
  public async Task<Solicitud> CreateAsync(Solicitud solicitud)
  {
     // Validar antes de crear
-       var validacion = Validaciones.ValidarSolicitud(solicitud);
+   var validacion = Validaciones.ValidarSolicitud(solicitud);
   if (!validacion.EsValido)
        {
-       throw new Exception($"Validación fallida:\n{validacion.ObtenerMensajeErrores()}");
+   throw new Exception($"Validación fallida:\n{validacion.ObtenerMensajeErrores()}");
  }
 
 using var context = new AppDbContext();
-    context.Solicitudes.Add(solicitud);
+context.Solicitudes.Add(solicitud);
 await context.SaveChangesAsync();
       return solicitud;
         }
 
   public async Task<Solicitud?> UpdateAsync(Solicitud solicitud)
    {
-        // Validar antes de actualizar
+    // Validar antes de actualizar
   var validacion = Validaciones.ValidarSolicitud(solicitud);
   if (!validacion.EsValido)
   {
@@ -68,50 +68,66 @@ await context.SaveChangesAsync();
     return null;
 
      solicitudExistente.FechaDesde = solicitud.FechaDesde;
-            solicitudExistente.Estado = solicitud.Estado;
+      solicitudExistente.Estado = solicitud.Estado;
 
           await context.SaveChangesAsync();
        return solicitudExistente;
   }
 
-        public async Task<bool> DeleteAsync(int id)
+     public async Task<bool> DeleteAsync(int id)
         {
        using var context = new AppDbContext();
-  var solicitud = await context.Solicitudes.FindAsync(id);
-      if (solicitud == null)
+            
+            // Buscar la solicitud con todas sus relaciones
+ var solicitud = await context.Solicitudes
+            .Include(s => s.SalonSolicitudes)
+          .Include(s => s.BarraSolicitudes)
+           .Include(s => s.GastroSolicitudes)
+     .Include(s => s.DjSolicitudes)
+            .FirstOrDefaultAsync(s => s.IdSolicitud == id);
+      
+            if (solicitud == null)
       return false;
 
-    context.Solicitudes.Remove(solicitud);
-     await context.SaveChangesAsync();
+            // Eliminar primero todas las relaciones en las tablas intermedias
+          context.SalonSolicitudes.RemoveRange(solicitud.SalonSolicitudes);
+         context.BarraSolicitudes.RemoveRange(solicitud.BarraSolicitudes);
+  context.GastroSolicitudes.RemoveRange(solicitud.GastroSolicitudes);
+    context.DjSolicitudes.RemoveRange(solicitud.DjSolicitudes);
+
+      // Ahora eliminar la solicitud
+            context.Solicitudes.Remove(solicitud);
+ 
+    await context.SaveChangesAsync();
       return true;
         }
 
-        // Métodos para gestionar las relaciones con servicios
+   // Métodos para gestionar las relaciones con servicios
   public async Task<bool> AsignarSalonASolicitudAsync(int idSolicitud, int idSalon)
-        {
+ {
   using var context = new AppDbContext();
        
         var existeRelacion = await context.SalonSolicitudes
      .AnyAsync(ss => ss.IdSolicitud == idSolicitud && ss.IdSalon == idSalon);
-            
+     
    if (existeRelacion)
-        return false;
+ return false;
 
 var salonSolicitud = new SalonSolicitud
-            {
+     {
   IdSolicitud = idSolicitud,
       IdSalon = idSalon
        };
 
    context.SalonSolicitudes.Add(salonSolicitud);
         await context.SaveChangesAsync();
-            return true;
-     }
+     return true;
+ }
 
   public async Task<bool> AsignarBarraASolicitudAsync(int idSolicitud, int idBarra)
     {
      using var context = new AppDbContext();
-            
+     
    var existeRelacion = await context.BarraSolicitudes
        .AnyAsync(bs => bs.IdSolicitud == idSolicitud && bs.IdBarra == idBarra);
    
@@ -119,10 +135,10 @@ var salonSolicitud = new SalonSolicitud
      return false;
 
  var barraSolicitud = new BarraSolicitud
-            {
+         {
           IdSolicitud = idSolicitud,
    IdBarra = idBarra
-            };
+};
 
     context.BarraSolicitudes.Add(barraSolicitud);
     await context.SaveChangesAsync();
@@ -132,36 +148,36 @@ var salonSolicitud = new SalonSolicitud
 public async Task<bool> AsignarGastronomicoASolicitudAsync(int idSolicitud, int idGastro)
   {
 using var context = new AppDbContext();
-            
-         var existeRelacion = await context.GastroSolicitudes
+       
+     var existeRelacion = await context.GastroSolicitudes
       .AnyAsync(gs => gs.IdSolicitud == idSolicitud && gs.IdGastro == idGastro);
-         
+    
      if (existeRelacion)
   return false;
 
   var gastroSolicitud = new GastroSolicitud
    {
        IdSolicitud = idSolicitud,
-           IdGastro = idGastro
+    IdGastro = idGastro
   };
 
    context.GastroSolicitudes.Add(gastroSolicitud);
-   await context.SaveChangesAsync();
+await context.SaveChangesAsync();
        return true;
   }
 
  public async Task<bool> AsignarDjASolicitudAsync(int idSolicitud, int idDj)
-        {
-       using var context = new AppDbContext();
-         
+ {
+  using var context = new AppDbContext();
+     
     var existeRelacion = await context.DjSolicitudes
-        .AnyAsync(ds => ds.IdSolicitud == idSolicitud && ds.IdDj == idDj);
+  .AnyAsync(ds => ds.IdSolicitud == idSolicitud && ds.IdDj == idDj);
      
        if (existeRelacion)
   return false;
 
   var djSolicitud = new DjSolicitud
-    {
+  {
     IdSolicitud = idSolicitud,
       IdDj = idDj
   };
@@ -177,18 +193,18 @@ return true;
   using var context = new AppDbContext();
   var solicitud = await context.Solicitudes
       .Include(s => s.SalonSolicitudes).ThenInclude(ss => ss.Salon)
-       .Include(s => s.BarraSolicitudes).ThenInclude(bs => bs.Barra)
-        .Include(s => s.GastroSolicitudes).ThenInclude(gs => gs.Gastronomico)
+  .Include(s => s.BarraSolicitudes).ThenInclude(bs => bs.Barra)
+    .Include(s => s.GastroSolicitudes).ThenInclude(gs => gs.Gastronomico)
           .Include(s => s.DjSolicitudes).ThenInclude(ds => ds.Dj)
     .FirstOrDefaultAsync(s => s.IdSolicitud == idSolicitud);
-            
+     
       if (solicitud == null)
-             return 0;
+   return 0;
 
   decimal total = 0;
 
-            // Sumar montos de salones
-       total += solicitud.SalonSolicitudes.Sum(ss => ss.Salon.MontoSalon);
+// Sumar montos de salones
+    total += solicitud.SalonSolicitudes.Sum(ss => ss.Salon.MontoSalon);
 
        // Sumar montos de barras
   total += solicitud.BarraSolicitudes.Sum(bs => bs.Barra.PrecioPorHora);
@@ -197,9 +213,9 @@ return true;
          total += solicitud.GastroSolicitudes.Sum(gs => gs.Gastronomico.MontoG);
 
  // Sumar montos de DJs
-     total += solicitud.DjSolicitudes.Sum(ds => ds.Dj.MontoDj);
+ total += solicitud.DjSolicitudes.Sum(ds => ds.Dj.MontoDj);
 
-            return total;
+      return total;
         }
 
         // Cambiar estado de la solicitud
@@ -210,18 +226,18 @@ return true;
   if (solicitud == null)
       return false;
 
-       solicitud.Estado = nuevoEstado;
+solicitud.Estado = nuevoEstado;
        await context.SaveChangesAsync();
          return true;
         }
 
  // Obtener solicitudes por estado
-     public async Task<List<Solicitud>> GetByEstadoAsync(string estado)
+  public async Task<List<Solicitud>> GetByEstadoAsync(string estado)
         {
    using var context = new AppDbContext();
          return await context.Solicitudes
      .Where(s => s.Estado == estado)
-        .Include(s => s.Cliente)
+ .Include(s => s.Cliente)
        .ToListAsync();
   }
     }
