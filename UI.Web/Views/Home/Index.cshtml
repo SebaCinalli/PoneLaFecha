@@ -5,45 +5,45 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-12">
-     <div class="jumbotron bg-gradient p-5 rounded shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <h1 class="display-4 text-white">Bienvenido, @ViewBag.NombreCompleto!</h1>
-      <p class="lead text-white">Sistema de Gestión de Eventos - PoneLaFecha</p>
-        <hr class="my-4 bg-white">
-     <p class="text-white">Panel de control para @ViewBag.Rol</p>
-      </div>
+     <div class="jumbotron p-5 rounded shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 200px;">
+    <h1 class="display-4 text-white" style="font-weight: bold;">Bienvenido, @ViewBag.NombreCompleto!</h1>
+   <p class="lead text-white" style="font-size: 1.25rem;">Sistema de Gestión de Eventos - PoneLaFecha</p>
+<hr class="my-4" style="border-color: rgba(255,255,255,0.3);">
+     <p class="text-white" style="font-size: 1.1rem;">Panel de control para @ViewBag.Rol</p>
+  </div>
     </div>
     </div>
 
 @if (ViewBag.Rol == "Administrador")
  {
-        <div class="row mt-4">
+<div class="row mt-4">
      <div class="col-md-12">
           <h3 class="text-dark">Panel de Administrador</h3>
          <p class="text-muted">Acceso completo a todas las funcionalidades del sistema</p>
      </div>
         </div>
 
-        <div class="row mt-3">
-   <div class="col-md-3 mb-3">
-         <div class="card border-primary shadow-sm h-100">
+  <div class="row mt-3">
+ <div class="col-md-3 mb-3">
+     <div class="card border-primary shadow-sm h-100">
         <div class="card-body text-center">
      <i class="bi bi-people-fill" style="font-size: 3rem; color: #667eea;"></i>
  <h5 class="card-title mt-3 text-dark">Clientes</h5>
-         <p class="card-text text-muted">Gestionar clientes</p>
-      <a asp-controller="Cliente" asp-action="Index" class="btn btn-primary btn-sm">Ir</a>
-         </div>
+      <p class="card-text text-muted">Gestionar clientes</p>
+   <a asp-controller="Cliente" asp-action="Index" class="btn btn-primary btn-sm">Ir</a>
+       </div>
      </div>
           </div>
 
   <div class="col-md-3 mb-3">
     <div class="card border-success shadow-sm h-100">
-               <div class="card-body text-center">
-         <i class="bi bi-door-closed" style="font-size: 3rem; color: #28a745;"></i>
+     <div class="card-body text-center">
+<i class="bi bi-door-closed" style="font-size: 3rem; color: #28a745;"></i>
   <h5 class="card-title mt-3 text-dark">Salones</h5>
   <p class="card-text text-muted">Gestionar salones</p>
             <a asp-controller="Salon" asp-action="Index" class="btn btn-success btn-sm">Ir</a>
 </div>
-        </div>
+   </div>
    </div>
 
   <div class="col-md-3 mb-3">
@@ -51,9 +51,9 @@
 <div class="card-body text-center">
 <i class="bi bi-cup-straw" style="font-size: 3rem; color: #ffc107;"></i>
      <h5 class="card-title mt-3 text-dark">Barras</h5>
-          <p class="card-text text-muted">Gestionar barras</p>
+        <p class="card-text text-muted">Gestionar barras</p>
      <a asp-controller="Barra" asp-action="Index" class="btn btn-warning btn-sm">Ir</a>
-       </div>
+ </div>
       </div>
 </div>
 
@@ -63,29 +63,29 @@
        <i class="bi bi-disc" style="font-size: 3rem; color: #17a2b8;"></i>
   <h5 class="card-title mt-3 text-dark">DJs</h5>
        <p class="card-text text-muted">Gestionar DJs</p>
-     <a asp-controller="Dj" asp-action="Index" class="btn btn-info btn-sm">Ir</a>
-          </div>
-       </div>
+  <a asp-controller="Dj" asp-action="Index" class="btn btn-info btn-sm">Ir</a>
+ </div>
+     </div>
             </div>
       </div>
 
    <div class="row">
-            <div class="col-md-3 mb-3">
-                <div class="card border-danger shadow-sm h-100">
-       <div class="card-body text-center">
-       <i class="bi bi-egg-fried" style="font-size: 3rem; color: #dc3545;"></i>
+       <div class="col-md-3 mb-3">
+    <div class="card border-danger shadow-sm h-100">
+    <div class="card-body text-center">
+    <i class="bi bi-egg-fried" style="font-size: 3rem; color: #dc3545;"></i>
    <h5 class="card-title mt-3 text-dark">Gastronomía</h5>
    <p class="card-text text-muted">Servicios gastronómicos</p>
        <a asp-controller="Gastronomico" asp-action="Index" class="btn btn-danger btn-sm">Ir</a>
     </div>
-        </div>
+     </div>
       </div>
 
       <div class="col-md-3 mb-3">
 <div class="card border-secondary shadow-sm h-100">
         <div class="card-body text-center">
-          <i class="bi bi-map" style="font-size: 3rem; color: #6c757d;"></i>
-        <h5 class="card-title mt-3 text-dark">Zonas</h5>
+<i class="bi bi-map" style="font-size: 3rem; color: #6c757d;"></i>
+   <h5 class="card-title mt-3 text-dark">Zonas</h5>
      <p class="card-text text-muted">Gestionar zonas</p>
  <a asp-controller="Zona" asp-action="Index" class="btn btn-secondary btn-sm">Ir</a>
       </div>
@@ -93,31 +93,31 @@
   </div>
 
       <div class="col-md-3 mb-3">
-         <div class="card border-primary shadow-sm h-100">
-    <div class="card-body text-center">
+   <div class="card border-primary shadow-sm h-100">
+<div class="card-body text-center">
        <i class="bi bi-calendar-event" style="font-size: 3rem; color: #667eea;"></i>
  <h5 class="card-title mt-3 text-dark">Solicitudes</h5>
  <p class="card-text text-muted">Ver todas las solicitudes</p>
   <a asp-controller="Solicitud" asp-action="Index" class="btn btn-primary btn-sm">Ir</a>
    </div>
  </div>
-          </div>
+     </div>
 
-    <div class="col-md-3 mb-3">
+<div class="col-md-3 mb-3">
   <div class="card border-dark shadow-sm h-100">
       <div class="card-body text-center">
-    <i class="bi bi-database" style="font-size: 3rem; color: #343a40;"></i>
-       <h5 class="card-title mt-3 text-dark">Estadísticas ADO.NET</h5>
-     <p class="card-text text-muted">Consultas con ADO.NET</p>
+    <i class="bi bi-bar-chart" style="font-size: 3rem; color: #343a40;"></i>
+       <h5 class="card-title mt-3 text-dark">Estadísticas</h5>
+     <p class="card-text text-muted">Ver estadísticas del sistema</p>
   <a asp-controller="Estadisticas" asp-action="Index" class="btn btn-dark btn-sm">Ver</a>
    </div>
-      </div>
+  </div>
    </div>
     </div>
     }
     else
     {
-        <div class="row mt-4">
+      <div class="row mt-4">
    <div class="col-md-12">
   <h3 class="text-dark">Panel de Cliente</h3>
    <p class="text-muted">Gestiona tus eventos y solicitudes</p>
@@ -125,14 +125,14 @@
         </div>
 
         <div class="row mt-3">
-            <div class="col-md-6 mb-3">
+   <div class="col-md-6 mb-3">
       <div class="card border-primary shadow-sm">
-        <div class="card-body text-center">
-        <i class="bi bi-calendar-check" style="font-size: 4rem; color: #667eea;"></i>
+     <div class="card-body text-center">
+      <i class="bi bi-calendar-check" style="font-size: 4rem; color: #667eea;"></i>
        <h4 class="card-title mt-3 text-dark">Mis Solicitudes</h4>
  <p class="card-text text-muted">Ver y gestionar mis eventos</p>
-     <a asp-controller="Solicitud" asp-action="Index" class="btn btn-primary">Ver Solicitudes</a>
-      </div>
+  <a asp-controller="Solicitud" asp-action="Index" class="btn btn-primary">Ver Solicitudes</a>
+   </div>
  </div>
    </div>
 
@@ -141,12 +141,12 @@
    <div class="card-body text-center">
     <i class="bi bi-plus-circle-fill" style="font-size: 4rem; color: #28a745;"></i>
     <h4 class="card-title mt-3 text-dark">Nueva Solicitud</h4>
-       <p class="card-text text-muted">Crear un nuevo evento</p>
-   <a asp-controller="Solicitud" asp-action="Crear" class="btn btn-success">Crear Solicitud</a>
+<p class="card-text text-muted">Crear un nuevo evento</p>
+ <a asp-controller="Solicitud" asp-action="Crear" class="btn btn-success">Crear Solicitud</a>
    </div>
      </div>
-            </div>
-        </div>
+          </div>
+     </div>
     }
 </div>
 
