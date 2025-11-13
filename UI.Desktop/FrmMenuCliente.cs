@@ -19,6 +19,8 @@ namespace UI.Desktop
         private Label lblTitulo;
         private Label lblBienvenida;
 
+        public bool CerroSesion { get; private set; } = false;
+
         public FrmMenuCliente()
         {
             InitializeComponent();
@@ -132,7 +134,7 @@ namespace UI.Desktop
             this.btnGastronomicos.Name = "btnGastronomicos";
             this.btnGastronomicos.Size = new Size(180, 45);
             this.btnGastronomicos.TabIndex = 7;
-            this.btnGastronomicos.Text = "Ver Gastronomico";
+            this.btnGastronomicos.Text = "Ver Gastronómico";
             this.btnGastronomicos.UseVisualStyleBackColor = true;
             this.btnGastronomicos.Click += BtnGastronomicos_Click;
 
@@ -196,7 +198,6 @@ namespace UI.Desktop
 
         private void BtnMisSolicitudes_Click(object sender, EventArgs e)
         {
-            // Mostrar solo las solicitudes del cliente actual
             var frmMisSolicitudes = new FrmMisSolicitudes();
             frmMisSolicitudes.ShowDialog();
         }
@@ -233,30 +234,8 @@ namespace UI.Desktop
             if (resultado == DialogResult.Yes)
             {
                 SesionUsuario.CerrarSesion();
-                this.Hide();
-                
-                // Mostrar formulario de login nuevamente
-                var frmLogin = new FrmLogin();
-                if (frmLogin.ShowDialog() == DialogResult.OK && frmLogin.LoginExitoso && SesionUsuario.EstaLogueado)
-                {
-                    if (SesionUsuario.EsAdministrador)
-                    {
-                        // Si es administrador, abrir menú principal
-                        var frmMenuPrincipal = new FrmMenuPrincipal();
-                        frmMenuPrincipal.Show();
-                        this.Close();
-                    }
-                    else if (SesionUsuario.EsCliente)
-                    {
-                        // Si es cliente, seguir en este formulario
-                        this.Show();
-                    }
-                }
-                else
-                {
-                    // Si no hay login exitoso, cerrar la aplicación
-                    this.Close();
-                }
+                CerroSesion = true;
+                this.Close();
             }
         }
 
