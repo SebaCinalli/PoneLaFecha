@@ -9,91 +9,101 @@ namespace UI.Desktop
     internal static class Program
     {
         [STAThread]
-      static void Main()
- {
+        static void Main()
+        {
             ApplicationConfiguration.Initialize();
 
-      // Agregar manejo global de excepciones
+            // Agregar manejo global de excepciones
             Application.ThreadException += Application_ThreadException;
-      AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
- try
+            try
             {
                 // Ensure DB schema with migrations
-         using (var db = new AppDbContext())
-   {
-      db.Database.Migrate();
-    }
+                using (var db = new AppDbContext())
+                {
+                    db.Database.Migrate();
+                }
 
-    // Crear administrador por defecto si no existe
-          LogicaUsuario.CrearAdministradorDefault();
-       
-         // Crear usuarios de ejemplo para testing
-           LogicaUsuario.CrearUsuariosEjemplo();
+                // Crear administrador por defecto si no existe
+                LogicaUsuario.CrearAdministradorDefault();
                 
-   // Crear datos de ejemplo para los servicios
-     LogicaSalon.CrearDatosEjemplo();
-         LogicaBarra.CrearDatosEjemplo();
-    LogicaDj.CrearDatosEjemplo();
-       LogicaGastronomico.CrearDatosEjemplo();
+                // Crear usuarios de ejemplo para testing
+                LogicaUsuario.CrearUsuariosEjemplo();
+                
+                // Crear datos de ejemplo para los servicios
+                LogicaSalon.CrearDatosEjemplo();
+                LogicaBarra.CrearDatosEjemplo();
+                LogicaDj.CrearDatosEjemplo();
+                LogicaGastronomico.CrearDatosEjemplo();
 
-            // Ciclo de login/menú
-   bool continuarAplicacion = true;
-       
+                // Ciclo de login/menú
+                bool continuarAplicacion = true;
+                
                 while (continuarAplicacion)
-    {
-  // Mostrar formulario de login
-        var frmLogin = new FrmLogin();
+                {
+                    // Mostrar formulario de login
+                    var frmLogin = new FrmLogin();
                     Application.Run(frmLogin);
 
- // Si el login fue exitoso, mostrar la interfaz correspondiente
-        if (frmLogin.LoginExitoso && SesionUsuario.EstaLogueado)
-        {
-            try
-               {
-             if (SesionUsuario.EsAdministrador)
-    {
-        Application.Run(new FrmMenuPrincipal());
-        // Si el administrador cierra su menú, salir de la aplicación
-     continuarAplicacion = false;
-           }
-      else if (SesionUsuario.EsCliente)
-   {
-               var frmMenuCliente = new FrmMenuCliente();
-      Application.Run(frmMenuCliente);
-     
-        // Si el cliente cerró sesión, volver al login
-        if (frmMenuCliente.CerroSesion)
-        {
- continuarAplicacion = true; // Continuar al login
+                    // Si el login fue exitoso, mostrar la interfaz correspondiente
+                    if (frmLogin.LoginExitoso && SesionUsuario.EstaLogueado)
+                    {
+                        try
+                        {
+                            if (SesionUsuario.EsAdministrador)
+                            {
+                                var frmMenuPrincipal = new FrmMenuPrincipal();
+                                Application.Run(frmMenuPrincipal);
+                                
+                                // Si el administrador cerró sesión, volver al login
+                                if (frmMenuPrincipal.CerroSesion)
+                                {
+                                    continuarAplicacion = true; // Continuar al login
+                                }
+                                else
+                                {
+                                    // Si cerró el formulario sin cerrar sesión (salir), terminar
+                                    continuarAplicacion = false;
+                                }
+                            }
+                            else if (SesionUsuario.EsCliente)
+                            {
+                                var frmMenuCliente = new FrmMenuCliente();
+                                Application.Run(frmMenuCliente);
+                                
+                                // Si el cliente cerró sesión, volver al login
+                                if (frmMenuCliente.CerroSesion)
+                                {
+                                    continuarAplicacion = true; // Continuar al login
+                                }
+                                else
+                                {
+                                    // Si cerró el formulario sin cerrar sesión (salir), terminar
+                                    continuarAplicacion = false;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error al abrir el menú:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            continuarAplicacion = false;
+                        }
+                    }
+                    else
+                    {
+                        // Si no hay login exitoso, salir
+                        continuarAplicacion = false;
+                    }
+                }
             }
-          else
-         {
-  // Si cerró el formulario sin cerrar sesión (salir), terminar
-  continuarAplicacion = false;
-   }
-        }
-      }
-      catch (Exception ex)
-             {
-        MessageBox.Show($"Error al abrir el menú:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                continuarAplicacion = false;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al inicializar la aplicación:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
+                    "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-  }
-         else
-    {
-        // Si no hay login exitoso, salir
-      continuarAplicacion = false;
-           }
- }
         }
-  catch (Exception ex)
-     {
- MessageBox.Show($"Error al inicializar la aplicación:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-  "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
-          }
-   }
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
