@@ -6,7 +6,26 @@ namespace UI.Web.Controllers
 {
     public class GastronomicoController : Controller
     {
-        public IActionResult Index() => View(LogicaGastronomico.Listar());
+        public IActionResult Index(decimal? precioMin, decimal? precioMax)
+        {
+            var gastronomicos = LogicaGastronomico.Listar();
+            
+            // Aplicar filtros de precio
+            if (precioMin.HasValue)
+            {
+                gastronomicos = gastronomicos.Where(g => g.MontoG >= precioMin.Value).ToList();
+            }
+            
+            if (precioMax.HasValue)
+            {
+                gastronomicos = gastronomicos.Where(g => g.MontoG <= precioMax.Value).ToList();
+            }
+            
+            ViewBag.PrecioMin = precioMin;
+            ViewBag.PrecioMax = precioMax;
+            
+            return View(gastronomicos);
+        }
 
         public IActionResult Crear() => View();
 

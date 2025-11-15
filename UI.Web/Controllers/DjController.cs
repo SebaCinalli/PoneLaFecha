@@ -6,7 +6,26 @@ namespace UI.Web.Controllers
 {
  public class DjController : Controller
   {
-   public IActionResult Index() => View(LogicaDj.Listar());
+   public IActionResult Index(decimal? precioMin, decimal? precioMax)
+   {
+       var djs = LogicaDj.Listar();
+       
+       // Aplicar filtros de precio
+       if (precioMin.HasValue)
+       {
+           djs = djs.Where(d => d.MontoDj >= precioMin.Value).ToList();
+       }
+       
+       if (precioMax.HasValue)
+       {
+           djs = djs.Where(d => d.MontoDj <= precioMax.Value).ToList();
+       }
+       
+       ViewBag.PrecioMin = precioMin;
+       ViewBag.PrecioMax = precioMax;
+       
+       return View(djs);
+   }
 
  public IActionResult Crear() => View();
 
