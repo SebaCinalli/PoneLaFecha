@@ -38,6 +38,9 @@
 
     <h4>Seleccionar Servicios</h4>
     <p class="text-muted">Seleccione los servicios que desea contratar para su evento</p>
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> <strong>Nota:</strong> Solo puede seleccionar un servicio de cada tipo (Salón, Barra, Gastronomía, DJ).
+    </div>
 
     <div class="row">
         <div class="col-md-6">
@@ -51,7 +54,7 @@
     @foreach (var salon in ViewBag.Salones)
        {
            <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" name="salonesSeleccionados" value="@salon.IdSalon" id="salon_@salon.IdSalon">
+            <input class="form-check-input servicio-checkbox" type="checkbox" name="salonesSeleccionados" value="@salon.IdSalon" id="salon_@salon.IdSalon" data-tipo="salon">
        <label class="form-check-label" for="salon_@salon.IdSalon">
         <strong>@salon.NombreSalon</strong> - $@salon.MontoSalon.ToString("N2")
         <br><small class="text-muted">Estado: @salon.Estado</small>
@@ -76,7 +79,7 @@
     @foreach (var barra in ViewBag.Barras)
                 {
       <div class="form-check mb-2">
-         <input class="form-check-input" type="checkbox" name="barrasSeleccionadas" value="@barra.IdBarra" id="barra_@barra.IdBarra">
+         <input class="form-check-input servicio-checkbox" type="checkbox" name="barrasSeleccionadas" value="@barra.IdBarra" id="barra_@barra.IdBarra" data-tipo="barra">
          <label class="form-check-label" for="barra_@barra.IdBarra">
           <strong>@barra.Nombre</strong> - $@barra.PrecioPorHora.ToString("N2")/hora
         <br><small class="text-muted">@barra.TipoBebida - @barra.Estado</small>
@@ -103,7 +106,7 @@
            @foreach (var gastro in ViewBag.Gastronomicos)
         {
             <div class="form-check mb-2">
-                 <input class="form-check-input" type="checkbox" name="gastrosSeleccionados" value="@gastro.IdGastro" id="gastro_@gastro.IdGastro">
+                 <input class="form-check-input servicio-checkbox" type="checkbox" name="gastrosSeleccionados" value="@gastro.IdGastro" id="gastro_@gastro.IdGastro" data-tipo="gastro">
     <label class="form-check-label" for="gastro_@gastro.IdGastro">
             <strong>@gastro.Nombre</strong> - $@gastro.MontoG.ToString("N2")
       <br><small class="text-muted">Tipo: @gastro.TipoComida</small>
@@ -128,7 +131,7 @@
       @foreach (var dj in ViewBag.Djs)
              {
     <div class="form-check mb-2">
-         <input class="form-check-input" type="checkbox" name="djsSeleccionados" value="@dj.IdDj" id="dj_@dj.IdDj">
+         <input class="form-check-input servicio-checkbox" type="checkbox" name="djsSeleccionados" value="@dj.IdDj" id="dj_@dj.IdDj" data-tipo="dj">
         <label class="form-check-label" for="dj_@dj.IdDj">
        <strong>@dj.NombreArtistico</strong> - $@dj.MontoDj.ToString("N2")
           <br><small class="text-muted">Estado: @dj.Estado</small>
@@ -146,7 +149,7 @@
     </div>
 
     <div class="mt-4">
-        <button type="submit" class="btn btn-success btn-lg">Crear Solicitud</button>
+        <button type="submit" class="btn btn-success btn-lg">Crear Solicitud (Estado: Pendiente)</button>
         <a asp-action="Index" class="btn btn-secondary btn-lg">Cancelar</a>
     </div>
 </form>
@@ -155,4 +158,51 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    
+    <script>
+        $(document).ready(function() {
+            // Función para bloquear/desbloquear checkboxes del mismo tipo
+            function gestionarSeleccionServicio() {
+                $('.servicio-checkbox').each(function() {
+                    var tipo = $(this).data('tipo');
+                    var checkboxesMismoTipo = $('input[data-tipo="' + tipo + '"]');
+                    var algunoSeleccionado = checkboxesMismoTipo.filter(':checked').length > 0;
+                    
+                    if (algunoSeleccionado) {
+                        // Deshabilitar los que no están seleccionados
+                        checkboxesMismoTipo.not(':checked').prop('disabled', true);
+                        checkboxesMismoTipo.not(':checked').closest('.form-check').addClass('text-muted');
+                    } else {
+                        // Habilitar todos si ninguno está seleccionado
+                        checkboxesMismoTipo.prop('disabled', false);
+                        checkboxesMismoTipo.closest('.form-check').removeClass('text-muted');
+                    }
+                });
+            }
+            
+            // Ejecutar al cambiar cualquier checkbox
+            $('.servicio-checkbox').on('change', function() {
+                gestionarSeleccionServicio();
+            });
+            
+            // Ejecutar al cargar la página
+            gestionarSeleccionServicio();
+            
+            // Mostrar mensaje informativo al intentar seleccionar un checkbox deshabilitado
+            $('.servicio-checkbox').on('click', function() {
+                if ($(this).prop('disabled')) {
+                    var tipo = $(this).data('tipo');
+                    var tipoNombre = '';
+                    switch(tipo) {
+                        case 'salon': tipoNombre = 'Salón'; break;
+                        case 'barra': tipoNombre = 'Barra'; break;
+                        case 'gastro': tipoNombre = 'Servicio Gastronómico'; break;
+                        case 'dj': tipoNombre = 'DJ'; break;
+                    }
+                    alert('Ya ha seleccionado un ' + tipoNombre + '. Deseleccione el actual para elegir otro.');
+                    return false;
+                }
+            });
+        });
+    </script>
 }
