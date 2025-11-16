@@ -11,9 +11,11 @@ namespace UI.Desktop
      private DataGridView dgvGastronomicos;
         private TextBox txtNombre;
      private ComboBox cboTipoComida;
+        private ComboBox cboEstado;
         private TextBox txtMontoG;
         private Label lblNombre;
         private Label lblTipoComida;
+        private Label lblEstado;
         private Label lblMontoG;
         private Button btnAgregar;
     private Button btnModificar;
@@ -37,9 +39,11 @@ private Button btnVolver;
             this.dgvGastronomicos = new DataGridView();
        this.txtNombre = new TextBox();
 this.cboTipoComida = new ComboBox();
+            this.cboEstado = new ComboBox();
   this.txtMontoG = new TextBox();
      this.lblNombre = new Label();
      this.lblTipoComida = new Label();
+            this.lblEstado = new Label();
             this.lblMontoG = new Label();
    this.btnAgregar = new Button();
       this.btnModificar = new Button();
@@ -103,70 +107,89 @@ this.dgvGastronomicos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHei
             this.cboTipoComida.TabIndex = 4;
 
             // 
+            // lblEstado
+            // 
+            this.lblEstado.AutoSize = true;
+            this.lblEstado.Location = new Point(580, 280);
+            this.lblEstado.Name = "lblEstado";
+            this.lblEstado.Size = new Size(45, 15);
+            this.lblEstado.TabIndex = 5;
+            this.lblEstado.Text = "Estado:";
+
+            // 
+            // cboEstado
+            // 
+            this.cboEstado.DropDownStyle = ComboBoxStyle.DropDownList;
+            this.cboEstado.Location = new Point(635, 277);
+            this.cboEstado.Name = "cboEstado";
+            this.cboEstado.Size = new Size(120, 23);
+            this.cboEstado.TabIndex = 6;
+
+            // 
     // lblMontoG
             // 
             this.lblMontoG.AutoSize = true;
-            this.lblMontoG.Location = new Point(580, 280);
+            this.lblMontoG.Location = new Point(12, 315);
             this.lblMontoG.Name = "lblMontoG";
           this.lblMontoG.Size = new Size(48, 15);
-   this.lblMontoG.TabIndex = 5;
+   this.lblMontoG.TabIndex = 7;
             this.lblMontoG.Text = "Monto:";
 
             // 
       // txtMontoG
  // 
-       this.txtMontoG.Location = new Point(635, 277);
+       this.txtMontoG.Location = new Point(85, 312);
      this.txtMontoG.Name = "txtMontoG";
-     this.txtMontoG.Size = new Size(100, 23);
-            this.txtMontoG.TabIndex = 6;
+     this.txtMontoG.Size = new Size(150, 23);
+            this.txtMontoG.TabIndex = 8;
 
           // 
      // btnAgregar
  // 
-            this.btnAgregar.Location = new Point(12, 330);
+            this.btnAgregar.Location = new Point(12, 360);
             this.btnAgregar.Name = "btnAgregar";
      this.btnAgregar.Size = new Size(100, 30);
-      this.btnAgregar.TabIndex = 7;
+      this.btnAgregar.TabIndex = 9;
     this.btnAgregar.Text = "Agregar";
       this.btnAgregar.UseVisualStyleBackColor = true;
 
     // 
        // btnModificar
             // 
-this.btnModificar.Location = new Point(130, 330);
+this.btnModificar.Location = new Point(130, 360);
       this.btnModificar.Name = "btnModificar";
   this.btnModificar.Size = new Size(100, 30);
-            this.btnModificar.TabIndex = 8;
+            this.btnModificar.TabIndex = 10;
             this.btnModificar.Text = "Modificar";
    this.btnModificar.UseVisualStyleBackColor = true;
 
   // 
             // btnEliminar
       // 
-      this.btnEliminar.Location = new Point(248, 330);
+      this.btnEliminar.Location = new Point(248, 360);
      this.btnEliminar.Name = "btnEliminar";
           this.btnEliminar.Size = new Size(100, 30);
-            this.btnEliminar.TabIndex = 9;
+            this.btnEliminar.TabIndex = 11;
             this.btnEliminar.Text = "Eliminar";
         this.btnEliminar.UseVisualStyleBackColor = true;
 
             // 
             // btnLimpiar
        // 
-    this.btnLimpiar.Location = new Point(366, 330);
+    this.btnLimpiar.Location = new Point(366, 360);
      this.btnLimpiar.Name = "btnLimpiar";
             this.btnLimpiar.Size = new Size(100, 30);
-    this.btnLimpiar.TabIndex = 10;
+    this.btnLimpiar.TabIndex = 12;
           this.btnLimpiar.Text = "Limpiar";
      this.btnLimpiar.UseVisualStyleBackColor = true;
 
   // 
       // btnVolver
    // 
-   this.btnVolver.Location = new Point(484, 330);
+   this.btnVolver.Location = new Point(484, 360);
             this.btnVolver.Name = "btnVolver";
        this.btnVolver.Size = new Size(100, 30);
-          this.btnVolver.TabIndex = 11;
+          this.btnVolver.TabIndex = 13;
     this.btnVolver.Text = "Volver";
             this.btnVolver.UseVisualStyleBackColor = true;
 
@@ -175,7 +198,7 @@ this.btnModificar.Location = new Point(130, 330);
         // 
     this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(784, 380);
+            this.ClientSize = new Size(784, 410);
 this.Controls.Add(this.btnVolver);
        this.Controls.Add(this.btnLimpiar);
    this.Controls.Add(this.btnEliminar);
@@ -183,6 +206,8 @@ this.Controls.Add(this.btnVolver);
             this.Controls.Add(this.btnAgregar);
          this.Controls.Add(this.txtMontoG);
       this.Controls.Add(this.lblMontoG);
+            this.Controls.Add(this.cboEstado);
+            this.Controls.Add(this.lblEstado);
             this.Controls.Add(this.cboTipoComida);
          this.Controls.Add(this.lblTipoComida);
     this.Controls.Add(this.txtNombre);
@@ -216,6 +241,11 @@ this.MaximizeBox = false;
       "Vegana", "Mediterránea", "Oriental", "Mexicana", "Francesa", "Otro"
             });
 
+            // Cargar estados en el ComboBox
+            cboEstado.Items.AddRange(new string[] {
+                "Disponible", "Ocupado", "Mantenimiento"
+            });
+
   gastronomicos = LogicaGastronomico.Listar();
  ActualizarGrilla();
    }
@@ -242,6 +272,9 @@ this.MaximizeBox = false;
         
     if (dgvGastronomicos.Columns["TipoComida"] != null)
   dgvGastronomicos.Columns["TipoComida"].HeaderText = "Tipo de Comida";
+
+    if (dgvGastronomicos.Columns["Estado"] != null)
+  dgvGastronomicos.Columns["Estado"].HeaderText = "Estado";
         }
 
         private void BtnAgregar_Click(object sender, EventArgs e)
@@ -252,6 +285,7 @@ this.MaximizeBox = false;
     {
   Nombre = txtNombre.Text.Trim(),
     TipoComida = cboTipoComida.SelectedItem.ToString(),
+                    Estado = cboEstado.SelectedItem.ToString(),
           MontoG = decimal.Parse(txtMontoG.Text.Trim())
        };
 
@@ -269,6 +303,7 @@ if (gastronomicoSeleccionado != null && ValidarCampos())
   {
             gastronomicoSeleccionado.Nombre = txtNombre.Text.Trim();
       gastronomicoSeleccionado.TipoComida = cboTipoComida.SelectedItem.ToString();
+      gastronomicoSeleccionado.Estado = cboEstado.SelectedItem.ToString();
          gastronomicoSeleccionado.MontoG = decimal.Parse(txtMontoG.Text.Trim());
 
       LogicaGastronomico.Editar(gastronomicoSeleccionado);
@@ -328,6 +363,7 @@ if (gastronomicoSeleccionado != null && ValidarCampos())
         {
          txtNombre.Text = gastronomico.Nombre;
        cboTipoComida.SelectedItem = gastronomico.TipoComida;
+     cboEstado.SelectedItem = gastronomico.Estado;
   txtMontoG.Text = gastronomico.MontoG.ToString("F2");
       }
 
@@ -335,6 +371,7 @@ if (gastronomicoSeleccionado != null && ValidarCampos())
         {
    txtNombre.Clear();
           cboTipoComida.SelectedIndex = -1;
+          cboEstado.SelectedIndex = -1;
          txtMontoG.Clear();
       gastronomicoSeleccionado = null;
             dgvGastronomicos.ClearSelection();
@@ -353,6 +390,13 @@ if (gastronomicoSeleccionado != null && ValidarCampos())
         {
           MessageBox.Show("Debe seleccionar un tipo de comida.", "Error de Validación", MessageBoxButtons.OK, MessageBoxIcon.Error);
            cboTipoComida.Focus();
+     return false;
+ }
+
+ if (cboEstado.SelectedIndex == -1)
+        {
+          MessageBox.Show("Debe seleccionar un estado.", "Error de Validación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+           cboEstado.Focus();
      return false;
  }
 

@@ -39,7 +39,7 @@
     <h4>Seleccionar Servicios</h4>
     <p class="text-muted">Seleccione los servicios que desea contratar para su evento</p>
     <div class="alert alert-info">
-        <i class="bi bi-info-circle"></i> <strong>Nota:</strong> Solo puede seleccionar un servicio de cada tipo (Salón, Barra, Gastronomía, DJ).
+        <i class="bi bi-info-circle"></i> <strong>Nota:</strong> Solo puede seleccionar un servicio de cada tipo (Salón, Barra, Gastronomía, DJ). Los servicios ocupados no están disponibles para selección.
     </div>
 
     <div class="row">
@@ -53,11 +53,12 @@
   {
     @foreach (var salon in ViewBag.Salones)
        {
-           <div class="form-check mb-2">
-            <input class="form-check-input servicio-checkbox" type="checkbox" name="salonesSeleccionados" value="@salon.IdSalon" id="salon_@salon.IdSalon" data-tipo="salon">
-       <label class="form-check-label" for="salon_@salon.IdSalon">
+           var isOcupado = salon.Estado == "Ocupado";
+           <div class="form-check mb-2 @(isOcupado ? "opacity-50" : "")">
+            <input class="form-check-input servicio-checkbox" type="checkbox" name="salonesSeleccionados" value="@salon.IdSalon" id="salon_@salon.IdSalon" data-tipo="salon" data-ocupado="@isOcupado" disabled="@isOcupado">
+       <label class="form-check-label @(isOcupado ? "text-muted" : "")" for="salon_@salon.IdSalon">
         <strong>@salon.NombreSalon</strong> - $@salon.MontoSalon.ToString("N2")
-        <br><small class="text-muted">Estado: @salon.Estado</small>
+        <br><small class="@(isOcupado ? "text-danger" : "text-muted")">Estado: @salon.Estado @(isOcupado ? "(No disponible)" : "")</small>
    </label>
           </div>
        }
@@ -78,11 +79,12 @@
            {
     @foreach (var barra in ViewBag.Barras)
                 {
-      <div class="form-check mb-2">
-         <input class="form-check-input servicio-checkbox" type="checkbox" name="barrasSeleccionadas" value="@barra.IdBarra" id="barra_@barra.IdBarra" data-tipo="barra">
-         <label class="form-check-label" for="barra_@barra.IdBarra">
+                    var isOcupado = barra.Estado == "Ocupado";
+      <div class="form-check mb-2 @(isOcupado ? "opacity-50" : "")">
+         <input class="form-check-input servicio-checkbox" type="checkbox" name="barrasSeleccionadas" value="@barra.IdBarra" id="barra_@barra.IdBarra" data-tipo="barra" data-ocupado="@isOcupado" disabled="@isOcupado">
+         <label class="form-check-label @(isOcupado ? "text-muted" : "")" for="barra_@barra.IdBarra">
           <strong>@barra.Nombre</strong> - $@barra.PrecioPorHora.ToString("N2")/hora
-        <br><small class="text-muted">@barra.TipoBebida - @barra.Estado</small>
+        <br><small class="@(isOcupado ? "text-danger" : "text-muted")">@barra.TipoBebida - @barra.Estado @(isOcupado ? "(No disponible)" : "")</small>
          </label>
     </div>
         }
@@ -105,11 +107,12 @@
             {
            @foreach (var gastro in ViewBag.Gastronomicos)
         {
-            <div class="form-check mb-2">
-                 <input class="form-check-input servicio-checkbox" type="checkbox" name="gastrosSeleccionados" value="@gastro.IdGastro" id="gastro_@gastro.IdGastro" data-tipo="gastro">
-    <label class="form-check-label" for="gastro_@gastro.IdGastro">
+                var isOcupado = gastro.Estado == "Ocupado";
+            <div class="form-check mb-2 @(isOcupado ? "opacity-50" : "")">
+                 <input class="form-check-input servicio-checkbox" type="checkbox" name="gastrosSeleccionados" value="@gastro.IdGastro" id="gastro_@gastro.IdGastro" data-tipo="gastro" data-ocupado="@isOcupado" disabled="@isOcupado">
+    <label class="form-check-label @(isOcupado ? "text-muted" : "")" for="gastro_@gastro.IdGastro">
             <strong>@gastro.Nombre</strong> - $@gastro.MontoG.ToString("N2")
-      <br><small class="text-muted">Tipo: @gastro.TipoComida</small>
+      <br><small class="@(isOcupado ? "text-danger" : "text-muted")">Tipo: @gastro.TipoComida - Estado: @gastro.Estado @(isOcupado ? "(No disponible)" : "")</small>
          </label>
         </div>
       }
@@ -130,11 +133,12 @@
               {
       @foreach (var dj in ViewBag.Djs)
              {
-    <div class="form-check mb-2">
-         <input class="form-check-input servicio-checkbox" type="checkbox" name="djsSeleccionados" value="@dj.IdDj" id="dj_@dj.IdDj" data-tipo="dj">
-        <label class="form-check-label" for="dj_@dj.IdDj">
+                 var isOcupado = dj.Estado == "Ocupado";
+    <div class="form-check mb-2 @(isOcupado ? "opacity-50" : "")">
+         <input class="form-check-input servicio-checkbox" type="checkbox" name="djsSeleccionados" value="@dj.IdDj" id="dj_@dj.IdDj" data-tipo="dj" data-ocupado="@isOcupado" disabled="@isOcupado">
+        <label class="form-check-label @(isOcupado ? "text-muted" : "")" for="dj_@dj.IdDj">
        <strong>@dj.NombreArtistico</strong> - $@dj.MontoDj.ToString("N2")
-          <br><small class="text-muted">Estado: @dj.Estado</small>
+          <br><small class="@(isOcupado ? "text-danger" : "text-muted")">Estado: @dj.Estado @(isOcupado ? "(No disponible)" : "")</small>
      </label>
        </div>
             }
@@ -164,8 +168,16 @@
             // Función para bloquear/desbloquear checkboxes del mismo tipo
             function gestionarSeleccionServicio() {
                 $('.servicio-checkbox').each(function() {
+                    // No modificar los que están ocupados
+                    if ($(this).data('ocupado') === 'True' || $(this).data('ocupado') === true) {
+                        return;
+                    }
+                    
                     var tipo = $(this).data('tipo');
-                    var checkboxesMismoTipo = $('input[data-tipo="' + tipo + '"]');
+                    // Solo considerar checkboxes del mismo tipo que NO están ocupados
+                    var checkboxesMismoTipo = $('input[data-tipo="' + tipo + '"]').filter(function() {
+                        return $(this).data('ocupado') !== 'True' && $(this).data('ocupado') !== true;
+                    });
                     var algunoSeleccionado = checkboxesMismoTipo.filter(':checked').length > 0;
                     
                     if (algunoSeleccionado) {
@@ -173,7 +185,7 @@
                         checkboxesMismoTipo.not(':checked').prop('disabled', true);
                         checkboxesMismoTipo.not(':checked').closest('.form-check').addClass('text-muted');
                     } else {
-                        // Habilitar todos si ninguno está seleccionado
+                        // Habilitar todos si ninguno está seleccionado (excepto los ocupados)
                         checkboxesMismoTipo.prop('disabled', false);
                         checkboxesMismoTipo.closest('.form-check').removeClass('text-muted');
                     }
@@ -188,9 +200,19 @@
             // Ejecutar al cargar la página
             gestionarSeleccionServicio();
             
-            // Mostrar mensaje informativo al intentar seleccionar un checkbox deshabilitado
+            // Mostrar mensaje informativo al intentar hacer click en un servicio ocupado
+            $('.servicio-checkbox[disabled]').closest('.form-check').on('click', function(e) {
+                var checkbox = $(this).find('.servicio-checkbox');
+                if (checkbox.data('ocupado') === 'True' || checkbox.data('ocupado') === true) {
+                    e.preventDefault();
+                    alert('Este servicio está ocupado y no está disponible para selección.');
+                    return false;
+                }
+            });
+            
+            // Mostrar mensaje informativo al intentar seleccionar un checkbox deshabilitado (por selección previa)
             $('.servicio-checkbox').on('click', function() {
-                if ($(this).prop('disabled')) {
+                if ($(this).prop('disabled') && $(this).data('ocupado') !== 'True' && $(this).data('ocupado') !== true) {
                     var tipo = $(this).data('tipo');
                     var tipoNombre = '';
                     switch(tipo) {

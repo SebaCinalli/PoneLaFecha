@@ -232,10 +232,11 @@ TempData["Success"] = $"Estado actualizado a '{nuevoEstado}' exitosamente.";
 
    private async Task CargarListasAsync()
   {
-    ViewBag.Salones = LogicaSalon.Listar();
-  ViewBag.Barras = Negocio.LogicaBarra.Listar();
- ViewBag.Gastronomicos = LogicaGastronomico.Listar();
-  ViewBag.Djs = LogicaDj.Listar();
+    // Filtrar solo servicios en mantenimiento (los ocupados se mostrarán pero deshabilitados)
+    ViewBag.Salones = LogicaSalon.Listar().Where(s => s.Estado != "Mantenimiento").ToList();
+  ViewBag.Barras = Negocio.LogicaBarra.Listar().Where(b => b.Estado != "Mantenimiento").ToList();
+ ViewBag.Gastronomicos = LogicaGastronomico.Listar().Where(g => g.Estado != "Mantenimiento").ToList();
+  ViewBag.Djs = LogicaDj.Listar().Where(d => d.Estado != "Mantenimiento").ToList();
     }
     }
 }

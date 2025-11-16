@@ -58,29 +58,55 @@ namespace Negocio
                     {
                         TipoComida = "Italiana",
                         Nombre = "Pasta & Pizza Deluxe",
-                        MontoG = 25000.00m
+                        MontoG = 25000.00m,
+                        Estado = "Disponible"
                     },
                     new Gastronomico
                     {
                         TipoComida = "Argentina",
                         Nombre = "Parrilla Premium",
-                        MontoG = 35000.00m
+                        MontoG = 35000.00m,
+                        Estado = "Disponible"
                     },
                     new Gastronomico
                     {
                         TipoComida = "Internacional",
                         Nombre = "Buffet Internacional",
-                        MontoG = 40000.00m
+                        MontoG = 40000.00m,
+                        Estado = "Disponible"
                     },
                     new Gastronomico
                     {
                         TipoComida = "Vegetariana",
                         Nombre = "Garden Fresh",
-                        MontoG = 22000.00m
+                        MontoG = 22000.00m,
+                        Estado = "Disponible"
                     }
                 };
                 
                 db.Gastronomicos.AddRange(gastronomicos);
+                db.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Método para actualizar el estado de gastronómicos existentes que no tienen estado
+        /// </summary>
+        public static void ActualizarEstadosVacios()
+        {
+            using var db = new AppDbContext();
+            
+            var gastronomicosSinEstado = db.Gastronomicos
+                .Where(g => string.IsNullOrEmpty(g.Estado))
+                .ToList();
+            
+            foreach (var gastro in gastronomicosSinEstado)
+            {
+                gastro.Estado = "Disponible";
+            }
+            
+            if (gastronomicosSinEstado.Any())
+            {
                 db.SaveChanges();
             }
         }
