@@ -19,6 +19,10 @@ namespace Entidades
         [Range(0, double.MaxValue, ErrorMessage = "El monto debe ser mayor a 0")]
         public decimal MontoG { get; set; }
         
+        [Required(ErrorMessage = "El estado es requerido")]
+        [StringLength(50, ErrorMessage = "El estado no puede exceder los 50 caracteres")]
+        public string Estado { get; set; } = "Disponible";
+        
         // Navegación
         public ICollection<ZonaGastro> ZonaGastros { get; set; } = new List<ZonaGastro>();
         public ICollection<GastroSolicitud> GastroSolicitudes { get; set; } = new List<GastroSolicitud>();

@@ -70,5 +70,20 @@ namespace UI.Web.Controllers
             var gastronomico = LogicaGastronomico.Obtener(id);
             return gastronomico == null ? NotFound() : View(gastronomico);
         }
+
+        // Acción para actualizar estados vacíos (puede ejecutarse una vez para corregir datos existentes)
+        public IActionResult ActualizarEstados()
+        {
+            try
+            {
+                LogicaGastronomico.ActualizarEstadosVacios();
+                TempData["Success"] = "Estados actualizados correctamente.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al actualizar estados: {ex.Message}";
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

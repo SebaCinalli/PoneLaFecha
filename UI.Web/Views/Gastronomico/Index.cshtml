@@ -51,6 +51,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>Tipo de Comida</th>
+                <th>Estado</th>
                 <th class="text-end">Monto</th>
                 <th>Acciones</th>
             </tr>
@@ -61,6 +62,24 @@
                 <tr>
                     <td>@g.Nombre</td>
                     <td>@g.TipoComida</td>
+                    <td>
+                        @if (g.Estado == "Disponible")
+                        {
+                            <span class="badge bg-success">@g.Estado</span>
+                        }
+                        else if (g.Estado == "Ocupado")
+                        {
+                            <span class="badge bg-warning text-dark">@g.Estado</span>
+                        }
+                        else if (g.Estado == "Mantenimiento")
+                        {
+                            <span class="badge bg-danger">@g.Estado</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@g.Estado</span>
+                        }
+                    </td>
                     <td class="text-end">@g.MontoG.ToString("C")</td>
                     <td>
                         <a asp-action="Detalle" asp-route-id="@g.IdGastro" class="btn btn-sm btn-info">Ver</a>
