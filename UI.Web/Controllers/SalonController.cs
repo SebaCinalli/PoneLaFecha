@@ -6,7 +6,26 @@ namespace UI.Web.Controllers
 {
     public class SalonController : Controller
     {
-        public IActionResult Index() => View(LogicaSalon.Listar());
+        public IActionResult Index(decimal? precioMin, decimal? precioMax)
+        {
+            var salones = LogicaSalon.Listar();
+            
+            // Aplicar filtros de precio
+            if (precioMin.HasValue)
+            {
+                salones = salones.Where(s => s.MontoSalon >= precioMin.Value).ToList();
+            }
+            
+            if (precioMax.HasValue)
+            {
+                salones = salones.Where(s => s.MontoSalon <= precioMax.Value).ToList();
+            }
+            
+            ViewBag.PrecioMin = precioMin;
+            ViewBag.PrecioMax = precioMax;
+            
+            return View(salones);
+        }
 
         public IActionResult Crear() => View();
 

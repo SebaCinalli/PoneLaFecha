@@ -19,18 +19,22 @@ namespace UI.Desktop
         private Label lblSalon;
         private ComboBox cboSalon;
         private Label lblMontoSalon;
+        private Button btnLimpiarSalon;
         
         private Label lblDJ;
         private ComboBox cboDJ;
         private Label lblMontoDJ;
+        private Button btnLimpiarDJ;
         
         private Label lblBarra;
         private ComboBox cboBarra;
         private Label lblMontoBarra;
+        private Button btnLimpiarBarra;
         
         private Label lblGastronomico;
         private ComboBox cboGastronomico;
         private Label lblMontoGastro;
+        private Button btnLimpiarGastro;
         
         private Label lblEstado;
         private ComboBox cboEstado;
@@ -78,6 +82,12 @@ namespace UI.Desktop
             {
                 CargarSolicitud();
             }
+            else
+            {
+                // Para nuevas solicitudes, ocultar el selector de estado
+                lblEstado.Visible = false;
+                cboEstado.Visible = false;
+            }
 
             if (_soloLectura)
             {
@@ -90,6 +100,10 @@ namespace UI.Desktop
                 cboEstado.Enabled = false;
                 btnGuardar.Visible = false;
                 btnCancelar.Text = "Cerrar";
+                btnLimpiarSalon.Visible = false;
+                btnLimpiarDJ.Visible = false;
+                btnLimpiarBarra.Visible = false;
+                btnLimpiarGastro.Visible = false;
                 this.Text = "Detalles de Solicitud";
             }
         }
@@ -105,18 +119,22 @@ namespace UI.Desktop
             this.lblSalon = new Label();
             this.cboSalon = new ComboBox();
             this.lblMontoSalon = new Label();
+            this.btnLimpiarSalon = new Button();
             
             this.lblDJ = new Label();
             this.cboDJ = new ComboBox();
             this.lblMontoDJ = new Label();
+            this.btnLimpiarDJ = new Button();
             
             this.lblBarra = new Label();
             this.cboBarra = new ComboBox();
             this.lblMontoBarra = new Label();
+            this.btnLimpiarBarra = new Button();
             
             this.lblGastronomico = new Label();
             this.cboGastronomico = new ComboBox();
             this.lblMontoGastro = new Label();
+            this.btnLimpiarGastro = new Button();
             
             this.lblEstado = new Label();
             this.cboEstado = new ComboBox();
@@ -201,6 +219,17 @@ namespace UI.Desktop
             this.lblMontoSalon.TabIndex = 7;
             this.lblMontoSalon.Text = "$0.00";
 
+            // btnLimpiarSalon
+            this.btnLimpiarSalon.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnLimpiarSalon.Location = new Point(520, 152);
+            this.btnLimpiarSalon.Name = "btnLimpiarSalon";
+            this.btnLimpiarSalon.Size = new Size(60, 24);
+            this.btnLimpiarSalon.TabIndex = 23;
+            this.btnLimpiarSalon.Text = "Limpiar";
+            this.btnLimpiarSalon.UseVisualStyleBackColor = true;
+            this.btnLimpiarSalon.Visible = false;
+            this.btnLimpiarSalon.Click += BtnLimpiarSalon_Click;
+
             // lblDJ
             this.lblDJ.AutoSize = true;
             this.lblDJ.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
@@ -229,6 +258,17 @@ namespace UI.Desktop
             this.lblMontoDJ.Size = new Size(45, 17);
             this.lblMontoDJ.TabIndex = 10;
             this.lblMontoDJ.Text = "$0.00";
+
+            // btnLimpiarDJ
+            this.btnLimpiarDJ.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnLimpiarDJ.Location = new Point(520, 192);
+            this.btnLimpiarDJ.Name = "btnLimpiarDJ";
+            this.btnLimpiarDJ.Size = new Size(60, 24);
+            this.btnLimpiarDJ.TabIndex = 24;
+            this.btnLimpiarDJ.Text = "Limpiar";
+            this.btnLimpiarDJ.UseVisualStyleBackColor = true;
+            this.btnLimpiarDJ.Visible = false;
+            this.btnLimpiarDJ.Click += BtnLimpiarDJ_Click;
 
             // lblBarra
             this.lblBarra.AutoSize = true;
@@ -259,6 +299,17 @@ namespace UI.Desktop
             this.lblMontoBarra.TabIndex = 13;
             this.lblMontoBarra.Text = "$0.00";
 
+            // btnLimpiarBarra
+            this.btnLimpiarBarra.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnLimpiarBarra.Location = new Point(520, 232);
+            this.btnLimpiarBarra.Name = "btnLimpiarBarra";
+            this.btnLimpiarBarra.Size = new Size(60, 24);
+            this.btnLimpiarBarra.TabIndex = 25;
+            this.btnLimpiarBarra.Text = "Limpiar";
+            this.btnLimpiarBarra.UseVisualStyleBackColor = true;
+            this.btnLimpiarBarra.Visible = false;
+            this.btnLimpiarBarra.Click += BtnLimpiarBarra_Click;
+
             // lblGastronomico
             this.lblGastronomico.AutoSize = true;
             this.lblGastronomico.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
@@ -287,6 +338,17 @@ namespace UI.Desktop
             this.lblMontoGastro.Size = new Size(45, 17);
             this.lblMontoGastro.TabIndex = 16;
             this.lblMontoGastro.Text = "$0.00";
+
+            // btnLimpiarGastro
+            this.btnLimpiarGastro.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point);
+            this.btnLimpiarGastro.Location = new Point(520, 272);
+            this.btnLimpiarGastro.Name = "btnLimpiarGastro";
+            this.btnLimpiarGastro.Size = new Size(60, 24);
+            this.btnLimpiarGastro.TabIndex = 26;
+            this.btnLimpiarGastro.Text = "Limpiar";
+            this.btnLimpiarGastro.UseVisualStyleBackColor = true;
+            this.btnLimpiarGastro.Visible = false;
+            this.btnLimpiarGastro.Click += BtnLimpiarGastro_Click;
 
             // lblEstado
             this.lblEstado.AutoSize = true;
@@ -354,6 +416,10 @@ namespace UI.Desktop
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightSteelBlue;
             this.ClientSize = new Size(600, 490);
+            this.Controls.Add(this.btnLimpiarGastro);
+            this.Controls.Add(this.btnLimpiarBarra);
+            this.Controls.Add(this.btnLimpiarDJ);
+            this.Controls.Add(this.btnLimpiarSalon);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.lblMontoTotalValor);
@@ -460,10 +526,13 @@ namespace UI.Desktop
             if (cboSalon.SelectedIndex > 0 && cboSalon.SelectedItem is Salon salon)
             {
                 lblMontoSalon.Text = salon.MontoSalon.ToString("C2");
+                // Mostrar el botón de limpiar y bloquear el combo
+                BloquearComboConBotonLimpiar(cboSalon, btnLimpiarSalon);
             }
             else
             {
                 lblMontoSalon.Text = "$0.00";
+                btnLimpiarSalon.Visible = false;
             }
             CalcularMontoTotal();
         }
@@ -473,10 +542,13 @@ namespace UI.Desktop
             if (cboDJ.SelectedIndex > 0 && cboDJ.SelectedItem is Dj dj)
             {
                 lblMontoDJ.Text = dj.MontoDj.ToString("C2");
+                // Mostrar el botón de limpiar y bloquear el combo
+                BloquearComboConBotonLimpiar(cboDJ, btnLimpiarDJ);
             }
             else
             {
                 lblMontoDJ.Text = "$0.00";
+                btnLimpiarDJ.Visible = false;
             }
             CalcularMontoTotal();
         }
@@ -486,10 +558,13 @@ namespace UI.Desktop
             if (cboBarra.SelectedIndex > 0 && cboBarra.SelectedItem is Barra barra)
             {
                 lblMontoBarra.Text = barra.PrecioPorHora.ToString("C2");
+                // Mostrar el botón de limpiar y bloquear el combo
+                BloquearComboConBotonLimpiar(cboBarra, btnLimpiarBarra);
             }
             else
             {
                 lblMontoBarra.Text = "$0.00";
+                btnLimpiarBarra.Visible = false;
             }
             CalcularMontoTotal();
         }
@@ -499,11 +574,61 @@ namespace UI.Desktop
             if (cboGastronomico.SelectedIndex > 0 && cboGastronomico.SelectedItem is Gastronomico gastro)
             {
                 lblMontoGastro.Text = gastro.MontoG.ToString("C2");
+                // Mostrar el botón de limpiar y bloquear el combo
+                BloquearComboConBotonLimpiar(cboGastronomico, btnLimpiarGastro);
             }
             else
             {
                 lblMontoGastro.Text = "$0.00";
+                btnLimpiarGastro.Visible = false;
             }
+            CalcularMontoTotal();
+        }
+
+        // Método para bloquear un combo cuando se selecciona un servicio y mostrar botón de limpiar
+        private void BloquearComboConBotonLimpiar(ComboBox combo, Button btnLimpiar)
+        {
+            if (combo.SelectedIndex > 0)
+            {
+                combo.Enabled = false;
+                btnLimpiar.Visible = true;
+            }
+        }
+
+        // Métodos para limpiar las selecciones
+        private void BtnLimpiarSalon_Click(object sender, EventArgs e)
+        {
+            cboSalon.Enabled = true;
+            cboSalon.SelectedIndex = 0;
+            btnLimpiarSalon.Visible = false;
+            lblMontoSalon.Text = "$0.00";
+            CalcularMontoTotal();
+        }
+
+        private void BtnLimpiarDJ_Click(object sender, EventArgs e)
+        {
+            cboDJ.Enabled = true;
+            cboDJ.SelectedIndex = 0;
+            btnLimpiarDJ.Visible = false;
+            lblMontoDJ.Text = "$0.00";
+            CalcularMontoTotal();
+        }
+
+        private void BtnLimpiarBarra_Click(object sender, EventArgs e)
+        {
+            cboBarra.Enabled = true;
+            cboBarra.SelectedIndex = 0;
+            btnLimpiarBarra.Visible = false;
+            lblMontoBarra.Text = "$0.00";
+            CalcularMontoTotal();
+        }
+
+        private void BtnLimpiarGastro_Click(object sender, EventArgs e)
+        {
+            cboGastronomico.Enabled = true;
+            cboGastronomico.SelectedIndex = 0;
+            btnLimpiarGastro.Visible = false;
+            lblMontoGastro.Text = "$0.00";
             CalcularMontoTotal();
         }
 
@@ -601,7 +726,7 @@ namespace UI.Desktop
                 }
                 else
                 {
-                    MessageBox.Show("No se encontró la solicitud.", "Error",
+                    MessageBox.Show("No se encontr? la solicitud.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close();
                 }
@@ -656,7 +781,7 @@ namespace UI.Desktop
             {
                 if (cboCliente.SelectedValue == null)
                 {
-                    MessageBox.Show("Debe seleccionar un cliente.", "Validación",
+                    MessageBox.Show("Debe seleccionar un cliente.", "Validaci?n",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -665,16 +790,16 @@ namespace UI.Desktop
 
             if (dtpFechaEvento.Value < DateTime.Today)
             {
-                MessageBox.Show("La fecha del evento no puede ser anterior a hoy.", "Validación",
+                MessageBox.Show("La fecha del evento no puede ser anterior a hoy.", "Validaci?n",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Validar que al menos un servicio esté seleccionado
+            // Validar que al menos un servicio est? seleccionado
             if (cboSalon.SelectedIndex == 0 && cboDJ.SelectedIndex == 0 && 
                 cboBarra.SelectedIndex == 0 && cboGastronomico.SelectedIndex == 0)
             {
-                MessageBox.Show("Debe seleccionar al menos un servicio para la solicitud.", "Validación",
+                MessageBox.Show("Debe seleccionar al menos un servicio para la solicitud.", "Validaci?n",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -685,7 +810,9 @@ namespace UI.Desktop
                 {
                     IdCliente = idCliente,
                     FechaDesde = dtpFechaEvento.Value,
-                    Estado = cboEstado.SelectedItem.ToString()
+                    // Si es nueva solicitud, siempre asignar "Pendiente"
+                    // Si es edición, tomar el valor del combo (que está visible)
+                    Estado = _idSolicitud.HasValue ? cboEstado.SelectedItem.ToString() : "Pendiente"
                 };
 
                 if (_idSolicitud.HasValue)
@@ -724,13 +851,13 @@ namespace UI.Desktop
                 
                 if (_idSolicitud.HasValue)
                 {
-                    MessageBox.Show("Solicitud actualizada correctamente.", "Éxito",
+                    MessageBox.Show("Solicitud actualizada correctamente.", "?xito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show($"Solicitud creada correctamente.\n\nTotal: {montoTotal:C2}", 
- "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Solicitud creada correctamente con estado 'Pendiente'.\n\nTotal: {montoTotal:C2}", 
+ "?xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 this.DialogResult = DialogResult.OK;

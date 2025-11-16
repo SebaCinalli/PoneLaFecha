@@ -23,9 +23,44 @@
         </div>
     }
 
-    <p>
-        <a asp-action="Crear" class="btn btn-primary">Agregar Nuevo Salón</a>
-    </p>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <a asp-action="Crear" class="btn btn-primary">Agregar Nuevo Salón</a>
+        </div>
+    </div>
+
+    <!-- Filtros de Precio -->
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtrar por Precio</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="precioMin" class="form-label">Precio Mínimo</label>
+                    <input type="number" class="form-control" id="precioMin" name="precioMin" 
+                           value="@ViewBag.PrecioMin" placeholder="Ej: 50000" step="1000">
+                </div>
+                <div class="col-md-4">
+                    <label for="precioMax" class="form-label">Precio Máximo</label>
+                    <input type="number" class="form-control" id="precioMax" name="precioMax" 
+                           value="@ViewBag.PrecioMax" placeholder="Ej: 500000" step="1000">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Aplicar Filtros</button>
+                    <a asp-action="Index" class="btn btn-secondary">Limpiar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>Mostrando:</strong> @Model.Count salones
+        @if (ViewBag.PrecioMin != null || ViewBag.PrecioMax != null)
+        {
+            <span>con filtros aplicados</span>
+        }
+    </div>
 
     <table class="table table-striped table-hover">
         <thead class="table-dark">

@@ -6,7 +6,26 @@ namespace UI.Web.Controllers
 {
     public class BarraController : Controller
     {
-        public IActionResult Index() => View(LogicaBarra.Listar());
+        public IActionResult Index(decimal? precioMin, decimal? precioMax)
+        {
+            var barras = LogicaBarra.Listar();
+            
+            // Aplicar filtros de precio
+            if (precioMin.HasValue)
+            {
+                barras = barras.Where(b => b.PrecioPorHora >= precioMin.Value).ToList();
+            }
+            
+            if (precioMax.HasValue)
+            {
+                barras = barras.Where(b => b.PrecioPorHora <= precioMax.Value).ToList();
+            }
+            
+            ViewBag.PrecioMin = precioMin;
+            ViewBag.PrecioMax = precioMax;
+            
+            return View(barras);
+        }
 
         public IActionResult Crear() => View();
 

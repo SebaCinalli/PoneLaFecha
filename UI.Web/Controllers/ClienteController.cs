@@ -61,5 +61,57 @@ namespace UI.Web.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        // Perfil del cliente (para que los clientes editen sus propios datos)
+        public IActionResult MiPerfil()
+        {
+            var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+            if (string.IsNullOrEmpty(nombreUsuario))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var cliente = LogicaCliente.ObtenerPorNombreUsuario(nombreUsuario);
+            if (cliente == null)
+            {
+                TempData["Error"] = "No se encontró el perfil del cliente.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(cliente);
+        }
+
+        [HttpPost]
+        public IActionResult MiPerfil(Cliente cliente)
+        {
+            var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+            if (string.IsNullOrEmpty(nombreUsuario))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // Validar que el cliente está editando su propio perfil
+            var clienteActual = LogicaCliente.ObtenerPorNombreUsuario(nombreUsuario);
+            if (clienteActual == null || clienteActual.IdCliente != cliente.IdCliente)
+            {
+                TempData["Error"] = "No tiene permisos para editar este perfil.";
+                return RedirectToAction("MiPerfil");
+            }
+
+            try
+            {
+                // Mantener el nombre de usuario original
+                cliente.NombreUsuario = clienteActual.NombreUsuario;
+                
+                LogicaCliente.Editar(cliente);
+                TempData["Success"] = "Su perfil ha sido actualizado correctamente.";
+                return RedirectToAction("MiPerfil");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al actualizar el perfil: {ex.Message}";
+                return View(cliente);
+            }
+        }
     }
 }

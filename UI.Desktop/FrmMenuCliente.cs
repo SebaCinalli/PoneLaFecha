@@ -14,6 +14,7 @@ namespace UI.Desktop
         private Button btnGastronomicos;
         private Button btnMisSolicitudes;
         private Button btnNuevaSolicitud;
+        private Button btnMiPerfil;
         private Button btnCerrarSesion;
         private Button btnSalir;
         private Label lblTitulo;
@@ -34,6 +35,7 @@ namespace UI.Desktop
             this.btnGastronomicos = new Button();
             this.btnMisSolicitudes = new Button();
             this.btnNuevaSolicitud = new Button();
+            this.btnMiPerfil = new Button();
             this.btnCerrarSesion = new Button();
             this.btnSalir = new Button();
             this.lblTitulo = new Label();
@@ -91,10 +93,23 @@ namespace UI.Desktop
             this.btnMisSolicitudes.Click += BtnMisSolicitudes_Click;
 
             // 
+            // btnMiPerfil
+            // 
+            this.btnMiPerfil.BackColor = Color.LightYellow;
+            this.btnMiPerfil.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Bold, GraphicsUnit.Point);
+            this.btnMiPerfil.Location = new Point(150, 250);
+            this.btnMiPerfil.Name = "btnMiPerfil";
+            this.btnMiPerfil.Size = new Size(180, 45);
+            this.btnMiPerfil.TabIndex = 10;
+            this.btnMiPerfil.Text = "?? Mi Perfil";
+            this.btnMiPerfil.UseVisualStyleBackColor = false;
+            this.btnMiPerfil.Click += BtnMiPerfil_Click;
+
+            // 
             // btnSalones
             // 
             this.btnSalones.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnSalones.Location = new Point(150, 260);
+            this.btnSalones.Location = new Point(150, 310);
             this.btnSalones.Name = "btnSalones";
             this.btnSalones.Size = new Size(180, 45);
             this.btnSalones.TabIndex = 4;
@@ -106,7 +121,7 @@ namespace UI.Desktop
             // btnBarras
             // 
             this.btnBarras.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnBarras.Location = new Point(150, 320);
+            this.btnBarras.Location = new Point(150, 370);
             this.btnBarras.Name = "btnBarras";
             this.btnBarras.Size = new Size(180, 45);
             this.btnBarras.TabIndex = 5;
@@ -118,7 +133,7 @@ namespace UI.Desktop
             // btnDjs
             // 
             this.btnDjs.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnDjs.Location = new Point(150, 380);
+            this.btnDjs.Location = new Point(150, 430);
             this.btnDjs.Name = "btnDjs";
             this.btnDjs.Size = new Size(180, 45);
             this.btnDjs.TabIndex = 6;
@@ -130,7 +145,7 @@ namespace UI.Desktop
             // btnGastronomicos
             // 
             this.btnGastronomicos.Font = new Font("Microsoft Sans Serif", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnGastronomicos.Location = new Point(150, 440);
+            this.btnGastronomicos.Location = new Point(150, 490);
             this.btnGastronomicos.Name = "btnGastronomicos";
             this.btnGastronomicos.Size = new Size(180, 45);
             this.btnGastronomicos.TabIndex = 7;
@@ -144,7 +159,7 @@ namespace UI.Desktop
             this.btnCerrarSesion.BackColor = Color.Orange;
             this.btnCerrarSesion.ForeColor = Color.White;
             this.btnCerrarSesion.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold, GraphicsUnit.Point);
-            this.btnCerrarSesion.Location = new Point(100, 510);
+            this.btnCerrarSesion.Location = new Point(100, 560);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Size = new Size(120, 40);
             this.btnCerrarSesion.TabIndex = 8;
@@ -156,7 +171,7 @@ namespace UI.Desktop
             // btnSalir
             // 
             this.btnSalir.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point);
-            this.btnSalir.Location = new Point(240, 510);
+            this.btnSalir.Location = new Point(240, 560);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new Size(120, 40);
             this.btnSalir.TabIndex = 9;
@@ -170,7 +185,8 @@ namespace UI.Desktop
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.LightSteelBlue;
-            this.ClientSize = new Size(480, 570);
+            this.ClientSize = new Size(480, 620);
+            this.Controls.Add(this.btnMiPerfil);
             this.Controls.Add(this.btnSalir);
             this.Controls.Add(this.btnCerrarSesion);
             this.Controls.Add(this.btnGastronomicos);
@@ -200,6 +216,16 @@ namespace UI.Desktop
         {
             var frmMisSolicitudes = new FrmMisSolicitudes();
             frmMisSolicitudes.ShowDialog();
+        }
+
+        private void BtnMiPerfil_Click(object sender, EventArgs e)
+        {
+            var frmMiPerfil = new FrmMiPerfil(SesionUsuario.UsuarioActual.NombreUsuario);
+            if (frmMiPerfil.ShowDialog() == DialogResult.OK)
+            {
+                // Actualizar el label de bienvenida si cambió el nombre
+                lblBienvenida.Text = $"Bienvenido {SesionUsuario.NombreCompleto} - Cliente";
+            }
         }
 
         private void BtnSalones_Click(object sender, EventArgs e)
