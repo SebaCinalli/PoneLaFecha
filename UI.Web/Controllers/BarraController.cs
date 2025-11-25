@@ -1,57 +1,111 @@
 using Microsoft.AspNetCore.Mvc;
 using Entidades;
-using Negocio;
+using System.Text.Json;
+using System.Text;
 
 namespace UI.Web.Controllers
 {
     public class BarraController : Controller
     {
-        public IActionResult Index(decimal? precioMin, decimal? precioMax)
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonOptions;
+
+        public BarraController(IHttpClientFactory httpClientFactory)
         {
-            var barras = LogicaBarra.Listar();
-            
-            // Aplicar filtros de precio
-            if (precioMin.HasValue)
+            _httpClientFactory = httpClientFactory;
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        }
+
+        private HttpClient Client => _httpClientFactory.CreateClient("API");
+
+        public async Task<IActionResult> Index()
+        {
+            var response = await Client.GetAsync("Barra");
+            if (response.IsSuccessStatusCode)
             {
-                barras = barras.Where(b => b.PrecioPorHora >= precioMin.Value).ToList();
+                var content = await response.Content.ReadAsStringAsync();
+                var barras = JsonSerializer.Deserialize<List<Barra>>(content, _jsonOptions);
+                return View(barras);
             }
-            
-            if (precioMax.HasValue)
-            {
-                barras = barras.Where(b => b.PrecioPorHora <= precioMax.Value).ToList();
-            }
-            
-            ViewBag.PrecioMin = precioMin;
-            ViewBag.PrecioMax = precioMax;
-            
-            return View(barras);
+            return View(new List<Barra>());
         }
 
         public IActionResult Crear() => View();
 
         [HttpPost]
-        public IActionResult Crear(Barra b)
+        public async Task<IActionResult> Crear(Barra barra)
         {
-            LogicaBarra.Crear(b);
-            return RedirectToAction("Index");
+            try
+            {
+                var json = JsonSerializer.Serialize(barra);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PostAsync("Barra", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Barra creada correctamente.";
+                    return RedirectToAction("Index");
+                }
+                TempData["Error"] = "Error al crear la barra.";
+                return View(barra);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+                return View(barra);
+            }
         }
 
-        public IActionResult Editar(int id)
+        public async Task<IActionResult> Editar(int id)
         {
-            var barra = LogicaBarra.Obtener(id);
-            return barra == null ? NotFound() : View(barra);
+            var response = await Client.GetAsync($"Barra/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var barra = JsonSerializer.Deserialize<Barra>(content, _jsonOptions);
+                return View(barra);
+            }
+            return NotFound();
         }
 
         [HttpPost]
-        public IActionResult Editar(Barra b)
+        public async Task<IActionResult> Editar(Barra barra)
         {
-            LogicaBarra.Editar(b);
-            return RedirectToAction("Index");
+            try
+            {
+                var json = JsonSerializer.Serialize(barra);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PutAsync($"Barra/{barra.IdBarra}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Barra modificada correctamente.";
+                    return RedirectToAction("Index");
+                }
+                TempData["Error"] = "Error al modificar la barra.";
+                return View(barra);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+                return View(barra);
+            }
         }
 
-        public IActionResult Eliminar(int id)
+        public async Task<IActionResult> Eliminar(int id)
         {
-            LogicaBarra.Eliminar(id);
+            try
+            {
+                var response = await Client.DeleteAsync($"Barra/{id}");
+                if (response.IsSuccessStatusCode)
+                    TempData["Success"] = "Barra eliminada correctamente.";
+                else
+                    TempData["Error"] = "Error al eliminar la barra.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+            }
             return RedirectToAction("Index");
         }
     }

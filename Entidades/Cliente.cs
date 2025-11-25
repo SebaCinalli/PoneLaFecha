@@ -10,6 +10,8 @@ namespace Entidades
         public string Email { get; set; }
         public string Telefono { get; set; }
         public string NombreUsuario { get; set; }
+        public string Clave { get; set; }
+        public string Rol { get; set; }
         
         // Navegación
         public ICollection<Solicitud> Solicitudes { get; set; } = new List<Solicitud>();

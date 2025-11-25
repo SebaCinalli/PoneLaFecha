@@ -1,158 +1,92 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Entidades;
-using Negocio;
+using System.Text.Json;
+using System.Text;
 
 namespace UI.Web.Controllers
 {
     public class AuthController : Controller
     {
-        public IActionResult Login()
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonOptions;
+
+        public AuthController(IHttpClientFactory httpClientFactory)
         {
-            // Si ya está autenticado, redirigir al home
-   if (HttpContext.Session.GetString("UsuarioId") != null)
-         {
-       return RedirectToAction("Index", "Home");
-     }
-       return View();
+            _httpClientFactory = httpClientFactory;
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
+        private HttpClient Client => _httpClientFactory.CreateClient("API");
+
+        public IActionResult Login() => View();
+
         [HttpPost]
-        public IActionResult Login(string nombreUsuario, string password)
-      {
-    if (string.IsNullOrWhiteSpace(nombreUsuario) || string.IsNullOrWhiteSpace(password))
-   {
-     ViewBag.Error = "Debe ingresar usuario y contraseña.";
-    return View();
-          }
-
-   try
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            var loginRequest = new { Username = username, Password = password };
+            var json = JsonSerializer.Serialize(loginRequest);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            var response = await Client.PostAsync("Auth/login", content);
+            
+            if (response.IsSuccessStatusCode)
             {
- var usuario = LogicaUsuario.Autenticar(nombreUsuario, password);
-     
- if (usuario != null)
-    {
-          // Guardar información en la sesión
-               HttpContext.Session.SetString("UsuarioId", usuario.IdUsuario.ToString());
-  HttpContext.Session.SetString("NombreUsuario", usuario.NombreUsuario);
-          HttpContext.Session.SetString("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}");
-         HttpContext.Session.SetString("Rol", usuario.Rol);
-
-      // Redirigir según el rol
-if (usuario.Rol == "Administrador")
-          {
-              return RedirectToAction("Index", "Home");
-      }
-   else if (usuario.Rol == "Cliente")
-     {
-       return RedirectToAction("MenuCliente", "Auth");
-     }
-             }
-      else
-      {
-         ViewBag.Error = "Usuario o contraseña incorrectos.";
-       }
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var usuario = JsonSerializer.Deserialize<Cliente>(responseContent, _jsonOptions);
+                
+                HttpContext.Session.SetString("UsuarioId", usuario.IdCliente.ToString());
+                HttpContext.Session.SetString("NombreUsuario", usuario.NombreUsuario);
+                HttpContext.Session.SetString("Rol", usuario.Rol);
+                HttpContext.Session.SetString("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}");
+                
+                return RedirectToAction("Index", "Home");
             }
-            catch (Exception ex)
-            {
-    ViewBag.Error = $"Error al iniciar sesión: {ex.Message}";
-       }
+            
+            ViewBag.Error = "Usuario o contraseÃ±a incorrectos";
+            return View();
+        }
 
-     return View();
-  }
+        public IActionResult Register() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Register(string nombre, string apellido, string email, string username, string password, string confirmPassword)
+        {
+            if (password != confirmPassword)
+            {
+                ViewBag.Error = "Las contraseÃ±as no coinciden";
+                return View();
+            }
+
+            var usuario = new Cliente
+            {
+                Nombre = nombre,
+                Apellido = apellido,
+                Email = email,
+                NombreUsuario = username,
+                Clave = password,
+                Rol = "Cliente"
+            };
+
+            var json = JsonSerializer.Serialize(usuario);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            var response = await Client.PostAsync("Auth/register", content);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Login");
+            }
+            
+            ViewBag.Error = "Error al registrar el usuario";
+            return View();
+        }
 
         public IActionResult Logout()
         {
-      HttpContext.Session.Clear();
-        return RedirectToAction("Login");
-    }
-
-   public IActionResult Register()
-        {
-         // Si ya está autenticado, redirigir al home
-          if (HttpContext.Session.GetString("UsuarioId") != null)
-            {
-   return RedirectToAction("Index", "Home");
-            }
-    return View();
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
-
-     [HttpPost]
-        public IActionResult Register(string nombreUsuario, string password, string confirmPassword, 
-    string nombre, string apellido, string email, string telefono)
-        {
-            if (password != confirmPassword)
-  {
-       ViewBag.Error = "Las contraseñas no coinciden.";
-            return View();
-  }
-
-   try
-            {
-                var usuario = new Usuario
-    {
-        NombreUsuario = nombreUsuario,
-        Password = password,
-     Nombre = nombre,
-          Apellido = apellido,
-    Email = email,
- Telefono = telefono,
-  Rol = "Cliente", // Por defecto los registros son clientes
-     Activo = true,
-     FechaCreacion = DateTime.Now
-        };
-
-                // Validar
-        var validacion = Validaciones.ValidarUsuario(usuario);
-     if (!validacion.EsValido)
-     {
-         ViewBag.Error = validacion.ObtenerMensajeErrores();
-          return View();
-      }
-
-      LogicaUsuario.Crear(usuario);
-
-       // Crear cliente asociado
-                var cliente = new Cliente
-       {
- Nombre = nombre,
-                  Apellido = apellido,
-       Email = email,
-              Telefono = telefono,
-        NombreUsuario = nombreUsuario
-       };
-
-        LogicaCliente.Crear(cliente);
-
-         ViewBag.Success = "Registro exitoso. Ahora puede iniciar sesión.";
-   return View("Login");
-        }
-        catch (Exception ex)
-          {
- ViewBag.Error = $"Error al registrar: {ex.Message}";
-            }
-
-            return View();
-        }
-
-        public IActionResult MenuCliente()
-  {
-      // Verificar autenticación
-  if (HttpContext.Session.GetString("UsuarioId") == null)
-      {
-        return RedirectToAction("Login");
-     }
-
-        // Verificar rol
-    if (HttpContext.Session.GetString("Rol") != "Cliente")
-         {
-    return RedirectToAction("Index", "Home");
-            }
-
-          ViewBag.NombreCompleto = HttpContext.Session.GetString("NombreCompleto");
-         return View();
-        }
-
+        
         public IActionResult AccessDenied()
         {
             return View();

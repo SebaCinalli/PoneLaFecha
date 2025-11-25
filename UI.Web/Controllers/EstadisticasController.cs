@@ -1,53 +1,47 @@
 using Microsoft.AspNetCore.Mvc;
-using Negocio;
+using System.Text.Json;
 
 namespace UI.Web.Controllers
 {
     public class EstadisticasController : Controller
     {
-        /// <summary>
-        /// Vista que muestra estadísticas del sistema
-        /// </summary>
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonOptions;
+
+        public EstadisticasController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        }
+
+        private HttpClient Client => _httpClientFactory.CreateClient("API");
+
         public async Task<IActionResult> Index()
         {
-       try
+            var response = await Client.GetAsync("Estadisticas");
+            if (response.IsSuccessStatusCode)
             {
-        // Usar métodos con ADO.NET para salones y clientes
-      var salones = LogicaSalon.ListarConADO();
-  var totalClientes = LogicaCliente.ObtenerTotalClientesConADO();
-   
-             // Obtener estadísticas de todos los servicios
-     var barras = Negocio.LogicaBarra.Listar();
-    var djs = LogicaDj.Listar();
-  var gastronomicos = LogicaGastronomico.Listar();
+                var content = await response.Content.ReadAsStringAsync();
+                var stats = JsonSerializer.Deserialize<StatsDto>(content, _jsonOptions);
                 
- // Usar LogicaZona con async
-   var logicaZona = new LogicaZona();
-      var zonas = await logicaZona.GetAllAsync();
-
-    ViewBag.Salones = salones;
-        ViewBag.TotalClientes = totalClientes;
-      ViewBag.TotalSalones = salones.Count;
-     
- ViewBag.Barras = barras;
-      ViewBag.TotalBarras = barras.Count;
-  
-     ViewBag.Djs = djs;
- ViewBag.TotalDjs = djs.Count;
-  
-    ViewBag.Gastronomicos = gastronomicos;
-  ViewBag.TotalGastronomicos = gastronomicos.Count;
-   
-      ViewBag.Zonas = zonas;
- ViewBag.TotalZonas = zonas.Count;
-
-      return View();
-          }
-   catch (Exception ex)
-     {
-  ViewBag.Error = $"Error al cargar estadísticas: {ex.Message}";
- return View();
-  }
+                ViewBag.TotalClientes = stats.TotalClientes;
+                ViewBag.TotalZonas = stats.TotalZonas;
+                ViewBag.TotalSalones = stats.TotalSalones;
+                ViewBag.TotalDjs = stats.TotalDjs;
+                ViewBag.TotalBarras = stats.TotalBarras;
+                ViewBag.TotalComidas = stats.TotalComidas;
+            }
+            return View();
         }
+    }
+
+    public class StatsDto
+    {
+        public int TotalClientes { get; set; }
+        public int TotalZonas { get; set; }
+        public int TotalSalones { get; set; }
+        public int TotalDjs { get; set; }
+        public int TotalBarras { get; set; }
+        public int TotalComidas { get; set; }
     }
 }
