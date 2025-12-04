@@ -11,13 +11,13 @@ namespace PoneLaFecha.API.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(LogicaGastronomico.ListarBarras());
+            return Ok(LogicaBarra.Listar());
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var barra = LogicaGastronomico.ObtenerBarra(id);
+            var barra = LogicaBarra.Obtener(id);
             if (barra == null)
                 return NotFound();
             return Ok(barra);
@@ -28,7 +28,7 @@ namespace PoneLaFecha.API.Controllers
         {
             try
             {
-                LogicaGastronomico.CrearBarra(barra);
+                LogicaBarra.Crear(barra);
                 return CreatedAtAction(nameof(Get), new { id = barra.IdBarra }, barra);
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace PoneLaFecha.API.Controllers
 
             try
             {
-                LogicaGastronomico.EditarBarra(barra);
+                LogicaBarra.Editar(barra);
                 return NoContent();
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace PoneLaFecha.API.Controllers
         {
             try
             {
-                LogicaGastronomico.EliminarBarra(id);
+                LogicaBarra.Eliminar(id);
                 return NoContent();
             }
             catch (Exception ex)

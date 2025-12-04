@@ -257,7 +257,7 @@ namespace UI.Desktop
                 var gastros = LogicaGastronomico.Listar();
                 lblTotalGastro.Text = gastros.Count.ToString();
 
-                var zonas = new LogicaZona().GetAllAsync().Result;
+                var zonas = LogicaZona.GetAllAsync().Result;
                 lblTotalZonas.Text = zonas.Count.ToString();
 
                 // Cargar grillas

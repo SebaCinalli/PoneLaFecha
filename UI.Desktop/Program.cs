@@ -23,6 +23,18 @@ namespace UI.Desktop
                 using (var db = new AppDbContext())
                 {
                     db.Database.Migrate();
+                    
+                    // Actualizar clientes existentes que no tengan Clave o Rol
+                    var clientesSinClave = db.Clientes.Where(c => c.Clave == null || c.Clave == "").ToList();
+                    foreach (var cliente in clientesSinClave)
+                    {
+                        cliente.Clave = "123456"; // Contraseña temporal por defecto
+                        cliente.Rol = "Cliente";  // Rol por defecto
+                    }
+                    if (clientesSinClave.Any())
+                    {
+                        db.SaveChanges();
+                    }
                 }
 
                 // Crear administrador por defecto si no existe
@@ -37,71 +49,12 @@ namespace UI.Desktop
                 LogicaDj.CrearDatosEjemplo();
                 LogicaGastronomico.CrearDatosEjemplo();
 
-                // Ciclo de login/menú
-                bool continuarAplicacion = true;
-                
-                while (continuarAplicacion)
-                {
-                    // Mostrar formulario de login
-                    var frmLogin = new FrmLogin();
-                    Application.Run(frmLogin);
-
-                    // Si el login fue exitoso, mostrar la interfaz correspondiente
-                    if (frmLogin.LoginExitoso && SesionUsuario.EstaLogueado)
-                    {
-                        try
-                        {
-                            if (SesionUsuario.EsAdministrador)
-                            {
-                                var frmMenuPrincipal = new FrmMenuPrincipal();
-                                Application.Run(frmMenuPrincipal);
-                                
-                                // Si el administrador cerró sesión, volver al login
-                                if (frmMenuPrincipal.CerroSesion)
-                                {
-                                    continuarAplicacion = true; // Continuar al login
-                                }
-                                else
-                                {
-                                    // Si cerró el formulario sin cerrar sesión (salir), terminar
-                                    continuarAplicacion = false;
-                                }
-                            }
-                            else if (SesionUsuario.EsCliente)
-                            {
-                                var frmMenuCliente = new FrmMenuCliente();
-                                Application.Run(frmMenuCliente);
-                                
-                                // Si el cliente cerró sesión, volver al login
-                                if (frmMenuCliente.CerroSesion)
-                                {
-                                    continuarAplicacion = true; // Continuar al login
-                                }
-                                else
-                                {
-                                    // Si cerró el formulario sin cerrar sesión (salir), terminar
-                                    continuarAplicacion = false;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Error al abrir el menú:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            continuarAplicacion = false;
-                        }
-                    }
-                    else
-                    {
-                        // Si no hay login exitoso, salir
-                        continuarAplicacion = false;
-                    }
-                }
+                Application.Run(new FrmLogin());
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al inicializar la aplicación:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-                    "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al inicializar la aplicacin:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
+                    "Error Crtico", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

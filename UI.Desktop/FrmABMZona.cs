@@ -20,13 +20,10 @@ namespace UI.Desktop
         private TextBox txtBuscar;
         private Label lblBuscar;
 
-        private readonly LogicaZona _logicaZona;
-
-   public FrmABMZona()
+        public FrmABMZona()
         {
-  _logicaZona = new LogicaZona();
             InitializeComponent();
-        CargarZonas();
+            CargarZonasAsync();
         }
 
         private void InitializeComponent()
@@ -163,11 +160,11 @@ this.btnCerrar.Size = new Size(120, 40);
    this.PerformLayout();
 }
 
-        private async void CargarZonas()
+        private async Task CargarZonasAsync()
      {
             try
          {
-       var zonas = await _logicaZona.GetAllAsync();
+       var zonas = await LogicaZona.GetAllAsync();
        dgvZonas.DataSource = zonas;
 
      // Configurar columnas
@@ -209,7 +206,7 @@ if (dgvZonas.Columns["ZonaDJs"] != null)
  var frmDetalle = new FrmDetalleZona();
             if (frmDetalle.ShowDialog() == DialogResult.OK)
             {
-            CargarZonas();
+                _ = CargarZonasAsync();
  }
    }
 
@@ -226,7 +223,7 @@ if (dgvZonas.Columns["ZonaDJs"] != null)
             var frmDetalle = new FrmDetalleZona(zona.IdZona);
  if (frmDetalle.ShowDialog() == DialogResult.OK)
   {
-             CargarZonas();
+             await CargarZonasAsync();
     }
   }
 
@@ -261,10 +258,10 @@ if (dgvZonas.Columns["ZonaDJs"] != null)
             {
        try
     {
-    await _logicaZona.DeleteAsync(zona.IdZona);
+    await LogicaZona.DeleteAsync(zona.IdZona);
          MessageBox.Show("Zona eliminada correctamente.", "Éxito", 
          MessageBoxButtons.OK, MessageBoxIcon.Information);
-      CargarZonas();
+         await CargarZonasAsync();
    }
  catch (Exception ex)
           {

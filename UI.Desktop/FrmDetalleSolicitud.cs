@@ -43,14 +43,12 @@ namespace UI.Desktop
         private Label lblMontoTotal;
         private Label lblMontoTotalValor;
 
-        private readonly LogicaSolicitud _logicaSolicitud;
-        private int? _idSolicitud;
+        private readonly int? _idSolicitud;
         private bool _soloLectura;
         private int _idClienteActual;
 
         public FrmDetalleSolicitud(int? idSolicitud = null, bool soloLectura = false)
         {
-            _logicaSolicitud = new LogicaSolicitud();
             _idSolicitud = idSolicitud;
             _soloLectura = soloLectura;
             InitializeComponent();
@@ -655,7 +653,7 @@ namespace UI.Desktop
         {
             try
             {
-                var solicitud = await _logicaSolicitud.GetByIdAsync(_idSolicitud.Value);
+                var solicitud = await LogicaSolicitud.GetByIdAsync(_idSolicitud.Value);
                 if (solicitud != null)
                 {
                     if (!SesionUsuario.EsCliente)
@@ -818,36 +816,36 @@ namespace UI.Desktop
                 if (_idSolicitud.HasValue)
                 {
                     solicitud.IdSolicitud = _idSolicitud.Value;
-                    await _logicaSolicitud.UpdateAsync(solicitud);
+                    await LogicaSolicitud.UpdateAsync(solicitud);
                 }
                 else
                 {
-                    await _logicaSolicitud.CreateAsync(solicitud);
+                    await LogicaSolicitud.CreateAsync(solicitud);
                     
                     // Asignar servicios seleccionados a la nueva solicitud
                     if (cboSalon.SelectedIndex > 0 && cboSalon.SelectedItem is Salon salon)
                     {
-                        await _logicaSolicitud.AsignarSalonASolicitudAsync(solicitud.IdSolicitud, salon.IdSalon);
+                        await LogicaSolicitud.AsignarSalonASolicitudAsync(solicitud.IdSolicitud, salon.IdSalon);
                     }
                 
                     if (cboDJ.SelectedIndex > 0 && cboDJ.SelectedItem is Dj dj)
                     {
-                         await _logicaSolicitud.AsignarDjASolicitudAsync(solicitud.IdSolicitud, dj.IdDj);
+                         await LogicaSolicitud.AsignarDjASolicitudAsync(solicitud.IdSolicitud, dj.IdDj);
                      }
                      
                      if (cboBarra.SelectedIndex > 0 && cboBarra.SelectedItem is Barra barra)
                      {
-                         await _logicaSolicitud.AsignarBarraASolicitudAsync(solicitud.IdSolicitud, barra.IdBarra);
+                         await LogicaSolicitud.AsignarBarraASolicitudAsync(solicitud.IdSolicitud, barra.IdBarra);
                      }
                     
                     if (cboGastronomico.SelectedIndex > 0 && cboGastronomico.SelectedItem is Gastronomico gastro)
                     {
-                         await _logicaSolicitud.AsignarGastronomicoASolicitudAsync(solicitud.IdSolicitud, gastro.IdGastro);
+                         await LogicaSolicitud.AsignarGastronomicoASolicitudAsync(solicitud.IdSolicitud, gastro.IdGastro);
                      }
                 }
 
                 // Calcular monto total para mostrarlo
-                decimal montoTotal = await _logicaSolicitud.CalcularMontoTotalAsync(solicitud.IdSolicitud);
+                decimal montoTotal = await LogicaSolicitud.CalcularMontoTotalAsync(solicitud.IdSolicitud);
                 
                 if (_idSolicitud.HasValue)
                 {

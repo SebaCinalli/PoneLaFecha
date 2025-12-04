@@ -255,31 +255,31 @@ this.Controls.Add(this.cboAnio);
      {
      try
 {
-      var solicitudes = await _logicaSolicitud.GetAllAsync();
-    
-  // Filtrar confirmadas y por período
-       var solicitudesFiltradas = solicitudes
-        .Where(s => s.Estado == "Confirmada")
-      .ToList();
+                var solicitudes = await LogicaSolicitud.GetAllAsync();
+                
+                // Filtrar confirmadas y por período
+                var solicitudesFiltradas = solicitudes
+                    .Where(s => s.Estado == "Confirmada")
+                    .ToList();
 
-if (cboMes.SelectedIndex > 0 && cboAnio.SelectedItem != null)
-       {
-      int mes = cboMes.SelectedIndex;
-       int anio = (int)cboAnio.SelectedItem;
-       solicitudesFiltradas = solicitudesFiltradas
- .Where(s => s.FechaDesde.Month == mes && s.FechaDesde.Year == anio)
-  .ToList();
-       }
-       else if (cboAnio.SelectedItem != null)
-  {
-       int anio = (int)cboAnio.SelectedItem;
-       solicitudesFiltradas = solicitudesFiltradas
-      .Where(s => s.FechaDesde.Year == anio)
-    .ToList();
-       }
+                if (cboMes.SelectedIndex > 0 && cboAnio.SelectedItem != null)
+                {
+                    int mes = cboMes.SelectedIndex;
+                    int anio = (int)cboAnio.SelectedItem;
+                    solicitudesFiltradas = solicitudesFiltradas
+                        .Where(s => s.FechaDesde.Month == mes && s.FechaDesde.Year == anio)
+                        .ToList();
+                }
+                else if (cboAnio.SelectedItem != null)
+                {
+                    int anio = (int)cboAnio.SelectedItem;
+                    solicitudesFiltradas = solicitudesFiltradas
+                        .Where(s => s.FechaDesde.Year == anio)
+                        .ToList();
+                }
 
-    MostrarEstadisticas(solicitudesFiltradas);
-       pnlGrafico.Invalidate();
+                MostrarEstadisticas(solicitudesFiltradas);
+                pnlGrafico.Invalidate();
    }
        catch (Exception ex)
             {

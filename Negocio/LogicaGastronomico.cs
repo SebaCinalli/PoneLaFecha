@@ -109,12 +109,40 @@ namespace Negocio
             using var context = new AppDbContext();
             if (!context.Gastronomicos.Any())
             {
-                context.Gastronomicos.Add(new Gastronomico { Nombre = "Pizza Party" });
+                context.Gastronomicos.Add(new Gastronomico 
+                { 
+                    Nombre = "Pizza Party",
+                    TipoComida = "Pizzas",
+                    MontoG = 5000,
+                    Estado = "Disponible"
+                });
+                context.Gastronomicos.Add(new Gastronomico 
+                { 
+                    Nombre = "Catering Completo",
+                    TipoComida = "Buffet",
+                    MontoG = 8000,
+                    Estado = "Disponible"
+                });
                 context.SaveChanges();
             }
             if (!context.Barras.Any())
             {
-                context.Barras.Add(new Barra { Nombre = "Barra Libre" });
+                context.Barras.Add(new Barra 
+                { 
+                    Nombre = "Barra Libre Premium",
+                    TipoBebida = "Mixta",
+                    Descripcion = "Barra con bebidas alcohólicas y sin alcohol",
+                    PrecioPorHora = 3000,
+                    Estado = "Disponible"
+                });
+                context.Barras.Add(new Barra 
+                { 
+                    Nombre = "Barra Sin Alcohol",
+                    TipoBebida = "Sin Alcohol",
+                    Descripcion = "Barra con jugos, gaseosas y tragos sin alcohol",
+                    PrecioPorHora = 1500,
+                    Estado = "Disponible"
+                });
                 context.SaveChanges();
             }
         }

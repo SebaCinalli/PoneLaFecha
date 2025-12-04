@@ -91,7 +91,9 @@ namespace Negocio
                 Apellido = usuario.Apellido,
                 Email = usuario.Email ?? string.Empty,
                 Telefono = usuario.Telefono ?? string.Empty,
-                NombreUsuario = usuario.NombreUsuario
+                NombreUsuario = usuario.NombreUsuario,
+                Clave = usuario.Password,  // Agregar la clave desde el usuario
+                Rol = usuario.Rol          // Agregar el rol desde el usuario
             };
 
             db.Clientes.Add(nuevoCliente);

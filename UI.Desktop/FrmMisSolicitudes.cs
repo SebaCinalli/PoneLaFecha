@@ -21,11 +21,8 @@ namespace UI.Desktop
         private Button btnLimpiarFiltro;
         private Label lblInfo;
 
-        private readonly LogicaSolicitud _logicaSolicitud;
-
         public FrmMisSolicitudes()
         {
-            _logicaSolicitud = new LogicaSolicitud();
             InitializeComponent();
             CargarSolicitudes();
         }
@@ -214,7 +211,7 @@ namespace UI.Desktop
                 }
 
                 // Cargar solicitudes del cliente actual
-                var solicitudes = await _logicaSolicitud.GetByClienteIdAsync(cliente.IdCliente);
+                var solicitudes = await LogicaSolicitud.GetByClienteIdAsync(cliente.IdCliente);
                 dgvSolicitudes.DataSource = solicitudes;
                 ConfigurarColumnas();
             }
@@ -278,7 +275,7 @@ namespace UI.Desktop
                     }
 
                     var estado = cboEstado.SelectedItem.ToString();
-                    var todasSolicitudes = await _logicaSolicitud.GetByClienteIdAsync(cliente.IdCliente);
+                    var todasSolicitudes = await LogicaSolicitud.GetByClienteIdAsync(cliente.IdCliente);
                     var solicitudesFiltradas = todasSolicitudes.Where(s => s.Estado == estado).ToList();
                     dgvSolicitudes.DataSource = solicitudesFiltradas;
                     ConfigurarColumnas();
@@ -372,7 +369,7 @@ namespace UI.Desktop
             {
                 try
                 {
-                    await _logicaSolicitud.CambiarEstadoAsync(solicitud.IdSolicitud, "Cancelada");
+                    await LogicaSolicitud.CambiarEstadoAsync(solicitud.IdSolicitud, "Cancelada");
                     MessageBox.Show("Solicitud cancelada correctamente.", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     CargarSolicitudes();

@@ -3,18 +3,34 @@ builder.WebHost.UseUrls("http://localhost:5115", "https://localhost:7296");
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Configure CORS to allow requests from UI.Web
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebUI", policy =>
+    {
+        policy.WithOrigins("http://localhost:5200", "https://localhost:7200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+// Enable CORS
+app.UseCors("AllowWebUI");
 
 app.UseAuthorization();
 

@@ -233,18 +233,18 @@ this.Controls.Add(this.dtpDesde);
  private async void CargarReporte()
       {
         try
-{
-          var solicitudes = await _logicaSolicitud.GetAllAsync();
-         
-    // Filtrar por rango de fechas
-            var solicitudesFiltradas = solicitudes
-          .Where(s => s.FechaDesde >= dtpDesde.Value.Date && 
-          s.FechaDesde <= dtpHasta.Value.Date)
-               .ToList();
+        {
+                var solicitudes = await LogicaSolicitud.GetAllAsync();
+                
+                // Filtrar por rango de fechas
+                var solicitudesFiltradas = solicitudes
+                    .Where(s => s.FechaDesde >= dtpDesde.Value.Date && 
+                                s.FechaDesde <= dtpHasta.Value.Date)
+                    .ToList();
 
                 MostrarEstadisticas(solicitudesFiltradas);
                 pnlGrafico.Invalidate(); // Redibujar el gráfico
-    }
+            }
             catch (Exception ex)
        {
  MessageBox.Show($"Error al cargar el reporte: {ex.Message}", "Error", 
