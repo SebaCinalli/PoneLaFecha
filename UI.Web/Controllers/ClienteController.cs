@@ -192,5 +192,54 @@ namespace UI.Web.Controllers
                 return View(cliente);
             }
         }
+
+        // Ver solicitudes del cliente logueado
+        public async Task<IActionResult> MisSolicitudes()
+        {
+            var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+            if (string.IsNullOrEmpty(nombreUsuario))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            try
+            {
+                // Obtener el cliente actual
+                var clienteResponse = await Client.GetAsync($"Cliente/usuario/{nombreUsuario}");
+                if (!clienteResponse.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = "No se pudo obtener su perfil de cliente.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var clienteContent = await clienteResponse.Content.ReadAsStringAsync();
+                var cliente = JsonSerializer.Deserialize<Cliente>(clienteContent, _jsonOptions);
+
+                if (cliente == null)
+                {
+                    TempData["Error"] = "No se pudo obtener su perfil de cliente.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                // Obtener las solicitudes del cliente
+                var solicitudesResponse = await Client.GetAsync($"Solicitud/cliente/{cliente.IdCliente}");
+                if (solicitudesResponse.IsSuccessStatusCode)
+                {
+                    var solicitudesContent = await solicitudesResponse.Content.ReadAsStringAsync();
+                    var solicitudes = JsonSerializer.Deserialize<List<Solicitud>>(solicitudesContent, _jsonOptions);
+                    return View(solicitudes ?? new List<Solicitud>());
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron cargar las solicitudes.";
+                    return View(new List<Solicitud>());
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al cargar las solicitudes: {ex.Message}";
+                return View(new List<Solicitud>());
+            }
+        }
     }
 }

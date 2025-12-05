@@ -1,0 +1,117 @@
+@model List<Entidades.Solicitud>
+
+@{
+    ViewData["Title"] = "Mis Solicitudes";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Mis Solicitudes</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @Html.Raw(TempData["Error"])
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="mb-3">
+        <a asp-controller="Solicitud" asp-action="Crear" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Solicitud
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No tiene solicitudes registradas.
+            <a asp-controller="Solicitud" asp-action="Crear" class="alert-link">Cree su primera solicitud aquí</a>.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha del Evento</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var solicitud in Model)
+                    {
+                        <tr>
+                            <td>@solicitud.IdSolicitud</td>
+                            <td>@solicitud.FechaDesde.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (solicitud.Estado == "Pendiente")
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-clock"></i> Pendiente
+                                    </span>
+                                }
+                                else if (solicitud.Estado == "Aprobada" || solicitud.Estado == "Confirmada")
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Aprobada
+                                    </span>
+                                }
+                                else if (solicitud.Estado == "Rechazada" || solicitud.Estado == "Cancelada")
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Rechazada
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@solicitud.Estado</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a asp-controller="Solicitud" asp-action="Detalles" asp-route-id="@solicitud.IdSolicitud" 
+                                       class="btn btn-sm btn-info" title="Ver detalles">
+                                        <i class="bi bi-eye"></i> Ver Detalles
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <p class="text-muted">
+                <i class="bi bi-info-circle"></i> 
+                Total de solicitudes: <strong>@Model.Count</strong>
+            </p>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Inicio
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    </script>
+}

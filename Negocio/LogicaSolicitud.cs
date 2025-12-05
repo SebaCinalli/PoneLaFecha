@@ -77,9 +77,18 @@ namespace Negocio
         public static async Task<List<Solicitud>> GetByClienteIdAsync(int clienteId)
         {
             using var context = new AppDbContext();
+            // Use AsNoTracking to avoid circular reference tracking issues
             return await context.Solicitudes
+                .AsNoTracking()
                 .Where(s => s.IdCliente == clienteId)
-                .Include(s => s.Cliente)
+                .Select(s => new Solicitud
+                {
+                    IdSolicitud = s.IdSolicitud,
+                    IdCliente = s.IdCliente,
+                    FechaDesde = s.FechaDesde,
+                    Estado = s.Estado
+                    // Don't include Cliente to avoid circular reference
+                })
                 .OrderByDescending(s => s.FechaDesde)
                 .ToListAsync();
         }
@@ -88,6 +97,7 @@ namespace Negocio
         {
             using var context = new AppDbContext();
             return await context.Solicitudes
+                .AsNoTracking()
                 .Where(s => s.Estado == estado)
                 .Include(s => s.Cliente)
                 .ToListAsync();

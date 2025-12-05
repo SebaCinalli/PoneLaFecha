@@ -32,6 +32,78 @@ namespace UI.Web.Controllers
             return View(new List<Solicitud>());
         }
 
+        public async Task<IActionResult> Detalles(int id)
+        {
+            try
+            {
+                var response = await Client.GetAsync($"Solicitud/{id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = "No se pudo cargar la solicitud.";
+                    return RedirectToAction("Index");
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var solicitud = JsonSerializer.Deserialize<Solicitud>(content, _jsonOptions);
+
+                if (solicitud == null)
+                {
+                    TempData["Error"] = "Solicitud no encontrada.";
+                    return RedirectToAction("Index");
+                }
+
+                // Calcular monto total (puedes agregar un endpoint en el API para esto)
+                decimal montoTotal = 0;
+                
+                if (solicitud.SalonSolicitudes != null)
+                {
+                    foreach (var ss in solicitud.SalonSolicitudes)
+                    {
+                        if (ss.Salon != null)
+                            montoTotal += ss.Salon.MontoSalon;
+                    }
+                }
+
+                if (solicitud.BarraSolicitudes != null)
+                {
+                    foreach (var bs in solicitud.BarraSolicitudes)
+                    {
+                        if (bs.Barra != null)
+                            montoTotal += bs.Barra.PrecioPorHora;
+                    }
+                }
+
+                if (solicitud.GastroSolicitudes != null)
+                {
+                    foreach (var gs in solicitud.GastroSolicitudes)
+                    {
+                        if (gs.Gastronomico != null)
+                            montoTotal += gs.Gastronomico.MontoG;
+                    }
+                }
+
+                if (solicitud.DjSolicitudes != null)
+                {
+                    foreach (var ds in solicitud.DjSolicitudes)
+                    {
+                        if (ds.Dj != null)
+                            montoTotal += ds.Dj.MontoDj;
+                    }
+                }
+
+                ViewBag.MontoTotal = montoTotal;
+                ViewBag.Rol = HttpContext.Session.GetString("Rol");
+
+                return View(solicitud);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading solicitud details");
+                TempData["Error"] = $"Error al cargar los detalles: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
         public async Task<IActionResult> Crear()
         {
             // Verificar que el usuario esté logueado
@@ -247,6 +319,38 @@ namespace UI.Web.Controllers
             else
                 TempData["Error"] = "Error al rechazar la solicitud.";
                 
+            return RedirectToAction("Index");
+        }
+
+        // Método para eliminar solicitudes - Solo para Administradores
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            // Verificar que el usuario sea Administrador
+            var rol = HttpContext.Session.GetString("Rol");
+            if (rol != "Administrador")
+            {
+                TempData["Error"] = "No tiene permisos para eliminar solicitudes. Solo los administradores pueden realizar esta acción.";
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                var response = await Client.DeleteAsync($"Solicitud/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Solicitud eliminada correctamente.";
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    TempData["Error"] = $"Error al eliminar la solicitud: {errorContent}";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar solicitud {Id}", id);
+                TempData["Error"] = $"Error al eliminar: {ex.Message}";
+            }
             return RedirectToAction("Index");
         }
     }
