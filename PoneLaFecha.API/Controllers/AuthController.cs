@@ -33,7 +33,7 @@ namespace PoneLaFecha.API.Controllers
                 if (usuario != null)
                 {
                     _logger.LogInformation("Login exitoso para usuario: {Username}", request.Username);
-                    return Ok(usuario);
+                    return Ok(new { usuario = usuario });
                 }
 
                 // Si no es usuario, intentar login como Cliente
@@ -41,7 +41,7 @@ namespace PoneLaFecha.API.Controllers
                 if (cliente != null)
                 {
                     _logger.LogInformation("Login exitoso para cliente: {Username}", request.Username);
-                    return Ok(cliente);
+                    return Ok(new { usuario = cliente });
                 }
                 
                 _logger.LogWarning("Login fallido para usuario: {Username}", request.Username);
@@ -129,19 +129,43 @@ namespace PoneLaFecha.API.Controllers
                     return BadRequest("La contraseña debe tener al menos 6 caracteres");
                 }
 
-                // Verificar si el usuario ya existe
-                var usuarioExistente = LogicaUsuario.ObtenerClientePorNombreUsuario(cliente.NombreUsuario);
-                if (usuarioExistente != null)
+                // Verificar si el usuario ya existe en la tabla Usuarios o Clientes
+                var usuarioExistente = LogicaUsuario.ObtenerPorNombreUsuario(cliente.NombreUsuario);
+                var clienteExistente = LogicaUsuario.ObtenerClientePorNombreUsuario(cliente.NombreUsuario);
+                
+                if (usuarioExistente != null || clienteExistente != null)
                 {
                     _logger.LogWarning("Registro fallido: Usuario ya existe - {Username}", cliente.NombreUsuario);
                     return BadRequest("El nombre de usuario ya está en uso");
                 }
 
-                // Crear el cliente
+                // Primero crear el Usuario en la tabla Usuarios
+                var nuevoUsuario = new Usuario
+                {
+                    NombreUsuario = cliente.NombreUsuario,
+                    Password = cliente.Clave,
+                    Rol = "Cliente",
+                    Nombre = cliente.Nombre,
+                    Apellido = cliente.Apellido,
+                    Email = cliente.Email,
+                    Telefono = cliente.Telefono,
+                    FechaCreacion = DateTime.Now,
+                    Activo = true
+                };
+
+                LogicaUsuario.Crear(nuevoUsuario);
+                _logger.LogInformation("Usuario creado en tabla Usuarios: {Username}", cliente.NombreUsuario);
+
+                // Luego crear el Cliente en la tabla Clientes
                 LogicaUsuario.CrearCliente(cliente);
-                _logger.LogInformation("Usuario registrado exitosamente: {Username}", cliente.NombreUsuario);
+                _logger.LogInformation("Cliente creado en tabla Clientes: {Username}", cliente.NombreUsuario);
                 
                 return Ok(new { mensaje = "Usuario registrado exitosamente" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Registro fallido: {Username}", cliente?.NombreUsuario ?? "null");
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {

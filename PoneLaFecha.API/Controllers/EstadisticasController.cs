@@ -14,8 +14,8 @@ namespace PoneLaFecha.API.Controllers
             var zonas = LogicaZona.Listar();
             var salones = LogicaSalon.Listar();
             var djs = LogicaDj.Listar();
-            var barras = LogicaGastronomico.ListarBarras();
-            var comidas = LogicaGastronomico.Listar();
+            var barras = LogicaBarra.Listar();
+            var gastronomicos = LogicaGastronomico.Listar();
 
             return Ok(new
             {
@@ -24,7 +24,12 @@ namespace PoneLaFecha.API.Controllers
                 TotalSalones = salones.Count,
                 TotalDjs = djs.Count,
                 TotalBarras = barras.Count,
-                TotalComidas = comidas.Count
+                TotalComidas = gastronomicos.Count,
+                TotalGastronomicos = gastronomicos.Count,
+                Salones = salones,
+                Barras = barras,
+                Djs = djs,
+                Gastronomicos = gastronomicos
             });
         }
     }

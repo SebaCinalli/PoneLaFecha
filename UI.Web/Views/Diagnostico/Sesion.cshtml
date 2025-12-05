@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "Diagnóstico de Sesión";
+}
+
+<div class="container mt-4">
+    <h2>Diagnóstico de Sesión</h2>
+    <p>Esta página muestra información de debug sobre tu sesión actual.</p>
+
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h4>Información de Sesión</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Clave</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.Diagnostico)
+                    {
+                        <tr>
+                            <td><strong>@item.Key</strong></td>
+                            <td>
+                                @if (item.Key.Contains("Response"))
+                                {
+                                    <pre style="max-height: 200px; overflow-y: auto;">@item.Value</pre>
+                                }
+                                else
+                                {
+                                    @item.Value
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Volver al Inicio</a>
+        <a href="@Url.Action("Logout", "Auth")" class="btn btn-danger">Cerrar Sesión</a>
+    </div>
+</div>

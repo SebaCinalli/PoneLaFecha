@@ -50,6 +50,40 @@ namespace UI.Desktop
                 LogicaGastronomico.CrearDatosEjemplo();
 
                 Application.Run(new FrmLogin());
+                
+                // Después del login, abrir el menú correspondiente
+                while (true)
+                {
+                    var frmLogin = new FrmLogin();
+                    Application.Run(frmLogin);
+                    
+                    if (!frmLogin.LoginExitoso)
+                    {
+                        break; // Salir si no hubo login exitoso
+                    }
+                    
+                    // Abrir el menú correspondiente según el rol
+                    if (SesionUsuario.EsAdministrador)
+                    {
+                        var frmMenu = new FrmMenuPrincipal();
+                        frmMenu.ShowDialog();
+                        
+                        if (!frmMenu.CerroSesion)
+                        {
+                            break; // Salir si cerró la aplicación
+                        }
+                    }
+                    else if (SesionUsuario.EsCliente)
+                    {
+                        var frmMenuCliente = new FrmMenuCliente();
+                        frmMenuCliente.ShowDialog();
+                        
+                        if (!frmMenuCliente.CerroSesion)
+                        {
+                            break; // Salir si cerró la aplicación
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {

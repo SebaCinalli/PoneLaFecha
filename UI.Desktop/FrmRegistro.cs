@@ -1,4 +1,4 @@
-using System;
+锘縰sing System;
 using System.Windows.Forms;
 using Negocio;
 using Entidades;
@@ -92,7 +92,7 @@ namespace UI.Desktop
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new Size(75, 15);
             this.lblPassword.TabIndex = 3;
-            this.lblPassword.Text = "Contrase馻:*";
+            this.lblPassword.Text = "Contrase帽a:*";
 
             // 
             // txtPassword
@@ -112,7 +112,7 @@ namespace UI.Desktop
             this.lblConfirmarPassword.Name = "lblConfirmarPassword";
             this.lblConfirmarPassword.Size = new Size(133, 15);
             this.lblConfirmarPassword.TabIndex = 5;
-            this.lblConfirmarPassword.Text = "Confirmar Contrase馻:*";
+            this.lblConfirmarPassword.Text = "Confirmar Contrase帽a:*";
 
             // 
             // txtConfirmarPassword
@@ -132,7 +132,7 @@ namespace UI.Desktop
             this.chkMostrarPassword.Name = "chkMostrarPassword";
             this.chkMostrarPassword.Size = new Size(129, 19);
             this.chkMostrarPassword.TabIndex = 4;
-            this.chkMostrarPassword.Text = "Mostrar contrase馻s";
+            this.chkMostrarPassword.Text = "Mostrar contrase帽as";
             this.chkMostrarPassword.UseVisualStyleBackColor = true;
             this.chkMostrarPassword.CheckedChanged += ChkMostrarPassword_CheckedChanged;
 
@@ -201,7 +201,7 @@ namespace UI.Desktop
             this.lblTelefono.Name = "lblTelefono";
             this.lblTelefono.Size = new Size(58, 15);
             this.lblTelefono.TabIndex = 13;
-            this.lblTelefono.Text = "Tel閒ono:";
+            this.lblTelefono.Text = "Tel茅fono:";
 
             // 
             // txtTelefono
@@ -301,7 +301,23 @@ namespace UI.Desktop
                         Activo = true
                     };
 
+                    // Crear el usuario en la tabla Usuarios
                     LogicaUsuario.Crear(nuevoUsuario);
+                    
+                    // Crear tambi茅n el cliente en la tabla Clientes para compatibilidad
+                    var nuevoCliente = new Cliente
+                    {
+                        NombreUsuario = txtNombreUsuario.Text.Trim(),
+                        Clave = txtPassword.Text.Trim(),
+                        Rol = "Cliente",
+                        Nombre = txtNombre.Text.Trim(),
+                        Apellido = txtApellido.Text.Trim(),
+                        Email = string.IsNullOrWhiteSpace(txtEmail.Text) ? string.Empty : txtEmail.Text.Trim(),
+                        Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? string.Empty : txtTelefono.Text.Trim()
+                    };
+                    
+                    LogicaUsuario.CrearCliente(nuevoCliente);
+                    
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
@@ -324,7 +340,7 @@ namespace UI.Desktop
             // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(txtNombreUsuario.Text))
             {
-                MessageBox.Show("El nombre de usuario es obligatorio.", "Error de Validaci髇", 
+                MessageBox.Show("El nombre de usuario es obligatorio.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNombreUsuario.Focus();
                 return false;
@@ -332,7 +348,7 @@ namespace UI.Desktop
 
             if (string.IsNullOrWhiteSpace(txtPassword.Text))
             {
-                MessageBox.Show("La contrase馻 es obligatoria.", "Error de Validaci髇", 
+                MessageBox.Show("La contrase帽a es obligatoria.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtPassword.Focus();
                 return false;
@@ -340,7 +356,7 @@ namespace UI.Desktop
 
             if (txtPassword.Text.Length < 6)
             {
-                MessageBox.Show("La contrase馻 debe tener al menos 6 caracteres.", "Error de Validaci髇", 
+                MessageBox.Show("La contrase帽a debe tener al menos 6 caracteres.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtPassword.Focus();
                 return false;
@@ -348,7 +364,7 @@ namespace UI.Desktop
 
             if (txtPassword.Text != txtConfirmarPassword.Text)
             {
-                MessageBox.Show("Las contrase馻s no coinciden.", "Error de Validaci髇", 
+                MessageBox.Show("Las contrase帽as no coinciden.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtConfirmarPassword.Focus();
                 return false;
@@ -356,7 +372,7 @@ namespace UI.Desktop
 
             if (string.IsNullOrWhiteSpace(txtNombre.Text))
             {
-                MessageBox.Show("El nombre es obligatorio.", "Error de Validaci髇", 
+                MessageBox.Show("El nombre es obligatorio.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNombre.Focus();
                 return false;
@@ -364,7 +380,7 @@ namespace UI.Desktop
 
             if (string.IsNullOrWhiteSpace(txtApellido.Text))
             {
-                MessageBox.Show("El apellido es obligatorio.", "Error de Validaci髇", 
+                MessageBox.Show("El apellido es obligatorio.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtApellido.Focus();
                 return false;
@@ -373,17 +389,19 @@ namespace UI.Desktop
             // Validar email si se proporciona
             if (!string.IsNullOrWhiteSpace(txtEmail.Text) && !EsEmailValido(txtEmail.Text))
             {
-                MessageBox.Show("El formato del email no es v醠ido.", "Error de Validaci髇", 
+                MessageBox.Show("El formato del email no es v谩lido.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtEmail.Focus();
                 return false;
             }
 
-            // Verificar que el nombre de usuario no exista
+            // Verificar que el nombre de usuario no exista en Usuarios o Clientes
             var usuarioExistente = LogicaUsuario.ObtenerPorNombreUsuario(txtNombreUsuario.Text.Trim());
-            if (usuarioExistente != null)
+            var clienteExistente = LogicaUsuario.ObtenerClientePorNombreUsuario(txtNombreUsuario.Text.Trim());
+            
+            if (usuarioExistente != null || clienteExistente != null)
             {
-                MessageBox.Show("El nombre de usuario ya existe. Elija otro.", "Error de Validaci髇", 
+                MessageBox.Show("El nombre de usuario ya existe. Elija otro.", "Error de Validaci贸n", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNombreUsuario.Focus();
                 return false;

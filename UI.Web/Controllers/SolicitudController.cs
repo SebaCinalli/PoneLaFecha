@@ -9,10 +9,12 @@ namespace UI.Web.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly JsonSerializerOptions _jsonOptions;
+        private readonly ILogger<SolicitudController> _logger;
 
-        public SolicitudController(IHttpClientFactory httpClientFactory)
+        public SolicitudController(IHttpClientFactory httpClientFactory, ILogger<SolicitudController> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
             _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
@@ -32,6 +34,14 @@ namespace UI.Web.Controllers
 
         public async Task<IActionResult> Crear()
         {
+            // Verificar que el usuario esté logueado
+            var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+            if (string.IsNullOrEmpty(nombreUsuario))
+            {
+                TempData["Error"] = "Debe iniciar sesión para crear una solicitud.";
+                return RedirectToAction("Login", "Auth");
+            }
+
             try
             {
                 // Obtener listas de servicios disponibles
@@ -40,36 +50,42 @@ namespace UI.Web.Controllers
                 var gastroResponse = await Client.GetAsync("Gastronomico");
                 var djsResponse = await Client.GetAsync("Dj");
 
+                ViewBag.Salones = new List<Salon>();
+                ViewBag.Barras = new List<Barra>();
+                ViewBag.Gastronomicos = new List<Gastronomico>();
+                ViewBag.Djs = new List<Dj>();
+
                 if (salonesResponse.IsSuccessStatusCode)
                 {
                     var salonesContent = await salonesResponse.Content.ReadAsStringAsync();
-                    ViewBag.Salones = JsonSerializer.Deserialize<List<Salon>>(salonesContent, _jsonOptions);
+                    ViewBag.Salones = JsonSerializer.Deserialize<List<Salon>>(salonesContent, _jsonOptions) ?? new List<Salon>();
                 }
 
                 if (barrasResponse.IsSuccessStatusCode)
                 {
                     var barrasContent = await barrasResponse.Content.ReadAsStringAsync();
-                    ViewBag.Barras = JsonSerializer.Deserialize<List<Barra>>(barrasContent, _jsonOptions);
+                    ViewBag.Barras = JsonSerializer.Deserialize<List<Barra>>(barrasContent, _jsonOptions) ?? new List<Barra>();
                 }
 
                 if (gastroResponse.IsSuccessStatusCode)
                 {
                     var gastroContent = await gastroResponse.Content.ReadAsStringAsync();
-                    ViewBag.Gastronomicos = JsonSerializer.Deserialize<List<Gastronomico>>(gastroContent, _jsonOptions);
+                    ViewBag.Gastronomicos = JsonSerializer.Deserialize<List<Gastronomico>>(gastroContent, _jsonOptions) ?? new List<Gastronomico>();
                 }
 
                 if (djsResponse.IsSuccessStatusCode)
                 {
                     var djsContent = await djsResponse.Content.ReadAsStringAsync();
-                    ViewBag.Djs = JsonSerializer.Deserialize<List<Dj>>(djsContent, _jsonOptions);
+                    ViewBag.Djs = JsonSerializer.Deserialize<List<Dj>>(djsContent, _jsonOptions) ?? new List<Dj>();
                 }
 
                 return View();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al cargar datos para crear solicitud");
                 TempData["Error"] = $"Error al cargar los datos: {ex.Message}";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -82,18 +98,82 @@ namespace UI.Web.Controllers
         {
             try
             {
-                // Obtener el IdCliente de la sesión
-                var idClienteStr = HttpContext.Session.GetString("IdCliente");
-                if (string.IsNullOrEmpty(idClienteStr))
+                // 1. Verificar sesión básica
+                var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+                if (string.IsNullOrEmpty(nombreUsuario))
                 {
-                    TempData["Error"] = "Debe iniciar sesión para crear una solicitud.";
+                    TempData["Error"] = "Su sesión ha expirado. Por favor, inicie sesión nuevamente.";
                     return RedirectToAction("Login", "Auth");
                 }
 
-                solicitud.IdCliente = int.Parse(idClienteStr);
+                // 2. Obtener IdCliente
+                int idCliente = 0;
+                
+                // 2.1 Intentar desde sesión
+                var idClienteStr = HttpContext.Session.GetString("IdCliente");
+                if (!string.IsNullOrEmpty(idClienteStr))
+                {
+                    if (int.TryParse(idClienteStr, out idCliente) && idCliente > 0)
+                    {
+                        // Tenemos el IdCliente, continuar
+                    }
+                    else
+                    {
+                        TempData["Error"] = $"El IdCliente en sesión no es válido: '{idClienteStr}'. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                
+                // 2.2 Si no está en sesión, obtener del API
+                if (idCliente <= 0)
+                {
+                    try
+                    {
+                        var clienteResponse = await Client.GetAsync($"Cliente/usuario/{nombreUsuario}");
+                        
+                        if (!clienteResponse.IsSuccessStatusCode)
+                        {
+                            var errorMsg = await clienteResponse.Content.ReadAsStringAsync();
+                            TempData["Error"] = $"No se pudo obtener su perfil de cliente. Status: {clienteResponse.StatusCode}. Error: {errorMsg}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                            return RedirectToAction("Index", "Home");
+                        }
+                        
+                        var clienteContent = await clienteResponse.Content.ReadAsStringAsync();
+                        var cliente = JsonSerializer.Deserialize<Cliente>(clienteContent, _jsonOptions);
+                        
+                        if (cliente == null)
+                        {
+                            TempData["Error"] = $"El cliente se deserializó como null. Respuesta: {clienteContent}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                            return RedirectToAction("Index", "Home");
+                        }
+                        
+                        if (cliente.IdCliente <= 0)
+                        {
+                            TempData["Error"] = $"El cliente tiene IdCliente inválido: {cliente.IdCliente}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                            return RedirectToAction("Index", "Home");
+                        }
+                        
+                        idCliente = cliente.IdCliente;
+                        HttpContext.Session.SetString("IdCliente", idCliente.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["Error"] = $"Excepción al obtener cliente del API: {ex.Message}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+                // 3. Verificar que tenemos un IdCliente válido
+                if (idCliente <= 0)
+                {
+                    TempData["Error"] = $"No se pudo determinar el IdCliente. Valor final: {idCliente}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                    return RedirectToAction("Logout", "Auth");
+                }
+
+                // 4. Crear la solicitud
+                solicitud.IdCliente = idCliente;
                 solicitud.Estado = "Pendiente";
 
-                // Crear DTO para enviar a la API
                 var solicitudDto = new
                 {
                     solicitud.IdCliente,
@@ -112,55 +192,20 @@ namespace UI.Web.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["Success"] = "Solicitud creada correctamente. Estado: Pendiente.";
-                    return RedirectToAction("Index", "Cliente");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    TempData["Error"] = $"Error al crear la solicitud: {errorContent}";
-                    return await ReloadCrearView(solicitud);
+                    TempData["Error"] = $"Error del servidor al crear solicitud (Status: {response.StatusCode}): {errorContent}";
+                    return RedirectToAction("Crear");
                 }
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Error: {ex.Message}";
-                return await ReloadCrearView(solicitud);
+                TempData["Error"] = $"Error inesperado: {ex.Message}<br/>StackTrace: {ex.StackTrace}<br/><a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                return RedirectToAction("Index", "Home");
             }
-        }
-
-        private async Task<IActionResult> ReloadCrearView(Solicitud solicitud)
-        {
-            // Recargar los datos para la vista
-            var salonesResponse = await Client.GetAsync("Salon");
-            var barrasResponse = await Client.GetAsync("Barra");
-            var gastroResponse = await Client.GetAsync("Gastronomico");
-            var djsResponse = await Client.GetAsync("Dj");
-
-            if (salonesResponse.IsSuccessStatusCode)
-            {
-                var salonesContent = await salonesResponse.Content.ReadAsStringAsync();
-                ViewBag.Salones = JsonSerializer.Deserialize<List<Salon>>(salonesContent, _jsonOptions);
-            }
-
-            if (barrasResponse.IsSuccessStatusCode)
-            {
-                var barrasContent = await barrasResponse.Content.ReadAsStringAsync();
-                ViewBag.Barras = JsonSerializer.Deserialize<List<Barra>>(barrasContent, _jsonOptions);
-            }
-
-            if (gastroResponse.IsSuccessStatusCode)
-            {
-                var gastroContent = await gastroResponse.Content.ReadAsStringAsync();
-                ViewBag.Gastronomicos = JsonSerializer.Deserialize<List<Gastronomico>>(gastroContent, _jsonOptions);
-            }
-
-            if (djsResponse.IsSuccessStatusCode)
-            {
-                var djsContent = await djsResponse.Content.ReadAsStringAsync();
-                ViewBag.Djs = JsonSerializer.Deserialize<List<Dj>>(djsContent, _jsonOptions);
-            }
-
-            return View("Crear", solicitud);
         }
 
         public async Task<IActionResult> Pendientes()

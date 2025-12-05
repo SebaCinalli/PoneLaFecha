@@ -11,122 +11,122 @@
     <title>@ViewData["Title"] - PoneLaFecha</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
-body {
+        body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-       min-height: 100vh;
-      display: flex;
-      align-items: center;
-       justify-content: center;
-     padding: 20px 0;
-   }
-   .register-container {
-  background: white;
-      border-radius: 15px;
- box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 40px;
-      max-width: 500px;
-         width: 100%;
-         margin: 20px auto;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
         }
-   .register-header {
+        .register-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            margin: 20px auto;
+        }
+        .register-header {
             text-align: center;
- margin-bottom: 30px;
-   }
-.register-header h1 {
-   color: #667eea;
-       font-weight: bold;
-  margin-bottom: 10px;
-  }
+            margin-bottom: 30px;
+        }
+        .register-header h1 {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
         .register-header p {
             color: #6c757d;
-     }
-        .form-control {
-padding: 12px;
-          border-radius: 8px;
- }
-     .btn-register {
-      width: 100%;
-       padding: 12px;
-          border-radius: 8px;
-            font-weight: bold;
-       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
         }
-   .btn-register:hover {
-     transform: translateY(-2px);
-   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
- }
-   .alert {
-border-radius: 8px;
-}
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .alert {
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="register-container">
         <div class="register-header">
-    <h1>?? PoneLaFecha</h1>
+            <h1>PoneLaFecha</h1>
             <p>Crear Nueva Cuenta</p>
-   </div>
+        </div>
 
         @if (ViewBag.Error != null)
         {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-       <strong>Error:</strong> @ViewBag.Error
-     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    }
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error:</strong> @ViewBag.Error
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
 
         <form asp-action="Register" method="post">
-   <div class="row">
-   <div class="col-md-6 mb-3">
-    <label for="nombre" class="form-label">Nombre</label>
-    <input type="text" class="form-control" id="nombre" name="nombre" required>
- </div>
-    <div class="col-md-6 mb-3">
-         <label for="apellido" class="form-label">Apellido</label>
-        <input type="text" class="form-control" id="apellido" name="apellido" required>
-       </div>
-  </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="apellido" class="form-label">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" name="apellido" required>
+                </div>
+            </div>
 
-   <div class="mb-3">
+            <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" 
-           placeholder="ejemplo@correo.com" required>
-       </div>
+                       placeholder="ejemplo@correo.com" required>
+            </div>
 
             <div class="mb-3">
-    <label for="telefono" class="form-label">Teléfono</label>
-      <input type="tel" class="form-control" id="telefono" name="telefono" 
-             placeholder="1234567890" required>
-       </div>
-
-      <div class="mb-3">
-   <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
-       <input type="text" class="form-control" id="nombreUsuario" name="nombreUsuario" 
-      placeholder="Mínimo 3 caracteres" required>
-         </div>
-
-     <div class="mb-3">
-    <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" name="password" 
-       placeholder="Mínimo 6 caracteres" required>
-      </div>
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="telefono" name="telefono" 
+                       placeholder="1234567890" required>
+            </div>
 
             <div class="mb-3">
-         <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
- <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
-   placeholder="Repita la contraseña" required>
- </div>
+                <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
+                <input type="text" class="form-control" id="nombreUsuario" name="nombreUsuario" 
+                       placeholder="Mínimo 3 caracteres" required>
+            </div>
 
- <button type="submit" class="btn btn-primary btn-register">Registrarse</button>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" 
+                       placeholder="Mínimo 6 caracteres" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                       placeholder="Repita la contraseña" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-register">Registrarse</button>
         </form>
 
         <div class="text-center mt-3">
             <p class="mb-0">¿Ya tienes cuenta? 
                 <a asp-action="Login" class="text-decoration-none fw-bold">Inicia sesión aquí</a>
-         </p>
-   </div>
-</div>
+            </p>
+        </div>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
