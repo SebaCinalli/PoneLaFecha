@@ -87,25 +87,25 @@ namespace UI.Desktop
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al inicializar la aplicacin:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-                    "Error Crtico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al inicializar la aplicación:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
+                    "Error Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-    MessageBox.Show($"Error no controlado:\n{e.Exception.Message}\n\nDetalles:\n{e.Exception.ToString()}", 
-    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error no controlado:\n{e.Exception.Message}\n\nDetalles:\n{e.Exception.ToString()}", 
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
- private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-    Exception ex = e.ExceptionObject as Exception;
-      if (ex != null)
+            Exception ex = e.ExceptionObject as Exception;
+            if (ex != null)
             {
-  MessageBox.Show($"Error fatal:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-     "Error Fatal", MessageBoxButtons.OK, MessageBoxIcon.Error);
-     }
-}
-  }
+                MessageBox.Show($"Error fatal:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
+                    "Error Fatal", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
 }
