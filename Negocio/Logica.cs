@@ -63,26 +63,26 @@ namespace Negocio
                     new Barra
                     {
                         Nombre = "Barra Premium",
-                        TipoBebida = "Licores Premium",
-                        PrecioPorHora = 15000.00m,
-                        Estado = "Disponible",
-                        Descripcion = "Barra completa con licores premium y cócteles exclusivos"
+                        TipoBebida = "Mixta",
+                        Descripcion = "Barra completa con bebidas alcohólicas premium y sin alcohol",
+                        PrecioPorHora = 5000.00m,
+                        Estado = "Disponible"
                     },
                     new Barra
                     {
                         Nombre = "Barra Estándar",
-                        TipoBebida = "Bebidas Estándar",
-                        PrecioPorHora = 8000.00m,
-                        Estado = "Disponible",
-                        Descripcion = "Barra con selección estándar de bebidas y cócteles básicos"
+                        TipoBebida = "Estándar",
+                        Descripcion = "Barra con bebidas alcohólicas y sin alcohol básicas",
+                        PrecioPorHora = 3000.00m,
+                        Estado = "Disponible"
                     },
                     new Barra
                     {
-                        Nombre = "Barra de Vinos",
-                        TipoBebida = "Vinos y Champagne",
-                        PrecioPorHora = 12000.00m,
-                        Estado = "Mantenimiento",
-                        Descripcion = "Especializada en vinos finos y champagne"
+                        Nombre = "Barra Sin Alcohol",
+                        TipoBebida = "Sin Alcohol",
+                        Descripcion = "Barra con jugos, gaseosas y tragos sin alcohol",
+                        PrecioPorHora = 1500.00m,
+                        Estado = "Disponible"
                     }
                 };
                 

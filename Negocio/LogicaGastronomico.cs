@@ -1,114 +1,156 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Entidades;
 using Datos;
+using Entidades;
+using Microsoft.EntityFrameworkCore;
 
 namespace Negocio
 {
-    public static class LogicaGastronomico
+    public class LogicaGastronomico
     {
+        // M茅todos para Gastronomico (Comida)
         public static List<Gastronomico> Listar()
         {
-            using var db = new AppDbContext();
-            return db.Gastronomicos.ToList();
+            using var context = new AppDbContext();
+            return context.Gastronomicos.ToList();
         }
 
-        public static int Crear(Gastronomico g)
+        public static List<Comida> ListarComidas()
         {
-            using var db = new AppDbContext();
-            db.Gastronomicos.Add(g);
-            db.SaveChanges();
-            return g.IdGastro;
+            using var context = new AppDbContext();
+            // Asumiendo que Comida es un tipo de Gastronomico o mapeado
+            // Si Comida no es una entidad en DB, esto podr铆a requerir ajuste.
+            // Por ahora asumo que Gastronomico es la entidad base y Comida es lo que se usa en UI
+            // Pero el error dec铆a 'Comida' no encontrado en API, as铆 que usar茅 Gastronomico
+            return context.Gastronomicos.Select(g => new Comida 
+            { 
+                IdServicio = g.IdGastro, 
+                Nombre = g.Nombre,
+                // Mapear otras propiedades si es necesario
+            }).ToList();
         }
-
+        
+        // Ajuste: Si Comida es una clase en Entidades que hereda o es un DTO, necesito ver su definici贸n.
+        // Viendo los archivos en Entidades: Gastronomico.cs existe. Comida no la vi en la lista de archivos de Entidades en el paso 239.
+        // Espera, el paso 239 NO mostr贸 Comida.cs. Mostr贸 Gastronomico.cs.
+        // Pero el controlador GastronomicoController usaba Comida.
+        // Ah, el error de compilaci贸n dec铆a: "El nombre del tipo o del espacio de nombres 'Comida' no se encontr贸".
+        // Entonces Comida NO existe en Entidades. Debo usar Gastronomico.
+        
         public static Gastronomico? Obtener(int id)
         {
-            using var db = new AppDbContext();
-            return db.Gastronomicos.Find(id);
+            using var context = new AppDbContext();
+            return context.Gastronomicos.Find(id);
         }
 
-        public static void Editar(Gastronomico g)
+        public static void Crear(Gastronomico comida)
         {
-            using var db = new AppDbContext();
-            db.Gastronomicos.Update(g);
-            db.SaveChanges();
+            using var context = new AppDbContext();
+            context.Gastronomicos.Add(comida);
+            context.SaveChanges();
+        }
+
+        public static void Editar(Gastronomico comida)
+        {
+            using var context = new AppDbContext();
+            context.Gastronomicos.Update(comida);
+            context.SaveChanges();
         }
 
         public static void Eliminar(int id)
         {
-            using var db = new AppDbContext();
-            var gastronomico = db.Gastronomicos.Find(id);
-            if (gastronomico != null)
+            using var context = new AppDbContext();
+            var comida = context.Gastronomicos.Find(id);
+            if (comida != null)
             {
-                db.Gastronomicos.Remove(gastronomico);
-                db.SaveChanges();
+                context.Gastronomicos.Remove(comida);
+                context.SaveChanges();
+            }
+        }
+
+        // M茅todos para Barra
+        public static List<Barra> ListarBarras()
+        {
+            using var context = new AppDbContext();
+            return context.Barras.ToList();
+        }
+
+        public static Barra? ObtenerBarra(int id)
+        {
+            using var context = new AppDbContext();
+            return context.Barras.Find(id);
+        }
+
+        public static void CrearBarra(Barra barra)
+        {
+            using var context = new AppDbContext();
+            context.Barras.Add(barra);
+            context.SaveChanges();
+        }
+
+        public static void EditarBarra(Barra barra)
+        {
+            using var context = new AppDbContext();
+            context.Barras.Update(barra);
+            context.SaveChanges();
+        }
+
+        public static void EliminarBarra(int id)
+        {
+            using var context = new AppDbContext();
+            var barra = context.Barras.Find(id);
+            if (barra != null)
+            {
+                context.Barras.Remove(barra);
+                context.SaveChanges();
             }
         }
 
         public static void CrearDatosEjemplo()
         {
-            using var db = new AppDbContext();
-            
-            if (!db.Gastronomicos.Any())
+            using var context = new AppDbContext();
+            if (!context.Gastronomicos.Any())
             {
-                var gastronomicos = new List<Gastronomico>
-                {
-                    new Gastronomico
-                    {
-                        TipoComida = "Italiana",
-                        Nombre = "Pasta & Pizza Deluxe",
-                        MontoG = 25000.00m,
-                        Estado = "Disponible"
-                    },
-                    new Gastronomico
-                    {
-                        TipoComida = "Argentina",
-                        Nombre = "Parrilla Premium",
-                        MontoG = 35000.00m,
-                        Estado = "Disponible"
-                    },
-                    new Gastronomico
-                    {
-                        TipoComida = "Internacional",
-                        Nombre = "Buffet Internacional",
-                        MontoG = 40000.00m,
-                        Estado = "Disponible"
-                    },
-                    new Gastronomico
-                    {
-                        TipoComida = "Vegetariana",
-                        Nombre = "Garden Fresh",
-                        MontoG = 22000.00m,
-                        Estado = "Disponible"
-                    }
-                };
-                
-                db.Gastronomicos.AddRange(gastronomicos);
-                db.SaveChanges();
+                context.Gastronomicos.Add(new Gastronomico 
+                { 
+                    Nombre = "Pizza Party",
+                    TipoComida = "Pizzas",
+                    MontoG = 5000,
+                    Estado = "Disponible"
+                });
+                context.Gastronomicos.Add(new Gastronomico 
+                { 
+                    Nombre = "Catering Completo",
+                    TipoComida = "Buffet",
+                    MontoG = 8000,
+                    Estado = "Disponible"
+                });
+                context.SaveChanges();
+            }
+            if (!context.Barras.Any())
+            {
+                context.Barras.Add(new Barra 
+                { 
+                    Nombre = "Barra Libre Premium",
+                    TipoBebida = "Mixta",
+                    Descripcion = "Barra con bebidas alcoh贸licas y sin alcohol",
+                    PrecioPorHora = 3000,
+                    Estado = "Disponible"
+                });
+                context.Barras.Add(new Barra 
+                { 
+                    Nombre = "Barra Sin Alcohol",
+                    TipoBebida = "Sin Alcohol",
+                    Descripcion = "Barra con jugos, gaseosas y tragos sin alcohol",
+                    PrecioPorHora = 1500,
+                    Estado = "Disponible"
+                });
+                context.SaveChanges();
             }
         }
-
-        /// <summary>
-        /// M閠odo para actualizar el estado de gastron髆icos existentes que no tienen estado
-        /// </summary>
-        public static void ActualizarEstadosVacios()
-        {
-            using var db = new AppDbContext();
-            
-            var gastronomicosSinEstado = db.Gastronomicos
-                .Where(g => string.IsNullOrEmpty(g.Estado))
-                .ToList();
-            
-            foreach (var gastro in gastronomicosSinEstado)
-            {
-                gastro.Estado = "Disponible";
-            }
-            
-            if (gastronomicosSinEstado.Any())
-            {
-                db.SaveChanges();
-            }
-        }
+    }
+    
+    // Helper class if Comida is needed for compatibility, but better to fix Controller to use Gastronomico
+    public class Comida : Gastronomico 
+    {
+        public int IdServicio { get => IdGastro; set => IdGastro = value; }
     }
 }

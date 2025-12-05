@@ -1,72 +1,112 @@
 using Microsoft.AspNetCore.Mvc;
 using Entidades;
-using Negocio;
+using System.Text.Json;
+using System.Text;
 
 namespace UI.Web.Controllers
 {
     public class ZonaController : Controller
     {
-  private readonly LogicaZona _logicaZona;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonOptions;
 
-        public ZonaController()
+        public ZonaController(IHttpClientFactory httpClientFactory)
         {
-            _logicaZona = new LogicaZona();
-  }
+            _httpClientFactory = httpClientFactory;
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        }
 
-   public async Task<IActionResult> Index()
+        private HttpClient Client => _httpClientFactory.CreateClient("API");
+
+        public async Task<IActionResult> Index()
         {
-  var zonas = await _logicaZona.GetAllAsync();
-            return View(zonas);
-  }
+            var response = await Client.GetAsync("Zona");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var zonas = JsonSerializer.Deserialize<List<Zona>>(content, _jsonOptions);
+                return View(zonas);
+            }
+            return View(new List<Zona>());
+        }
 
- public IActionResult Crear() => View();
+        public IActionResult Crear() => View();
 
         [HttpPost]
         public async Task<IActionResult> Crear(Zona zona)
-   {
-       if (ModelState.IsValid)
-            {
-        await _logicaZona.CreateAsync(zona);
-  return RedirectToAction("Index");
-    }
-    return View(zona);
- }
-
-  public async Task<IActionResult> Editar(int id)
-   {
-       var zona = await _logicaZona.GetByIdAsync(id);
-    return zona == null ? NotFound() : View(zona);
-        }
-
- [HttpPost]
-public async Task<IActionResult> Editar(Zona zona)
-   {
-            if (ModelState.IsValid)
-            {
-       await _logicaZona.UpdateAsync(zona);
-          return RedirectToAction("Index");
-   }
-   return View(zona);
-        }
-
-      public async Task<IActionResult> Eliminar(int id)
         {
-            await _logicaZona.DeleteAsync(id);
+            try
+            {
+                var json = JsonSerializer.Serialize(zona);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PostAsync("Zona", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Zona creada correctamente.";
+                    return RedirectToAction("Index");
+                }
+                TempData["Error"] = "Error al crear la zona.";
+                return View(zona);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+                return View(zona);
+            }
+        }
+
+        public async Task<IActionResult> Editar(int id)
+        {
+            var response = await Client.GetAsync($"Zona/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var zona = JsonSerializer.Deserialize<Zona>(content, _jsonOptions);
+                return View(zona);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Editar(Zona zona)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(zona);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PutAsync($"Zona/{zona.IdZona}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Zona modificada correctamente.";
+                    return RedirectToAction("Index");
+                }
+                TempData["Error"] = "Error al modificar la zona.";
+                return View(zona);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+                return View(zona);
+            }
+        }
+
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            try
+            {
+                var response = await Client.DeleteAsync($"Zona/{id}");
+                if (response.IsSuccessStatusCode)
+                    TempData["Success"] = "Zona eliminada correctamente.";
+                else
+                    TempData["Error"] = "Error al eliminar la zona.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+            }
             return RedirectToAction("Index");
-   }
-
-   public async Task<IActionResult> Detalles(int id)
-  {
- var zona = await _logicaZona.GetByIdAsync(id);
-            if (zona == null)
-     return NotFound();
-
-     ViewBag.Salones = await _logicaZona.GetSalonesPorZonaAsync(id);
-            ViewBag.Barras = await _logicaZona.GetBarrasPorZonaAsync(id);
-  ViewBag.Gastronomicos = await _logicaZona.GetGastronomicosPorZonaAsync(id);
-            ViewBag.Djs = await _logicaZona.GetDjsPorZonaAsync(id);
-
-      return View(zona);
- }
+        }
     }
 }

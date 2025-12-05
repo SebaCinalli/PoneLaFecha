@@ -1,242 +1,357 @@
 using Microsoft.AspNetCore.Mvc;
 using Entidades;
-using Negocio;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json;
+using System.Text;
 
 namespace UI.Web.Controllers
 {
     public class SolicitudController : Controller
     {
-        private readonly LogicaSolicitud _logicaSolicitud;
-        private readonly LogicaZona _logicaZona;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonOptions;
+        private readonly ILogger<SolicitudController> _logger;
 
-     public SolicitudController()
-   {
-       _logicaSolicitud = new LogicaSolicitud();
-  _logicaZona = new LogicaZona();
-    }
-
-  public async Task<IActionResult> Index()
-     {
-   var solicitudes = await _logicaSolicitud.GetAllAsync();
-       return View(solicitudes);
-}
-
-  public async Task<IActionResult> Crear()
-   {
-       // Verificar autenticación
-       var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
-       if (string.IsNullOrEmpty(nombreUsuario))
-       {
-      return RedirectToAction("Login", "Auth");
-       }
-
-  await CargarListasAsync();
-       return View();
-    }
-
-  [HttpPost]
-  public async Task<IActionResult> Crear(DateTime FechaDesde, int[] salonesSeleccionados, int[] barrasSeleccionadas, int[] gastrosSeleccionados, int[] djsSeleccionados)
-   {
- try
-       {
-      // Verificar autenticación
-   var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
-        if (string.IsNullOrEmpty(nombreUsuario))
-   {
-     TempData["Error"] = "Debe iniciar sesión para crear una solicitud.";
-       return RedirectToAction("Login", "Auth");
- }
-
-    // Obtener el cliente asociado al usuario logueado
-        var cliente = LogicaCliente.ObtenerPorNombreUsuario(nombreUsuario);
-           if (cliente == null)
-   {
-      TempData["Error"] = "No se encontró el cliente asociado a su usuario. Por favor, contacte al administrador.";
-await CargarListasAsync();
-         return View();
-       }
-
-           // Validar fecha
-        if (FechaDesde < DateTime.Today)
-    {
-   TempData["Error"] = "La fecha del evento no puede ser anterior a hoy.";
-    await CargarListasAsync();
-   return View();
-           }
-
-     // Crear la solicitud con datos automáticos
-  var solicitud = new Solicitud
-    {
-         IdCliente = cliente.IdCliente,
-             FechaDesde = FechaDesde,
-    Estado = "Pendiente" // Estado automático
- };
-
-       // Crear la solicitud
-           await _logicaSolicitud.CreateAsync(solicitud);
-
-      // Asignar servicios seleccionados
-       if (salonesSeleccionados != null && salonesSeleccionados.Length > 0)
-    {
-  foreach (var idSalon in salonesSeleccionados)
-   {
-      await _logicaSolicitud.AsignarSalonASolicitudAsync(solicitud.IdSolicitud, idSalon);
-}
-      }
-
-   if (barrasSeleccionadas != null && barrasSeleccionadas.Length > 0)
-         {
-foreach (var idBarra in barrasSeleccionadas)
-          {
-      await _logicaSolicitud.AsignarBarraASolicitudAsync(solicitud.IdSolicitud, idBarra);
-     }
-         }
-
-    if (gastrosSeleccionados != null && gastrosSeleccionados.Length > 0)
-    {
-        foreach (var idGastro in gastrosSeleccionados)
+        public SolicitudController(IHttpClientFactory httpClientFactory, ILogger<SolicitudController> logger)
         {
-  await _logicaSolicitud.AsignarGastronomicoASolicitudAsync(solicitud.IdSolicitud, idGastro);
-  }
-          }
-
-     if (djsSeleccionados != null && djsSeleccionados.Length > 0)
-   {
-       foreach (var idDj in djsSeleccionados)
-         {
-         await _logicaSolicitud.AsignarDjASolicitudAsync(solicitud.IdSolicitud, idDj);
-   }
-      }
-
-      TempData["Success"] = "Solicitud creada exitosamente con estado Pendiente.";
-        return RedirectToAction("Index");
-       }
-   catch (Exception ex)
-       {
-    TempData["Error"] = $"Error al crear la solicitud: {ex.Message}";
-    await CargarListasAsync();
-return View();
-    }
- }
-
-  public async Task<IActionResult> Editar(int id)
-     {
-       // Solo administradores pueden editar
-       var rol = HttpContext.Session.GetString("Rol");
-    if (rol != "Administrador")
-       {
-       TempData["Error"] = "Solo los administradores pueden editar solicitudes.";
-           return RedirectToAction("Index");
-  }
-
-    var solicitud = await _logicaSolicitud.GetByIdAsync(id);
-     if (solicitud == null)
-      return NotFound();
-
-   await CargarListasAsync();
-   return View(solicitud);
- }
-
-     [HttpPost]
-  public async Task<IActionResult> Editar(Solicitud solicitud)
-   {
-       // Solo administradores pueden editar
-       var rol = HttpContext.Session.GetString("Rol");
-       if (rol != "Administrador")
-       {
-    TempData["Error"] = "Solo los administradores pueden editar solicitudes.";
-    return RedirectToAction("Index");
-  }
-
-     if (ModelState.IsValid)
-   {
-  await _logicaSolicitud.UpdateAsync(solicitud);
-           TempData["Success"] = "Solicitud actualizada exitosamente.";
-       return RedirectToAction("Index");
-      }
-   await CargarListasAsync();
-   return View(solicitud);
-}
-
- public async Task<IActionResult> Eliminar(int id)
-  {
-       try
-       {
-    // Verificar autenticación
- var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
-       var rol = HttpContext.Session.GetString("Rol");
-           
-   if (string.IsNullOrEmpty(nombreUsuario))
-         {
- return RedirectToAction("Login", "Auth");
-      }
-
-           // Si es cliente, verificar que la solicitud le pertenece
-      if (rol == "Cliente")
-       {
-       var solicitud = await _logicaSolicitud.GetByIdAsync(id);
-        if (solicitud == null)
-    {
-                   return NotFound();
-               }
-
-    var cliente = LogicaCliente.ObtenerPorNombreUsuario(nombreUsuario);
-  if (cliente == null || solicitud.IdCliente != cliente.IdCliente)
-     {
-       TempData["Error"] = "No puede eliminar solicitudes que no le pertenecen.";
-    return RedirectToAction("Index");
-       }
+            _httpClientFactory = httpClientFactory;
+            _logger = logger;
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-     await _logicaSolicitud.DeleteAsync(id);
-       TempData["Success"] = "Solicitud eliminada exitosamente.";
-  return RedirectToAction("Index");
-       }
-       catch (Exception ex)
-     {
-           TempData["Error"] = $"Error al eliminar la solicitud: {ex.Message}";
-           return RedirectToAction("Index");
-       }
- }
+        private HttpClient Client => _httpClientFactory.CreateClient("API");
 
-public async Task<IActionResult> Detalles(int id)
-   {
-    var solicitud = await _logicaSolicitud.GetByIdAsync(id);
- if (solicitud == null)
-   return NotFound();
+        public async Task<IActionResult> Index()
+        {
+            var response = await Client.GetAsync("Solicitud");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var solicitudes = JsonSerializer.Deserialize<List<Solicitud>>(content, _jsonOptions);
+                return View(solicitudes);
+            }
+            return View(new List<Solicitud>());
+        }
 
-     ViewBag.MontoTotal = await _logicaSolicitud.CalcularMontoTotalAsync(id);
-       
-   // Pasar el rol a la vista para mostrar/ocultar opciones
-       ViewBag.Rol = HttpContext.Session.GetString("Rol");
-       
- return View(solicitud);
- }
+        public async Task<IActionResult> Detalles(int id)
+        {
+            try
+            {
+                var response = await Client.GetAsync($"Solicitud/{id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = "No se pudo cargar la solicitud.";
+                    return RedirectToAction("Index");
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var solicitud = JsonSerializer.Deserialize<Solicitud>(content, _jsonOptions);
+
+                if (solicitud == null)
+                {
+                    TempData["Error"] = "Solicitud no encontrada.";
+                    return RedirectToAction("Index");
+                }
+
+                // Calcular monto total (puedes agregar un endpoint en el API para esto)
+                decimal montoTotal = 0;
+                
+                if (solicitud.SalonSolicitudes != null)
+                {
+                    foreach (var ss in solicitud.SalonSolicitudes)
+                    {
+                        if (ss.Salon != null)
+                            montoTotal += ss.Salon.MontoSalon;
+                    }
+                }
+
+                if (solicitud.BarraSolicitudes != null)
+                {
+                    foreach (var bs in solicitud.BarraSolicitudes)
+                    {
+                        if (bs.Barra != null)
+                            montoTotal += bs.Barra.PrecioPorHora;
+                    }
+                }
+
+                if (solicitud.GastroSolicitudes != null)
+                {
+                    foreach (var gs in solicitud.GastroSolicitudes)
+                    {
+                        if (gs.Gastronomico != null)
+                            montoTotal += gs.Gastronomico.MontoG;
+                    }
+                }
+
+                if (solicitud.DjSolicitudes != null)
+                {
+                    foreach (var ds in solicitud.DjSolicitudes)
+                    {
+                        if (ds.Dj != null)
+                            montoTotal += ds.Dj.MontoDj;
+                    }
+                }
+
+                ViewBag.MontoTotal = montoTotal;
+                ViewBag.Rol = HttpContext.Session.GetString("Rol");
+
+                return View(solicitud);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading solicitud details");
+                TempData["Error"] = $"Error al cargar los detalles: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        public async Task<IActionResult> Crear()
+        {
+            // Verificar que el usuario esté logueado
+            var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+            if (string.IsNullOrEmpty(nombreUsuario))
+            {
+                TempData["Error"] = "Debe iniciar sesión para crear una solicitud.";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            try
+            {
+                // Obtener listas de servicios disponibles
+                var salonesResponse = await Client.GetAsync("Salon");
+                var barrasResponse = await Client.GetAsync("Barra");
+                var gastroResponse = await Client.GetAsync("Gastronomico");
+                var djsResponse = await Client.GetAsync("Dj");
+
+                ViewBag.Salones = new List<Salon>();
+                ViewBag.Barras = new List<Barra>();
+                ViewBag.Gastronomicos = new List<Gastronomico>();
+                ViewBag.Djs = new List<Dj>();
+
+                if (salonesResponse.IsSuccessStatusCode)
+                {
+                    var salonesContent = await salonesResponse.Content.ReadAsStringAsync();
+                    ViewBag.Salones = JsonSerializer.Deserialize<List<Salon>>(salonesContent, _jsonOptions) ?? new List<Salon>();
+                }
+
+                if (barrasResponse.IsSuccessStatusCode)
+                {
+                    var barrasContent = await barrasResponse.Content.ReadAsStringAsync();
+                    ViewBag.Barras = JsonSerializer.Deserialize<List<Barra>>(barrasContent, _jsonOptions) ?? new List<Barra>();
+                }
+
+                if (gastroResponse.IsSuccessStatusCode)
+                {
+                    var gastroContent = await gastroResponse.Content.ReadAsStringAsync();
+                    ViewBag.Gastronomicos = JsonSerializer.Deserialize<List<Gastronomico>>(gastroContent, _jsonOptions) ?? new List<Gastronomico>();
+                }
+
+                if (djsResponse.IsSuccessStatusCode)
+                {
+                    var djsContent = await djsResponse.Content.ReadAsStringAsync();
+                    ViewBag.Djs = JsonSerializer.Deserialize<List<Dj>>(djsContent, _jsonOptions) ?? new List<Dj>();
+                }
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar datos para crear solicitud");
+                TempData["Error"] = $"Error al cargar los datos: {ex.Message}";
+                return RedirectToAction("Index", "Home");
+            }
+        }
 
         [HttpPost]
-    public async Task<IActionResult> CambiarEstado(int id, string nuevoEstado)
-  {
-       // Solo administradores pueden cambiar el estado
-       var rol = HttpContext.Session.GetString("Rol");
-       if (rol != "Administrador")
-     {
-  TempData["Error"] = "Solo los administradores pueden cambiar el estado de las solicitudes.";
-   return RedirectToAction("Detalles", new { id });
-       }
+        public async Task<IActionResult> Crear(Solicitud solicitud, 
+            List<int>? salonesSeleccionados,
+            List<int>? barrasSeleccionadas,
+            List<int>? gastrosSeleccionados,
+            List<int>? djsSeleccionados)
+        {
+            try
+            {
+                // 1. Verificar sesión básica
+                var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+                if (string.IsNullOrEmpty(nombreUsuario))
+                {
+                    TempData["Error"] = "Su sesión ha expirado. Por favor, inicie sesión nuevamente.";
+                    return RedirectToAction("Login", "Auth");
+                }
 
- await _logicaSolicitud.CambiarEstadoAsync(id, nuevoEstado);
-TempData["Success"] = $"Estado actualizado a '{nuevoEstado}' exitosamente.";
-   return RedirectToAction("Detalles", new { id });
-   }
+                // 2. Obtener IdCliente
+                int idCliente = 0;
+                
+                // 2.1 Intentar desde sesión
+                var idClienteStr = HttpContext.Session.GetString("IdCliente");
+                if (!string.IsNullOrEmpty(idClienteStr))
+                {
+                    if (int.TryParse(idClienteStr, out idCliente) && idCliente > 0)
+                    {
+                        // Tenemos el IdCliente, continuar
+                    }
+                    else
+                    {
+                        TempData["Error"] = $"El IdCliente en sesión no es válido: '{idClienteStr}'. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                
+                // 2.2 Si no está en sesión, obtener del API
+                if (idCliente <= 0)
+                {
+                    try
+                    {
+                        var clienteResponse = await Client.GetAsync($"Cliente/usuario/{nombreUsuario}");
+                        
+                        if (!clienteResponse.IsSuccessStatusCode)
+                        {
+                            var errorMsg = await clienteResponse.Content.ReadAsStringAsync();
+                            TempData["Error"] = $"No se pudo obtener su perfil de cliente. Status: {clienteResponse.StatusCode}. Error: {errorMsg}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                            return RedirectToAction("Index", "Home");
+                        }
+                        
+                        var clienteContent = await clienteResponse.Content.ReadAsStringAsync();
+                        var cliente = JsonSerializer.Deserialize<Cliente>(clienteContent, _jsonOptions);
+                        
+                        if (cliente == null)
+                        {
+                            TempData["Error"] = $"El cliente se deserializó como null. Respuesta: {clienteContent}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                            return RedirectToAction("Index", "Home");
+                        }
+                        
+                        if (cliente.IdCliente <= 0)
+                        {
+                            TempData["Error"] = $"El cliente tiene IdCliente inválido: {cliente.IdCliente}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                            return RedirectToAction("Index", "Home");
+                        }
+                        
+                        idCliente = cliente.IdCliente;
+                        HttpContext.Session.SetString("IdCliente", idCliente.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["Error"] = $"Excepción al obtener cliente del API: {ex.Message}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
 
-   private async Task CargarListasAsync()
-  {
-    // Filtrar solo servicios en mantenimiento (los ocupados se mostrarán pero deshabilitados)
-    ViewBag.Salones = LogicaSalon.Listar().Where(s => s.Estado != "Mantenimiento").ToList();
-  ViewBag.Barras = Negocio.LogicaBarra.Listar().Where(b => b.Estado != "Mantenimiento").ToList();
- ViewBag.Gastronomicos = LogicaGastronomico.Listar().Where(g => g.Estado != "Mantenimiento").ToList();
-  ViewBag.Djs = LogicaDj.Listar().Where(d => d.Estado != "Mantenimiento").ToList();
-    }
+                // 3. Verificar que tenemos un IdCliente válido
+                if (idCliente <= 0)
+                {
+                    TempData["Error"] = $"No se pudo determinar el IdCliente. Valor final: {idCliente}. <a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                    return RedirectToAction("Logout", "Auth");
+                }
+
+                // 4. Crear la solicitud
+                solicitud.IdCliente = idCliente;
+                solicitud.Estado = "Pendiente";
+
+                var solicitudDto = new
+                {
+                    solicitud.IdCliente,
+                    solicitud.FechaDesde,
+                    solicitud.Estado,
+                    SalonesSeleccionados = salonesSeleccionados ?? new List<int>(),
+                    BarrasSeleccionadas = barrasSeleccionadas ?? new List<int>(),
+                    GastrosSeleccionados = gastrosSeleccionados ?? new List<int>(),
+                    DjsSeleccionados = djsSeleccionados ?? new List<int>()
+                };
+
+                var json = JsonSerializer.Serialize(solicitudDto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PostAsync("Solicitud", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Solicitud creada correctamente. Estado: Pendiente.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    TempData["Error"] = $"Error del servidor al crear solicitud (Status: {response.StatusCode}): {errorContent}";
+                    return RedirectToAction("Crear");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error inesperado: {ex.Message}<br/>StackTrace: {ex.StackTrace}<br/><a href='/Diagnostico/Sesion'>Ver diagnóstico</a>";
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        public async Task<IActionResult> Pendientes()
+        {
+            var response = await Client.GetAsync("Solicitud/estado/Pendiente");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var solicitudes = JsonSerializer.Deserialize<List<Solicitud>>(content, _jsonOptions);
+                return View("Index", solicitudes);
+            }
+            return View("Index", new List<Solicitud>());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Aprobar(int id)
+        {
+            var json = JsonSerializer.Serialize("Aprobada");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await Client.PostAsync($"Solicitud/{id}/cambiar-estado", content);
+            
+            if (response.IsSuccessStatusCode)
+                TempData["Success"] = "Solicitud aprobada.";
+            else
+                TempData["Error"] = "Error al aprobar la solicitud.";
+                
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Rechazar(int id)
+        {
+            var json = JsonSerializer.Serialize("Rechazada");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await Client.PostAsync($"Solicitud/{id}/cambiar-estado", content);
+            
+            if (response.IsSuccessStatusCode)
+                TempData["Success"] = "Solicitud rechazada.";
+            else
+                TempData["Error"] = "Error al rechazar la solicitud.";
+                
+            return RedirectToAction("Index");
+        }
+
+        // Método para eliminar solicitudes - Solo para Administradores
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            // Verificar que el usuario sea Administrador
+            var rol = HttpContext.Session.GetString("Rol");
+            if (rol != "Administrador")
+            {
+                TempData["Error"] = "No tiene permisos para eliminar solicitudes. Solo los administradores pueden realizar esta acción.";
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                var response = await Client.DeleteAsync($"Solicitud/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Solicitud eliminada correctamente.";
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    TempData["Error"] = $"Error al eliminar la solicitud: {errorContent}";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar solicitud {Id}", id);
+                TempData["Error"] = $"Error al eliminar: {ex.Message}";
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

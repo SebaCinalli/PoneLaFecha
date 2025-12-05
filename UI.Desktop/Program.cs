@@ -23,6 +23,18 @@ namespace UI.Desktop
                 using (var db = new AppDbContext())
                 {
                     db.Database.Migrate();
+                    
+                    // Actualizar clientes existentes que no tengan Clave o Rol
+                    var clientesSinClave = db.Clientes.Where(c => c.Clave == null || c.Clave == "").ToList();
+                    foreach (var cliente in clientesSinClave)
+                    {
+                        cliente.Clave = "123456"; // Contraseña temporal por defecto
+                        cliente.Rol = "Cliente";  // Rol por defecto
+                    }
+                    if (clientesSinClave.Any())
+                    {
+                        db.SaveChanges();
+                    }
                 }
 
                 // Crear administrador por defecto si no existe
@@ -37,64 +49,39 @@ namespace UI.Desktop
                 LogicaDj.CrearDatosEjemplo();
                 LogicaGastronomico.CrearDatosEjemplo();
 
-                // Ciclo de login/menú
-                bool continuarAplicacion = true;
+                Application.Run(new FrmLogin());
                 
-                while (continuarAplicacion)
+                // Después del login, abrir el menú correspondiente
+                while (true)
                 {
-                    // Mostrar formulario de login
                     var frmLogin = new FrmLogin();
                     Application.Run(frmLogin);
-
-                    // Si el login fue exitoso, mostrar la interfaz correspondiente
-                    if (frmLogin.LoginExitoso && SesionUsuario.EstaLogueado)
+                    
+                    if (!frmLogin.LoginExitoso)
                     {
-                        try
+                        break; // Salir si no hubo login exitoso
+                    }
+                    
+                    // Abrir el menú correspondiente según el rol
+                    if (SesionUsuario.EsAdministrador)
+                    {
+                        var frmMenu = new FrmMenuPrincipal();
+                        frmMenu.ShowDialog();
+                        
+                        if (!frmMenu.CerroSesion)
                         {
-                            if (SesionUsuario.EsAdministrador)
-                            {
-                                var frmMenuPrincipal = new FrmMenuPrincipal();
-                                Application.Run(frmMenuPrincipal);
-                                
-                                // Si el administrador cerró sesión, volver al login
-                                if (frmMenuPrincipal.CerroSesion)
-                                {
-                                    continuarAplicacion = true; // Continuar al login
-                                }
-                                else
-                                {
-                                    // Si cerró el formulario sin cerrar sesión (salir), terminar
-                                    continuarAplicacion = false;
-                                }
-                            }
-                            else if (SesionUsuario.EsCliente)
-                            {
-                                var frmMenuCliente = new FrmMenuCliente();
-                                Application.Run(frmMenuCliente);
-                                
-                                // Si el cliente cerró sesión, volver al login
-                                if (frmMenuCliente.CerroSesion)
-                                {
-                                    continuarAplicacion = true; // Continuar al login
-                                }
-                                else
-                                {
-                                    // Si cerró el formulario sin cerrar sesión (salir), terminar
-                                    continuarAplicacion = false;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Error al abrir el menú:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            continuarAplicacion = false;
+                            break; // Salir si cerró la aplicación
                         }
                     }
-                    else
+                    else if (SesionUsuario.EsCliente)
                     {
-                        // Si no hay login exitoso, salir
-                        continuarAplicacion = false;
+                        var frmMenuCliente = new FrmMenuCliente();
+                        frmMenuCliente.ShowDialog();
+                        
+                        if (!frmMenuCliente.CerroSesion)
+                        {
+                            break; // Salir si cerró la aplicación
+                        }
                     }
                 }
             }
@@ -107,18 +94,18 @@ namespace UI.Desktop
 
         private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
-    MessageBox.Show($"Error no controlado:\n{e.Exception.Message}\n\nDetalles:\n{e.Exception.ToString()}", 
-    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error no controlado:\n{e.Exception.Message}\n\nDetalles:\n{e.Exception.ToString()}", 
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
- private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-    Exception ex = e.ExceptionObject as Exception;
-      if (ex != null)
+            Exception ex = e.ExceptionObject as Exception;
+            if (ex != null)
             {
-  MessageBox.Show($"Error fatal:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
-     "Error Fatal", MessageBoxButtons.OK, MessageBoxIcon.Error);
-     }
-}
-  }
+                MessageBox.Show($"Error fatal:\n{ex.Message}\n\nDetalles:\n{ex.ToString()}", 
+                    "Error Fatal", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
 }

@@ -1,174 +1,178 @@
 using Entidades;
 using Datos;
-using System.Security.Cryptography;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Negocio
 {
     public static class LogicaUsuario
     {
+        // Métodos para trabajar con la entidad Usuario
         public static List<Usuario> Listar()
         {
-            using var db = new AppDbContext();
-            return db.Usuarios.Where(u => u.Activo).ToList();
+            using var context = new AppDbContext();
+            return context.Usuarios.ToList();
         }
 
-        public static int Crear(Usuario usuario)
+        public static Usuario? Autenticar(string username, string password)
         {
-            using var db = new AppDbContext();
-            // Encriptar password antes de guardar
-            usuario.Password = EncriptarPassword(usuario.Password);
-            db.Usuarios.Add(usuario);
-            db.SaveChanges();
-            return usuario.IdUsuario;
+            using var context = new AppDbContext();
+            return context.Usuarios.FirstOrDefault(u => 
+                u.NombreUsuario == username && 
+                u.Password == password && 
+                u.Activo);
         }
 
-        public static Usuario? Obtener(int id)
+        public static Usuario? ObtenerPorId(int id)
         {
-            using var db = new AppDbContext();
-            return db.Usuarios.Find(id);
+            using var context = new AppDbContext();
+            return context.Usuarios.Find(id);
         }
 
         public static Usuario? ObtenerPorNombreUsuario(string nombreUsuario)
         {
-            using var db = new AppDbContext();
-            return db.Usuarios.FirstOrDefault(u => u.NombreUsuario == nombreUsuario && u.Activo);
+            using var context = new AppDbContext();
+            return context.Usuarios.FirstOrDefault(u => u.NombreUsuario == nombreUsuario);
+        }
+
+        public static void Crear(Usuario usuario)
+        {
+            using var context = new AppDbContext();
+            
+            // Verificar si ya existe un usuario con ese nombre
+            var existente = context.Usuarios.FirstOrDefault(u => u.NombreUsuario == usuario.NombreUsuario);
+            if (existente != null)
+            {
+                throw new InvalidOperationException("El nombre de usuario ya está en uso");
+            }
+            
+            usuario.FechaCreacion = DateTime.Now;
+            context.Usuarios.Add(usuario);
+            context.SaveChanges();
         }
 
         public static void Editar(Usuario usuario)
         {
-            using var db = new AppDbContext();
-            var usuarioExistente = db.Usuarios.Find(usuario.IdUsuario);
-            if (usuarioExistente != null)
-            {
-                usuarioExistente.Nombre = usuario.Nombre;
-                usuarioExistente.Apellido = usuario.Apellido;
-                usuarioExistente.Email = usuario.Email;
-                usuarioExistente.Telefono = usuario.Telefono;
-                usuarioExistente.Rol = usuario.Rol;
-                usuarioExistente.Activo = usuario.Activo;
-                
-                // Solo actualizar password si se proporcionó uno nuevo
-                if (!string.IsNullOrWhiteSpace(usuario.Password))
-                {
-                    usuarioExistente.Password = EncriptarPassword(usuario.Password);
-                }
-                
-                db.SaveChanges();
-            }
+            using var context = new AppDbContext();
+            context.Usuarios.Update(usuario);
+            context.SaveChanges();
         }
 
         public static void Eliminar(int id)
         {
-            using var db = new AppDbContext();
-            var usuario = db.Usuarios.Find(id);
+            using var context = new AppDbContext();
+            var usuario = context.Usuarios.Find(id);
             if (usuario != null)
             {
-                // Eliminación lógica
-                usuario.Activo = false;
-                db.SaveChanges();
+                context.Usuarios.Remove(usuario);
+                context.SaveChanges();
             }
-        }
-
-        public static Usuario? Autenticar(string nombreUsuario, string password)
-        {
-            using var db = new AppDbContext();
-            var usuario = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == nombreUsuario && u.Activo);
-            
-            if (usuario != null && VerificarPassword(password, usuario.Password))
-            {
-                return usuario;
-            }
-            
-            return null;
         }
 
         public static void CrearAdministradorDefault()
         {
-            using var db = new AppDbContext();
+            using var context = new AppDbContext();
             
-            // Verificar si ya existe el administrador específico
-            var adminExistente = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == "chiqui123");
-            
-            if (adminExistente == null)
+            // Verificar si ya existe un administrador
+            var adminExistente = context.Usuarios.FirstOrDefault(u => u.Rol == "Administrador");
+            if (adminExistente != null) return;
+
+            var admin = new Usuario
             {
-                var admin = new Usuario
-                {
-                    NombreUsuario = "chiqui123",
-                    Password = EncriptarPassword("elchiqui123"),
-                    Rol = "Administrador",
-                    Nombre = "Chiqui",
-                    Apellido = "Tapia",
-                    Email = "chiquitapia@gmail.com",
-                    FechaCreacion = DateTime.Now,
-                    Activo = true
-                };
-                
-                db.Usuarios.Add(admin);
-                db.SaveChanges();
-            }
+                NombreUsuario = "chiqui123",
+                Password = "elchiqui123",
+                Rol = "Administrador",
+                Nombre = "Administrador",
+                Apellido = "Sistema",
+                Email = "admin@ponelafecha.com",
+                Telefono = "0000000000",
+                FechaCreacion = DateTime.Now,
+                Activo = true
+            };
+
+            context.Usuarios.Add(admin);
+            context.SaveChanges();
         }
 
         public static void CrearUsuariosEjemplo()
         {
-            using var db = new AppDbContext();
+            using var context = new AppDbContext();
             
-            // Crear algunos usuarios cliente de ejemplo si no existen
-            if (!db.Usuarios.Any(u => u.Rol == "Cliente"))
+            if (!context.Usuarios.Any())
             {
-                var clientes = new List<Usuario>
+                var usuarios = new List<Usuario>
                 {
                     new Usuario
                     {
+                        NombreUsuario = "chiqui123",
+                        Password = "elchiqui123",
+                        Rol = "Administrador",
+                        Nombre = "Administrador",
+                        Apellido = "Sistema",
+                        Email = "admin@ponelafecha.com",
+                        Telefono = "0000000000",
+                        Activo = true
+                    },
+                    new Usuario
+                    {
                         NombreUsuario = "cliente1",
-                        Password = EncriptarPassword("123456"),
+                        Password = "cliente123",
                         Rol = "Cliente",
                         Nombre = "Juan",
                         Apellido = "Pérez",
                         Email = "juan.perez@email.com",
                         Telefono = "1234567890",
-                        FechaCreacion = DateTime.Now,
                         Activo = true
                     },
                     new Usuario
                     {
                         NombreUsuario = "cliente2",
-                        Password = EncriptarPassword("123456"),
+                        Password = "cliente123",
                         Rol = "Cliente",
                         Nombre = "María",
                         Apellido = "González",
                         Email = "maria.gonzalez@email.com",
                         Telefono = "0987654321",
-                        FechaCreacion = DateTime.Now,
                         Activo = true
                     }
                 };
 
-                db.Usuarios.AddRange(clientes);
-                db.SaveChanges();
-            }
-        }
-        
-        private static string EncriptarPassword(string password)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                
-                return builder.ToString();
+                context.Usuarios.AddRange(usuarios);
+                context.SaveChanges();
             }
         }
 
-        private static bool VerificarPassword(string password, string hash)
+        // Métodos para trabajar con la entidad Cliente (compatibilidad)
+        public static Cliente? LoginCliente(string username, string password)
         {
-            string hashPassword = EncriptarPassword(password);
-            return string.Equals(hashPassword, hash, StringComparison.OrdinalIgnoreCase);
+            using var context = new AppDbContext();
+            var cliente = context.Clientes.FirstOrDefault(u => u.NombreUsuario == username);
+            
+            if (cliente != null && cliente.Clave == password)
+            {
+                return cliente;
+            }
+            return null;
+        }
+
+        public static Cliente? ObtenerClientePorNombreUsuario(string nombreUsuario)
+        {
+            using var context = new AppDbContext();
+            return context.Clientes.FirstOrDefault(c => c.NombreUsuario == nombreUsuario);
+        }
+
+        public static void CrearCliente(Cliente cliente)
+        {
+             using var context = new AppDbContext();
+             
+             // Verificar si ya existe un usuario con ese nombre
+             var existente = context.Clientes.FirstOrDefault(c => c.NombreUsuario == cliente.NombreUsuario);
+             if (existente != null)
+             {
+                 throw new InvalidOperationException("El nombre de usuario ya está en uso");
+             }
+             
+             context.Clientes.Add(cliente);
+             context.SaveChanges();
         }
     }
 }

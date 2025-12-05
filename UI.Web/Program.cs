@@ -1,9 +1,12 @@
-using Negocio;
-
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:5200", "https://localhost:7200");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7296/api/");
+});
 
 // Agregar soporte para sesiones
 builder.Services.AddDistributedMemoryCache();
@@ -16,17 +19,7 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// Initialize sample data
-try
-{
-LogicaSalon.CrearDatosEjemplo();
-    LogicaDj.CrearDatosEjemplo();
-    LogicaGastronomico.CrearDatosEjemplo();
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Error initializing sample data: {ex.Message}");
-}
+// Initialize sample data moved to API
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

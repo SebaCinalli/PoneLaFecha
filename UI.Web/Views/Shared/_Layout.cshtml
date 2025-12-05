@@ -48,6 +48,14 @@
     <li class="nav-item">
            <a class="nav-link text-dark" asp-area="" asp-controller="Solicitud" asp-action="Index">Solicitudes</a>
         </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="reportesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Reportes
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="reportesDropdown">
+                <li><a class="dropdown-item" asp-controller="Estadisticas" asp-action="Index">Estadísticas del Sistema</a></li>
+            </ul>
+        </li>
                    }
 else
       {

@@ -1,23 +1,56 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Entidades;
-using Negocio;
+using System.Text.Json;
+using System.Text;
 
 namespace UI.Web.Controllers
 {
     public class ClienteController : Controller
     {
-        public IActionResult Index() => View(LogicaCliente.Listar());
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonOptions;
+
+        public ClienteController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        }
+
+        private HttpClient Client => _httpClientFactory.CreateClient("API");
+
+        public async Task<IActionResult> Index()
+        {
+            var response = await Client.GetAsync("Cliente");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var clientes = JsonSerializer.Deserialize<List<Cliente>>(content, _jsonOptions);
+                return View(clientes);
+            }
+            return View(new List<Cliente>());
+        }
 
         public IActionResult Crear() => View();
 
         [HttpPost]
-        public IActionResult Crear(Cliente c)
+        public async Task<IActionResult> Crear(Cliente c)
         {
             try
             {
-                LogicaCliente.Crear(c);
-                TempData["Success"] = "Cliente creado correctamente.";
-                return RedirectToAction("Index");
+                var json = JsonSerializer.Serialize(c);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PostAsync("Cliente", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Cliente creado correctamente.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["Error"] = $"Error al crear el cliente: {response.ReasonPhrase}";
+                    return View(c);
+                }
             }
             catch (Exception ex)
             {
@@ -26,20 +59,37 @@ namespace UI.Web.Controllers
             }
         }
 
-        public IActionResult Editar(int id)
+        public async Task<IActionResult> Editar(int id)
         {
-            var cliente = LogicaCliente.Obtener(id);
-            return cliente == null ? NotFound() : View(cliente);
+            var response = await Client.GetAsync($"Cliente/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var cliente = JsonSerializer.Deserialize<Cliente>(content, _jsonOptions);
+                return View(cliente);
+            }
+            return NotFound();
         }
 
         [HttpPost]
-        public IActionResult Editar(Cliente c)
+        public async Task<IActionResult> Editar(Cliente c)
         {
             try
             {
-                LogicaCliente.Editar(c);
-                TempData["Success"] = "Cliente modificado correctamente.";
-                return RedirectToAction("Index");
+                var json = JsonSerializer.Serialize(c);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PutAsync($"Cliente/{c.IdCliente}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Cliente modificado correctamente.";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["Error"] = $"Error al modificar el cliente: {response.ReasonPhrase}";
+                    return View(c);
+                }
             }
             catch (Exception ex)
             {
@@ -48,22 +98,29 @@ namespace UI.Web.Controllers
             }
         }
 
-        public IActionResult Eliminar(int id)
+        public async Task<IActionResult> Eliminar(int id)
         {
             try
             {
-                LogicaCliente.Eliminar(id);
-                TempData["Success"] = "Cliente eliminado correctamente.";
+                var response = await Client.DeleteAsync($"Cliente/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Cliente eliminado correctamente.";
+                }
+                else
+                {
+                    TempData["Error"] = "No se puede eliminar este cliente porque tiene solicitudes asociadas. Por favor, elimine primero las solicitudes relacionadas.";
+                }
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "No se puede eliminar este cliente porque tiene solicitudes asociadas. Por favor, elimine primero las solicitudes relacionadas.";
+                TempData["Error"] = $"Error al eliminar: {ex.Message}";
             }
             return RedirectToAction("Index");
         }
 
         // Perfil del cliente (para que los clientes editen sus propios datos)
-        public IActionResult MiPerfil()
+        public async Task<IActionResult> MiPerfil()
         {
             var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
             if (string.IsNullOrEmpty(nombreUsuario))
@@ -71,18 +128,20 @@ namespace UI.Web.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            var cliente = LogicaCliente.ObtenerPorNombreUsuario(nombreUsuario);
-            if (cliente == null)
+            var response = await Client.GetAsync($"Cliente/usuario/{nombreUsuario}");
+            if (response.IsSuccessStatusCode)
             {
-                TempData["Error"] = "No se encontró el perfil del cliente.";
-                return RedirectToAction("Index", "Home");
+                var content = await response.Content.ReadAsStringAsync();
+                var cliente = JsonSerializer.Deserialize<Cliente>(content, _jsonOptions);
+                return View(cliente);
             }
-
-            return View(cliente);
+            
+            TempData["Error"] = "No se encontró el perfil del cliente.";
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
-        public IActionResult MiPerfil(Cliente cliente)
+        public async Task<IActionResult> MiPerfil(Cliente cliente)
         {
             var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
             if (string.IsNullOrEmpty(nombreUsuario))
@@ -91,7 +150,16 @@ namespace UI.Web.Controllers
             }
 
             // Validar que el cliente está editando su propio perfil
-            var clienteActual = LogicaCliente.ObtenerPorNombreUsuario(nombreUsuario);
+            var response = await Client.GetAsync($"Cliente/usuario/{nombreUsuario}");
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "Error al validar el perfil.";
+                return RedirectToAction("MiPerfil");
+            }
+            
+            var content = await response.Content.ReadAsStringAsync();
+            var clienteActual = JsonSerializer.Deserialize<Cliente>(content, _jsonOptions);
+
             if (clienteActual == null || clienteActual.IdCliente != cliente.IdCliente)
             {
                 TempData["Error"] = "No tiene permisos para editar este perfil.";
@@ -103,14 +171,74 @@ namespace UI.Web.Controllers
                 // Mantener el nombre de usuario original
                 cliente.NombreUsuario = clienteActual.NombreUsuario;
                 
-                LogicaCliente.Editar(cliente);
-                TempData["Success"] = "Su perfil ha sido actualizado correctamente.";
-                return RedirectToAction("MiPerfil");
+                var json = JsonSerializer.Serialize(cliente);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var putResponse = await Client.PutAsync($"Cliente/{cliente.IdCliente}", httpContent);
+
+                if (putResponse.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Su perfil ha sido actualizado correctamente.";
+                    return RedirectToAction("MiPerfil");
+                }
+                else
+                {
+                    TempData["Error"] = $"Error al actualizar el perfil: {putResponse.ReasonPhrase}";
+                    return View(cliente);
+                }
             }
             catch (Exception ex)
             {
                 TempData["Error"] = $"Error al actualizar el perfil: {ex.Message}";
                 return View(cliente);
+            }
+        }
+
+        // Ver solicitudes del cliente logueado
+        public async Task<IActionResult> MisSolicitudes()
+        {
+            var nombreUsuario = HttpContext.Session.GetString("NombreUsuario");
+            if (string.IsNullOrEmpty(nombreUsuario))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            try
+            {
+                // Obtener el cliente actual
+                var clienteResponse = await Client.GetAsync($"Cliente/usuario/{nombreUsuario}");
+                if (!clienteResponse.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = "No se pudo obtener su perfil de cliente.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var clienteContent = await clienteResponse.Content.ReadAsStringAsync();
+                var cliente = JsonSerializer.Deserialize<Cliente>(clienteContent, _jsonOptions);
+
+                if (cliente == null)
+                {
+                    TempData["Error"] = "No se pudo obtener su perfil de cliente.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                // Obtener las solicitudes del cliente
+                var solicitudesResponse = await Client.GetAsync($"Solicitud/cliente/{cliente.IdCliente}");
+                if (solicitudesResponse.IsSuccessStatusCode)
+                {
+                    var solicitudesContent = await solicitudesResponse.Content.ReadAsStringAsync();
+                    var solicitudes = JsonSerializer.Deserialize<List<Solicitud>>(solicitudesContent, _jsonOptions);
+                    return View(solicitudes ?? new List<Solicitud>());
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron cargar las solicitudes.";
+                    return View(new List<Solicitud>());
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al cargar las solicitudes: {ex.Message}";
+                return View(new List<Solicitud>());
             }
         }
     }

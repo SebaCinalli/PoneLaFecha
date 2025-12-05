@@ -1,87 +1,110 @@
 using Microsoft.AspNetCore.Mvc;
 using Entidades;
-using Negocio;
+using System.Text.Json;
+using System.Text;
 
 namespace UI.Web.Controllers
 {
     public class GastronomicoController : Controller
     {
-        public IActionResult Index(decimal? precioMin, decimal? precioMax)
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly JsonSerializerOptions _jsonOptions;
+
+        public GastronomicoController(IHttpClientFactory httpClientFactory)
         {
-            var gastronomicos = LogicaGastronomico.Listar();
-            
-            // Aplicar filtros de precio
-            if (precioMin.HasValue)
+            _httpClientFactory = httpClientFactory;
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        }
+
+        private HttpClient Client => _httpClientFactory.CreateClient("API");
+
+        public async Task<IActionResult> Index()
+        {
+            var response = await Client.GetAsync("Gastronomico");
+            if (response.IsSuccessStatusCode)
             {
-                gastronomicos = gastronomicos.Where(g => g.MontoG >= precioMin.Value).ToList();
+                var content = await response.Content.ReadAsStringAsync();
+                var comidas = JsonSerializer.Deserialize<List<Gastronomico>>(content, _jsonOptions);
+                return View(comidas);
             }
-            
-            if (precioMax.HasValue)
-            {
-                gastronomicos = gastronomicos.Where(g => g.MontoG <= precioMax.Value).ToList();
-            }
-            
-            ViewBag.PrecioMin = precioMin;
-            ViewBag.PrecioMax = precioMax;
-            
-            return View(gastronomicos);
+            return View(new List<Gastronomico>());
         }
 
         public IActionResult Crear() => View();
 
         [HttpPost]
-        public IActionResult Crear(Gastronomico g)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(g);
-            }
-            
-            LogicaGastronomico.Crear(g);
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Editar(int id)
-        {
-            var gastronomico = LogicaGastronomico.Obtener(id);
-            return gastronomico == null ? NotFound() : View(gastronomico);
-        }
-
-        [HttpPost]
-        public IActionResult Editar(Gastronomico g)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(g);
-            }
-            
-            LogicaGastronomico.Editar(g);
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Eliminar(int id)
-        {
-            LogicaGastronomico.Eliminar(id);
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Detalle(int id)
-        {
-            var gastronomico = LogicaGastronomico.Obtener(id);
-            return gastronomico == null ? NotFound() : View(gastronomico);
-        }
-
-        // Acci髇 para actualizar estados vac韔s (puede ejecutarse una vez para corregir datos existentes)
-        public IActionResult ActualizarEstados()
+        public async Task<IActionResult> Crear(Gastronomico comida)
         {
             try
             {
-                LogicaGastronomico.ActualizarEstadosVacios();
-                TempData["Success"] = "Estados actualizados correctamente.";
+                var json = JsonSerializer.Serialize(comida);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PostAsync("Gastronomico", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Gastron贸mico creado correctamente.";
+                    return RedirectToAction("Index");
+                }
+                TempData["Error"] = "Error al crear el gastron贸mico.";
+                return View(comida);
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Error al actualizar estados: {ex.Message}";
+                TempData["Error"] = $"Error: {ex.Message}";
+                return View(comida);
+            }
+        }
+
+        public async Task<IActionResult> Editar(int id)
+        {
+            var response = await Client.GetAsync($"Gastronomico/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var comida = JsonSerializer.Deserialize<Gastronomico>(content, _jsonOptions);
+                return View(comida);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Editar(Gastronomico comida)
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(comida);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await Client.PutAsync($"Gastronomico/{comida.IdGastro}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Gastron贸mico modificado correctamente.";
+                    return RedirectToAction("Index");
+                }
+                TempData["Error"] = "Error al modificar el gastron贸mico.";
+                return View(comida);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+                return View(comida);
+            }
+        }
+
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            try
+            {
+                var response = await Client.DeleteAsync($"Gastronomico/{id}");
+                if (response.IsSuccessStatusCode)
+                    TempData["Success"] = "Gastron贸mico eliminado correctamente.";
+                else
+                    TempData["Error"] = "Error al eliminar el gastron贸mico.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
             }
             return RedirectToAction("Index");
         }

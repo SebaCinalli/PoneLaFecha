@@ -20,11 +20,8 @@ private Button btnEditar;
         private Label lblFiltroEstado;
   private Button btnLimpiarFiltro;
 
-        private readonly LogicaSolicitud _logicaSolicitud;
-
         public FrmABMSolicitud()
 {
-  _logicaSolicitud = new LogicaSolicitud();
      InitializeComponent();
        CargarSolicitudes();
    }
@@ -179,11 +176,11 @@ this.Controls.Add(this.btnLimpiarFiltro);
   this.PerformLayout();
         }
 
-        private async void CargarSolicitudes()
+        private async Task CargarSolicitudes()
  {
    try
   {
-    var solicitudes = await _logicaSolicitud.GetAllAsync();
+    var solicitudes = await LogicaSolicitud.GetAllAsync();
             dgvSolicitudes.DataSource = solicitudes;
        ConfigurarColumnas();
  }
@@ -243,7 +240,7 @@ dgvSolicitudes.Columns["DjSolicitudes"].Visible = false;
        try
         {
        var estado = cboEstado.SelectedItem.ToString();
-         var solicitudes = await _logicaSolicitud.GetByEstadoAsync(estado);
+         var solicitudes = await LogicaSolicitud.GetByEstadoAsync(estado);
          dgvSolicitudes.DataSource = solicitudes;
       ConfigurarColumnas();
      }
@@ -318,7 +315,7 @@ return;
    {
        try
  {
-       await _logicaSolicitud.DeleteAsync(solicitud.IdSolicitud);
+       await LogicaSolicitud.DeleteAsync(solicitud.IdSolicitud);
   MessageBox.Show("Solicitud eliminada correctamente.", "Éxito", 
        MessageBoxButtons.OK, MessageBoxIcon.Information);
  CargarSolicitudes();
