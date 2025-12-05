@@ -48,10 +48,8 @@ namespace UI.Desktop
                 LogicaBarra.CrearDatosEjemplo();
                 LogicaDj.CrearDatosEjemplo();
                 LogicaGastronomico.CrearDatosEjemplo();
-
-                Application.Run(new FrmLogin());
                 
-                // Después del login, abrir el menú correspondiente
+                // Bucle principal de login y menús
                 while (true)
                 {
                     var frmLogin = new FrmLogin();
