@@ -49,7 +49,39 @@ namespace UI.Desktop
                 LogicaDj.CrearDatosEjemplo();
                 LogicaGastronomico.CrearDatosEjemplo();
 
-                Application.Run(new FrmLogin());
+                // Bucle principal de la aplicación
+                bool continuarEjecutando = true;
+                
+                while (continuarEjecutando)
+                {
+                    // Mostrar formulario de login
+                    var frmLogin = new FrmLogin();
+                    Application.Run(frmLogin);
+                    
+                    // Verificar si el login fue exitoso
+                    if (frmLogin.LoginExitoso && SesionUsuario.EstaLogueado)
+                    {
+                        // Abrir el menú principal
+                        var frmMenu = new FrmMenuPrincipal();
+                        Application.Run(frmMenu);
+                        
+                        // Si cerró sesión, volver al login
+                        if (frmMenu.CerroSesion)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            // Si salió, terminar la aplicación
+                            continuarEjecutando = false;
+                        }
+                    }
+                    else
+                    {
+                        // Si no hizo login (cerró el formulario), salir
+                        continuarEjecutando = false;
+                    }
+                }
             }
             catch (Exception ex)
             {

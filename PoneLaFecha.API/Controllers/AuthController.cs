@@ -33,7 +33,7 @@ namespace PoneLaFecha.API.Controllers
                 if (usuario != null)
                 {
                     _logger.LogInformation("Login exitoso para usuario: {Username}", request.Username);
-                    return Ok(usuario);
+                    return Ok(new { usuario = usuario });
                 }
 
                 // Si no es usuario, intentar login como Cliente
@@ -41,7 +41,7 @@ namespace PoneLaFecha.API.Controllers
                 if (cliente != null)
                 {
                     _logger.LogInformation("Login exitoso para cliente: {Username}", request.Username);
-                    return Ok(cliente);
+                    return Ok(new { usuario = cliente });
                 }
                 
                 _logger.LogWarning("Login fallido para usuario: {Username}", request.Username);

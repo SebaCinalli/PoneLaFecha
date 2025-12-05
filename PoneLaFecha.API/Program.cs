@@ -39,6 +39,7 @@ app.MapControllers();
 // Initialize sample data
 try
 {
+    Negocio.LogicaUsuario.CrearUsuariosEjemplo();
     Negocio.LogicaSalon.CrearDatosEjemplo();
     Negocio.LogicaDj.CrearDatosEjemplo();
     Negocio.LogicaGastronomico.CrearDatosEjemplo();

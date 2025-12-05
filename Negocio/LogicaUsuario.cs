@@ -78,8 +78,8 @@ namespace Negocio
 
             var admin = new Usuario
             {
-                NombreUsuario = "admin",
-                Password = "admin123",
+                NombreUsuario = "chiqui123",
+                Password = "elchiqui123",
                 Rol = "Administrador",
                 Nombre = "Administrador",
                 Apellido = "Sistema",
@@ -103,8 +103,8 @@ namespace Negocio
                 {
                     new Usuario
                     {
-                        NombreUsuario = "admin",
-                        Password = "admin123",
+                        NombreUsuario = "chiqui123",
+                        Password = "elchiqui123",
                         Rol = "Administrador",
                         Nombre = "Administrador",
                         Apellido = "Sistema",
