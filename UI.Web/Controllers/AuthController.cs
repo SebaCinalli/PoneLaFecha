@@ -38,17 +38,43 @@ namespace UI.Web.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
-                    var usuario = JsonSerializer.Deserialize<Cliente>(responseContent, _jsonOptions);
+                    _logger.LogInformation("Respuesta del login: {Response}", responseContent);
                     
-                    if (usuario != null)
+                    // La API devuelve { usuario: Usuario } o { usuario: Cliente }
+                    var loginResponse = JsonSerializer.Deserialize<JsonElement>(responseContent, _jsonOptions);
+                    
+                    if (loginResponse.TryGetProperty("usuario", out var usuarioElement))
                     {
-                        HttpContext.Session.SetString("UsuarioId", usuario.IdCliente.ToString());
-                        HttpContext.Session.SetString("NombreUsuario", usuario.NombreUsuario);
-                        HttpContext.Session.SetString("Rol", usuario.Rol);
-                        HttpContext.Session.SetString("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}");
-                        
-                        _logger.LogInformation("Login exitoso para: {Usuario}", nombreUsuario);
-                        return RedirectToAction("Index", "Home");
+                        // Intentar como Usuario primero (tiene IdUsuario)
+                        if (usuarioElement.TryGetProperty("idUsuario", out var _))
+                        {
+                            var usuario = JsonSerializer.Deserialize<Usuario>(usuarioElement.GetRawText(), _jsonOptions);
+                            if (usuario != null)
+                            {
+                                HttpContext.Session.SetString("UsuarioId", usuario.IdUsuario.ToString());
+                                HttpContext.Session.SetString("NombreUsuario", usuario.NombreUsuario);
+                                HttpContext.Session.SetString("Rol", usuario.Rol);
+                                HttpContext.Session.SetString("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}");
+                                
+                                _logger.LogInformation("Login exitoso para Usuario: {Usuario} con rol {Rol}", nombreUsuario, usuario.Rol);
+                                return RedirectToAction("Index", "Home");
+                            }
+                        }
+                        // Si no, intentar como Cliente (tiene IdCliente)
+                        else if (usuarioElement.TryGetProperty("idCliente", out var _))
+                        {
+                            var cliente = JsonSerializer.Deserialize<Cliente>(usuarioElement.GetRawText(), _jsonOptions);
+                            if (cliente != null)
+                            {
+                                HttpContext.Session.SetString("UsuarioId", cliente.IdCliente.ToString());
+                                HttpContext.Session.SetString("NombreUsuario", cliente.NombreUsuario);
+                                HttpContext.Session.SetString("Rol", cliente.Rol);
+                                HttpContext.Session.SetString("NombreCompleto", $"{cliente.Nombre} {cliente.Apellido}");
+                                
+                                _logger.LogInformation("Login exitoso para Cliente: {Usuario} con rol {Rol}", nombreUsuario, cliente.Rol);
+                                return RedirectToAction("Index", "Home");
+                            }
+                        }
                     }
                 }
                 
